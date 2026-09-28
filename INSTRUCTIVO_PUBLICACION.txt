@@ -1,0 +1,18 @@
+CENTRO DE SIMULACIÓN DIGITAL IPG – PUBLICACIÓN RÁPIDA EN GITHUB PAGES
+
+1. Descomprima el paquete.
+2. Cree una cuenta gratuita en GitHub si aún no dispone de una.
+3. Cree un repositorio llamado, por ejemplo: ipg-simuladores.
+4. Suba TODOS los archivos y carpetas del paquete.
+5. Abra Settings > Pages.
+6. En Build and deployment seleccione: Deploy from a branch.
+7. Seleccione Branch: main y Folder: /(root).
+8. Presione Save.
+9. GitHub publicará el portal bajo una dirección del tipo:
+   https://USUARIO.github.io/ipg-simuladores/
+
+IMPORTANTE:
+- No suba únicamente index.html: debe conservar las carpetas wms, comex, portsim, rrhh, finanzas y marketing.
+- El WMS ya está operativo dentro de /wms/.
+- Los demás módulos contienen su ficha de alcance y están preparados para reemplazarse posteriormente por sus simuladores.
+- El portal puede enlazarse desde Moodle como recurso web.
