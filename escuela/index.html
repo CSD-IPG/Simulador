@@ -68,6 +68,54 @@
 <div id="statusBox" class="notice">Esperando carga de datos.</div>
 <div class="panel"><h3>Participación por simulador</h3><div id="chart" class="chart"></div></div>
 <div class="panel"><h3>Detalle consolidado</h3><div class="tablewrap"><table><thead><tr><th>Inicio</th><th>Estudiante</th><th>ID/RUT</th><th>Carrera</th><th>Sección</th><th>Simulador</th><th>Estado</th><th>Avance</th><th>Puntaje</th><th>Intentos</th><th>Tiempo</th><th>U1</th><th>U2</th><th>U3</th></tr></thead><tbody id="tbody"></tbody></table></div></div>
+
+<div class="repo-section" id="repositorioUso">
+  <div class="panel">
+    <h2 style="margin-top:0">Uso del Repositorio Académico</h2>
+    <p class="sub">Descargas reales de materiales registradas en Supabase.</p>
+
+    <div class="repo-grid">
+      <div class="repo-kpi"><b id="repoTotal">0</b><small>Descargas totales</small></div>
+      <div class="repo-kpi"><b id="repoEst">0</b><small>Descargas estudiante</small></div>
+      <div class="repo-kpi"><b id="repoDoc">0</b><small>Descargas docente</small></div>
+      <div class="repo-kpi"><b id="repoEsc">0</b><small>Descargas escuela</small></div>
+    </div>
+
+    <div id="repoStatus" class="notice">Esperando carga de datos del repositorio.</div>
+
+    <div class="repo-panels">
+      <div class="repo-panel">
+        <h3>Recursos más descargados</h3>
+        <table class="repo-table">
+          <thead><tr><th>Recurso</th><th>Asignatura</th><th>Descargas</th></tr></thead>
+          <tbody id="repoTopBody"><tr><td colspan="3">Sin datos</td></tr></tbody>
+        </table>
+      </div>
+
+      <div class="repo-panel">
+        <h3>Descargas por carrera</h3>
+        <div id="repoCarreras">Sin datos</div>
+      </div>
+
+      <div class="repo-panel">
+        <h3>Descargas por asignatura</h3>
+        <table class="repo-table">
+          <thead><tr><th>Asignatura</th><th>Descargas</th></tr></thead>
+          <tbody id="repoAsignBody"><tr><td colspan="2">Sin datos</td></tr></tbody>
+        </table>
+      </div>
+
+      <div class="repo-panel">
+        <h3>Evolución mensual</h3>
+        <table class="repo-table">
+          <thead><tr><th>Mes</th><th>Descargas</th></tr></thead>
+          <tbody id="repoMesBody"><tr><td colspan="2">Sin datos</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
 </section>
 </div>
 <script>
@@ -86,8 +134,7 @@ async function login(){
    const r=await fetch(SUPABASE_URL+"/auth/v1/token?grant_type=password",{method:"POST",headers:{"Content-Type":"application/json","apikey":ANON_KEY},body:JSON.stringify({email,password})});
    const j=await r.json();
    if(!r.ok||!j.access_token)throw new Error(j.error_description||j.msg||"No fue posible autenticar.");
-   TOKEN=j.access_token;sessionStorage.setItem("csd_token",TOKEN);showDash();await loadData();
-    await loadRepositorioDashboard();
+   TOKEN=j.access_token;sessionStorage.setItem("csd_token",TOKEN);showDash();await loadAllData();
  }catch(e){$("loginMsg").innerHTML='<div class="notice bad">'+esc(e.message)+'</div>';}
 }
 async function loadData(){
@@ -133,122 +180,128 @@ function downloadCSV(){
 }
 function showDash(){$("loginView").classList.add("hidden");$("dashView").classList.remove("hidden")}
 function logout(){sessionStorage.removeItem("csd_token");TOKEN="";DATA=[];$("dashView").classList.add("hidden");$("loginView").classList.remove("hidden")}
-$("loginBtn").onclick=login;$("refreshBtn").onclick=loadData;$("csvBtn").onclick=downloadCSV;$("logoutBtn").onclick=logout;
-["fSim","fCar","fSec","fDoc","fEst"].forEach(id=>$(id).addEventListener("change",applyFilters));$("fSearch").addEventListener("input",applyFilters);
-if(TOKEN){showDash();loadData();}
 
 async function loadRepositorioDashboard(){
-  if(!accessToken) return;
+  if(!TOKEN)return;
+
+  $("repoStatus").className="notice";
+  $("repoStatus").textContent="Cargando datos del Repositorio Académico...";
+
   try{
-    // Resumen por perfil
-    let r1=await fetch(SUPABASE_URL+'/rest/v1/resumen_descargas_repositorio?select=*',{
-      headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+accessToken}
-    });
-    if(r1.ok){
-      let a=await r1.json(), s=a[0]||{};
-      let el=id=>document.getElementById(id);
-      if(el('repoTotal')) el('repoTotal').textContent=s.total_descargas||0;
-      if(el('repoEst')) el('repoEst').textContent=s.descargas_estudiante||0;
-      if(el('repoDoc')) el('repoDoc').textContent=s.descargas_docente||0;
-      if(el('repoEsc')) el('repoEsc').textContent=s.descargas_escuela||0;
-    }
+    const headers={"apikey":ANON_KEY,"Authorization":"Bearer "+TOKEN};
 
-    // Descargas + datos del recurso
-    let r2=await fetch(SUPABASE_URL+'/rest/v1/descargas_recursos?select=fecha,tipo_usuario,recurso_id,recursos_academicos(titulo,asignatura,carrera)&order=fecha.desc',{
-      headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+accessToken}
-    });
-    if(!r2.ok) return;
-    let rows=await r2.json();
+    const r1=await fetch(
+      SUPABASE_URL+"/rest/v1/resumen_descargas_repositorio?select=*",
+      {headers}
+    );
 
-    const byResource={}, byCareer={}, bySubject={}, byMonth={};
+    if(r1.status===401||r1.status===403)
+      throw new Error("Sin autorización para consultar descargas del repositorio.");
+
+    if(!r1.ok)
+      throw new Error("Resumen repositorio: Error "+r1.status+" · "+await r1.text());
+
+    const resumen=(await r1.json())[0]||{};
+
+    $("repoTotal").textContent=resumen.total_descargas||0;
+    $("repoEst").textContent=resumen.descargas_estudiante||0;
+    $("repoDoc").textContent=resumen.descargas_docente||0;
+    $("repoEsc").textContent=resumen.descargas_escuela||0;
+
+    const r2=await fetch(
+      SUPABASE_URL+"/rest/v1/descargas_recursos?select=fecha,tipo_usuario,recurso_id,recursos_academicos(titulo,asignatura,carrera)&order=fecha.desc",
+      {headers}
+    );
+
+    if(!r2.ok)
+      throw new Error("Detalle repositorio: Error "+r2.status+" · "+await r2.text());
+
+    const rows=await r2.json();
+
+    const byResource={},byCareer={},bySubject={},byMonth={};
+
     for(const d of rows){
       const rec=d.recursos_academicos||{};
-      const key=d.recurso_id;
-      if(!byResource[key]) byResource[key]={titulo:rec.titulo||'Recurso',asignatura:rec.asignatura||'—',count:0};
+      const key=String(d.recurso_id);
+
+      if(!byResource[key]){
+        byResource[key]={
+          titulo:rec.titulo||"Recurso",
+          asignatura:rec.asignatura||"—",
+          count:0
+        };
+      }
       byResource[key].count++;
 
-      const car=rec.carrera||'Sin carrera';
+      const car=rec.carrera||"Sin carrera";
       byCareer[car]=(byCareer[car]||0)+1;
 
-      const asg=rec.asignatura||'Sin asignatura';
+      const asg=rec.asignatura||"Sin asignatura";
       bySubject[asg]=(bySubject[asg]||0)+1;
 
       const dt=new Date(d.fecha);
-      const mes=isNaN(dt)?'Sin fecha':dt.toLocaleDateString('es-CL',{year:'numeric',month:'short'});
-      byMonth[mes]=(byMonth[mes]||0)+1;
+      const monthKey=isNaN(dt)
+        ?"Sin fecha"
+        :dt.toLocaleDateString("es-CL",{year:"numeric",month:"short"});
+      byMonth[monthKey]=(byMonth[monthKey]||0)+1;
     }
 
-    const top=Object.values(byResource).sort((a,b)=>b.count-a.count).slice(0,10);
-    const topBody=document.getElementById('repoTopBody');
-    if(topBody) topBody.innerHTML=top.length?top.map(x=>`<tr><td>${escapeHtmlRepo(x.titulo)}</td><td>${escapeHtmlRepo(x.asignatura)}</td><td>${x.count}</td></tr>`).join(''):'<tr><td colspan="3">Sin descargas registradas</td></tr>';
+    const top=Object.values(byResource)
+      .sort((a,b)=>b.count-a.count)
+      .slice(0,10);
 
-    const carr=Object.entries(byCareer).sort((a,b)=>b[1]-a[1]).slice(0,10);
-    const maxC=carr.length?Math.max(...carr.map(x=>x[1])):1;
-    const carBox=document.getElementById('repoCarreras');
-    if(carBox) carBox.innerHTML=carr.length?carr.map(([n,v])=>`<div style="margin:9px 0"><div style="display:flex;justify-content:space-between;gap:12px"><span>${escapeHtmlRepo(n)}</span><b>${v}</b></div><div class="repo-bar"><span style="width:${Math.round(v/maxC*100)}%"></span></div></div>`).join(''):'Sin descargas registradas';
+    $("repoTopBody").innerHTML=top.length
+      ?top.map(x=>`<tr><td>${esc(x.titulo)}</td><td>${esc(x.asignatura)}</td><td>${x.count}</td></tr>`).join("")
+      :'<tr><td colspan="3">Sin descargas registradas</td></tr>';
 
-    const asigs=Object.entries(bySubject).sort((a,b)=>b[1]-a[1]).slice(0,10);
-    const asgBody=document.getElementById('repoAsignBody');
-    if(asgBody) asgBody.innerHTML=asigs.length?asigs.map(([n,v])=>`<tr><td>${escapeHtmlRepo(n)}</td><td>${v}</td></tr>`).join(''):'<tr><td colspan="2">Sin descargas registradas</td></tr>';
+    const carreras=Object.entries(byCareer)
+      .sort((a,b)=>b[1]-a[1])
+      .slice(0,10);
+
+    const maxC=carreras.length?Math.max(...carreras.map(x=>x[1])):1;
+
+    $("repoCarreras").innerHTML=carreras.length
+      ?carreras.map(([n,v])=>`
+        <div style="margin:10px 0">
+          <div style="display:flex;justify-content:space-between;gap:12px">
+            <span>${esc(n)}</span><b>${v}</b>
+          </div>
+          <div class="repo-bar">
+            <span style="width:${Math.round(v/maxC*100)}%"></span>
+          </div>
+        </div>`).join("")
+      :"Sin descargas registradas";
+
+    const asigs=Object.entries(bySubject)
+      .sort((a,b)=>b[1]-a[1])
+      .slice(0,10);
+
+    $("repoAsignBody").innerHTML=asigs.length
+      ?asigs.map(([n,v])=>`<tr><td>${esc(n)}</td><td>${v}</td></tr>`).join("")
+      :'<tr><td colspan="2">Sin descargas registradas</td></tr>';
 
     const meses=Object.entries(byMonth);
-    const mesBody=document.getElementById('repoMesBody');
-    if(mesBody) mesBody.innerHTML=meses.length?meses.map(([n,v])=>`<tr><td>${escapeHtmlRepo(n)}</td><td>${v}</td></tr>`).join(''):'<tr><td colspan="2">Sin descargas registradas</td></tr>';
+
+    $("repoMesBody").innerHTML=meses.length
+      ?meses.map(([n,v])=>`<tr><td>${esc(n)}</td><td>${v}</td></tr>`).join("")
+      :'<tr><td colspan="2">Sin descargas registradas</td></tr>';
+
+    $("repoStatus").textContent=`Datos actualizados: ${rows.length} descarga(s) registrada(s).`;
+
   }catch(e){
-    console.error('Error cargando métricas del repositorio:',e);
+    console.error(e);
+    $("repoStatus").className="notice bad";
+    $("repoStatus").textContent=e.message;
   }
 }
-function escapeHtmlRepo(s){
-  return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+async function loadAllData(){
+  await loadData();
+  await loadRepositorioDashboard();
 }
 
+$("loginBtn").onclick=login;$("refreshBtn").onclick=loadAllData;$("csvBtn").onclick=downloadCSV;$("logoutBtn").onclick=logout;
+["fSim","fCar","fSec","fDoc","fEst"].forEach(id=>$(id).addEventListener("change",applyFilters));$("fSearch").addEventListener("input",applyFilters);
+if(TOKEN){showDash();loadAllData();}
 </script>
-
-<section class="repo-section" id="repositorioUso">
-  <div class="section-head">
-    <div>
-      <h2>Uso del Repositorio Académico</h2>
-      <p class="muted">Descargas reales registradas en Supabase por perfil y recurso.</p>
-    </div>
-  </div>
-
-  <div class="repo-grid">
-    <div class="repo-kpi"><b id="repoTotal">0</b><span>Descargas totales</span></div>
-    <div class="repo-kpi"><b id="repoEst">0</b><span>Descargas estudiante</span></div>
-    <div class="repo-kpi"><b id="repoDoc">0</b><span>Descargas docente</span></div>
-    <div class="repo-kpi"><b id="repoEsc">0</b><span>Descargas escuela</span></div>
-  </div>
-
-  <div class="repo-panels">
-    <div class="repo-panel">
-      <h3>Recursos más descargados</h3>
-      <table class="repo-table">
-        <thead><tr><th>Recurso</th><th>Asignatura</th><th>Descargas</th></tr></thead>
-        <tbody id="repoTopBody"><tr><td colspan="3">Cargando…</td></tr></tbody>
-      </table>
-    </div>
-
-    <div class="repo-panel">
-      <h3>Descargas por carrera</h3>
-      <div id="repoCarreras">Cargando…</div>
-    </div>
-
-    <div class="repo-panel">
-      <h3>Descargas por asignatura</h3>
-      <table class="repo-table">
-        <thead><tr><th>Asignatura</th><th>Descargas</th></tr></thead>
-        <tbody id="repoAsignBody"><tr><td colspan="2">Cargando…</td></tr></tbody>
-      </table>
-    </div>
-
-    <div class="repo-panel">
-      <h3>Evolución mensual</h3>
-      <table class="repo-table">
-        <thead><tr><th>Mes</th><th>Descargas</th></tr></thead>
-        <tbody id="repoMesBody"><tr><td colspan="2">Cargando…</td></tr></tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
 </body></html>
