@@ -3,44 +3,201 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Centro de Simulación Digital IPG | Escuela de Gestión</title>
-<meta name="description" content="Portal académico de simulación digital para Administración, Finanzas, Logística, Comercio Exterior, Operaciones Portuarias, Recursos Humanos y Marketing Digital.">
+<title>IPG PEOPLE V1 | Centro de Simulación Digital IPG</title>
 <style>
-:root{--navy:#10233e;--navy2:#173b68;--cyan:#16a6b6;--teal:#0c7f88;--bg:#f5f7fa;--card:#fff;--text:#1d2a3a;--muted:#607086;--line:#dfe6ee;--ok:#0f8a55;--warn:#b7791f;--shadow:0 10px 30px rgba(16,35,62,.08)}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text)}
-a{color:inherit}.wrap{max-width:1200px;margin:0 auto;padding:0 22px}
-header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.nav{height:72px;display:flex;align-items:center;justify-content:space-between;gap:22px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none}.mark{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,var(--navy),var(--cyan));display:grid;place-items:center;color:white;font-weight:800}.brand strong{display:block;color:var(--navy);font-size:15px}.brand span{display:block;color:var(--muted);font-size:12px}.navlinks{display:flex;gap:18px;align-items:center}.navlinks a{text-decoration:none;font-size:14px;color:#3f5269}.navlinks a:hover{color:var(--cyan)}
-.hero{background:radial-gradient(circle at 85% 20%,rgba(22,166,182,.22),transparent 26%),linear-gradient(135deg,var(--navy),#173b68 60%,#15566b);color:white;padding:72px 0 64px}.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.2);font-size:13px}.hero-grid{display:grid;grid-template-columns:1.4fr .9fr;gap:45px;align-items:center}.hero h1{font-size:clamp(38px,5vw,64px);line-height:1.03;margin:18px 0 18px;letter-spacing:-1.7px}.hero p{font-size:18px;line-height:1.65;color:#dbe8f5;max-width:760px}.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;border-radius:11px;padding:12px 17px;font-weight:700;font-size:14px;border:1px solid transparent}.btn.primary{background:white;color:var(--navy)}.btn.secondary{color:white;border-color:rgba(255,255,255,.38);background:rgba(255,255,255,.07)}.hero-panel{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);border-radius:18px;padding:22px;box-shadow:var(--shadow)}.hero-panel h3{margin:0 0 15px}.metric{display:flex;justify-content:space-between;border-top:1px solid rgba(255,255,255,.18);padding:13px 0;color:#e6f0f8}.metric b{color:white}
-section{padding:62px 0}.section-head{display:flex;justify-content:space-between;gap:24px;align-items:end;margin-bottom:26px}.section-head h2{margin:0;color:var(--navy);font-size:32px;letter-spacing:-.6px}.section-head p{margin:8px 0 0;color:var(--muted);max-width:760px;line-height:1.6}.pill{display:inline-block;background:#e7f7f8;color:#0c7179;border:1px solid #bee9ec;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:var(--shadow);position:relative;overflow:hidden}.card .icon{width:46px;height:46px;border-radius:12px;background:#edf5f8;display:grid;place-items:center;font-size:23px;margin-bottom:16px}.card h3{margin:0 0 8px;color:var(--navy);font-size:20px}.card p{margin:0 0 16px;color:var(--muted);line-height:1.55;font-size:14px}.tagrow{display:flex;gap:7px;flex-wrap:wrap;margin:14px 0}.tag{padding:5px 8px;border-radius:7px;background:#f1f4f8;color:#53657b;font-size:11px;font-weight:700}.status{font-size:12px;font-weight:800}.status.live{color:var(--ok)}.status.soon{color:var(--warn)}.cardlink{display:inline-flex;margin-top:8px;color:var(--teal);font-weight:800;text-decoration:none}.cardlink:hover{text-decoration:underline}.disabled{opacity:.74}
-.band{background:white;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.path{display:grid;grid-template-columns:repeat(4,1fr);gap:0}.step{padding:22px;border-right:1px solid var(--line)}.step:last-child{border-right:0}.num{width:32px;height:32px;border-radius:50%;background:var(--navy);color:white;display:grid;place-items:center;font-weight:800;margin-bottom:12px}.step h4{margin:0 0 7px;color:var(--navy)}.step p{font-size:13px;color:var(--muted);line-height:1.5;margin:0}
-.split{display:grid;grid-template-columns:1fr 1fr;gap:20px}.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:25px}.panel h3{margin-top:0;color:var(--navy)}.check{padding-left:0;list-style:none}.check li{margin:12px 0;color:#465a72;line-height:1.45}.check li:before{content:'✓';color:var(--ok);font-weight:900;margin-right:9px}.resource{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px 0;border-top:1px solid var(--line)}.resource:first-of-type{border-top:0}.resource small{display:block;color:var(--muted);margin-top:3px}.resource a{text-decoration:none;color:var(--teal);font-weight:800;font-size:13px}
-footer{background:#0c1c31;color:#cbd7e5;padding:34px 0}.foot{display:flex;justify-content:space-between;gap:20px;align-items:center}.foot strong{color:white}.foot small{display:block;margin-top:4px;color:#91a6bd}
-.notice{background:#fff8df;border:1px solid #f0d987;color:#765c10;padding:13px 16px;border-radius:10px;font-size:13px;line-height:1.5;margin-top:16px}
-@media(max-width:900px){.hero-grid,.split{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}.path{grid-template-columns:1fr 1fr}.step:nth-child(2){border-right:0}.navlinks{display:none}}@media(max-width:620px){.grid,.path{grid-template-columns:1fr}.step{border-right:0;border-bottom:1px solid var(--line)}.hero{padding-top:48px}.hero h1{font-size:40px}.section-head{align-items:start;flex-direction:column}}
+:root{--n:#10233e;--c:#16a6b6;--t:#0c7f88;--bg:#f4f7fa;--tx:#1d2a3a;--m:#64748b;--ln:#dde5ed;--ok:#12805c;--wa:#a86811;--bad:#a63f3f}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--tx)}
+button,input,select,textarea{font:inherit}.top{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--ln)}
+.nav{max-width:1280px;margin:auto;padding:12px 20px;display:flex;justify-content:space-between;align-items:center}.brand{display:flex;gap:11px;align-items:center}.mark{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,var(--n),var(--c));display:grid;place-items:center;color:white;font-weight:900}.brand strong{display:block;color:var(--n)}.brand small{color:var(--m)}.nav a{text-decoration:none;color:var(--t);font-weight:800}
+.shell{max-width:1280px;margin:auto;padding:24px 20px 45px}.hero{background:linear-gradient(135deg,var(--n),#174567);color:white;border-radius:18px;padding:26px;display:grid;grid-template-columns:1.5fr .8fr;gap:22px}.hero h1{font-size:38px;margin:6px 0}.hero p{color:#dce8f4;line-height:1.55}.badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#ffffff18;border:1px solid #ffffff30;font-size:12px;font-weight:800}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px}.st{background:#ffffff12;border:1px solid #ffffff22;border-radius:12px;padding:13px}.st b{display:block;font-size:23px}
+.layout{display:grid;grid-template-columns:245px 1fr;gap:18px;margin-top:18px}.side,.panel{background:white;border:1px solid var(--ln);border-radius:15px}.side{padding:12px;height:max-content;position:sticky;top:82px}.tab{width:100%;border:0;background:transparent;text-align:left;padding:11px;border-radius:9px;font-weight:750;color:#43566e;cursor:pointer}.tab.active,.tab:hover{background:#eaf5f7;color:#0b717a}.panel{padding:22px;min-height:630px}.view{display:none}.view.active{display:block}
+h2{color:var(--n);margin:0 0 8px}.sub{color:var(--m);line-height:1.55}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.kpi{border:1px solid var(--ln);border-radius:12px;padding:13px;background:#fbfcfe}.kpi b{display:block;font-size:22px;color:var(--n)}.kpi small{color:var(--m)}
+.form{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.f label{display:block;font-size:12px;color:#53677e;font-weight:800;margin-bottom:5px}.f input,.f select,.f textarea{width:100%;border:1px solid #ced8e2;border-radius:9px;padding:10px}.f textarea{min-height:90px}
+.btn{border:0;border-radius:9px;padding:10px 14px;font-weight:800;cursor:pointer}.pri{background:var(--n);color:white}.teal{background:var(--t);color:white}.light{background:#edf2f6;color:#31475f}.bad{background:#fdecec;color:#8e2f2f}.warn{background:#fff3d8;color:#805b00}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}.notice{padding:12px 14px;border-radius:10px;background:#eef8fa;border:1px solid #cde9ec;color:#315b61;font-size:13px;line-height:1.5}.notice.w{background:#fff8df;border-color:#efd98a;color:#745d17}.notice.b{background:#fff0f0;border-color:#f0c8c8;color:#7e3535}
+.tablewrap{overflow:auto;border:1px solid var(--ln);border-radius:11px}.table{width:100%;border-collapse:collapse;min-width:760px}.table th,.table td{padding:10px 9px;border-bottom:1px solid var(--ln);font-size:13px;text-align:left}.table th{background:#f3f6f9;color:#4b6077}.pill{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800}.p-ok{background:#e5f6ed;color:#167349}.p-wa{background:#fff4d8;color:#875f00}.p-bad{background:#fde9e9;color:#993737}
+.report{background:#fbfcfe;border:1px solid var(--ln);border-radius:12px;padding:15px}.timeline{border-left:3px solid #d9e3ec;padding-left:15px}.ev{padding:8px 0 14px}.ev b{color:var(--n)}.ev small{display:block;color:var(--m);margin-top:3px}.mono{font-family:ui-monospace,monospace;font-size:12px}
+footer{max-width:1280px;margin:auto;padding:0 20px 28px;color:#728197;font-size:12px}
+@media(max-width:960px){.layout{grid-template-columns:1fr}.side{position:static;display:grid;grid-template-columns:repeat(3,1fr)}.hero{grid-template-columns:1fr}.form{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr 1fr}}@media(max-width:620px){.side{grid-template-columns:1fr 1fr}.form,.cards{grid-template-columns:1fr}}
+@media print{.top,.side,.actions,.no-print{display:none!important}.layout{display:block}.panel{border:0}.view{display:none!important}#evidencia{display:block!important}.hero{display:none}}
 </style>
 </head>
 <body>
-<header><div class="wrap nav"><a class="brand" href="#inicio"><div class="mark">IPG</div><div><strong>Centro de Simulación Digital IPG</strong><span>Escuela de Gestión, Negocios y Marítima</span></div></a><nav class="navlinks"><a href="#simuladores">Simuladores</a><a href="#ruta">Metodología</a><a href="#docentes">Docentes</a><a href="#recursos">Recursos</a></nav></div></header>
+<div class="top"><div class="nav"><div class="brand"><div class="mark">IPG</div><div><strong>IPG PEOPLE V1</strong><small>Centro de Simulación Digital · Escuela de Gestión, Negocios y Marítima</small></div></div><a href="#">← Volver al portal</a></div></div>
 
-<main id="inicio">
-<section class="hero"><div class="wrap hero-grid"><div><span class="eyebrow">Ecosistema tecnológico académico · Fase inicial</span><h1>Aprender operando procesos del mundo laboral.</h1><p>Un entorno digital para experimentar con procesos de administración, finanzas, logística, comercio exterior, operaciones portuarias, recursos humanos y marketing, mediante simuladores IPG y plataformas reales de aprendizaje.</p><div class="cta"><a class="btn primary" href="wms/">Abrir WMS Simulator</a><a class="btn secondary" href="#simuladores">Explorar ecosistema</a></div></div><aside class="hero-panel"><h3>Modelo de aprendizaje</h3><div class="metric"><span>1 · Conocer</span><b>Interfaz y proceso</b></div><div class="metric"><span>2 · Operar</span><b>Ejecutar tareas</b></div><div class="metric"><span>3 · Resolver</span><b>Tomar decisiones</b></div><div class="metric"><span>4 · Integrar</span><b>Conectar áreas</b></div></aside></div></section>
+<div class="shell">
+<section class="hero">
+<div><span class="badge">SIMULADOR ACADÉMICO · HRIS / HCM / PEOPLE ANALYTICS</span><h1>Gestión digital de personas</h1><p>Simula procesos de contratación, asistencia, remuneraciones simplificadas, ausentismo, desempeño, capacitación y análisis de indicadores de personas. La interfaz es académica y no replica un software comercial específico.</p></div>
+<div class="stats"><div class="st"><b id="scH">0</b><span>Puntaje</span></div><div class="st"><b id="tmH">00:00</b><span>Tiempo</span></div><div class="st"><b id="erH">0</b><span>Errores</span></div><div class="st"><b id="avH">0%</b><span>Avance</span></div></div>
+</section>
 
-<section id="simuladores"><div class="wrap"><div class="section-head"><div><span class="pill">SIMULADORES IPG</span><h2>Laboratorios digitales</h2><p>Cada módulo reproduce a menor escala la lógica de un sistema empresarial real. El objetivo no es copiar software propietario, sino aprender sus procesos, decisiones, datos e indicadores.</p></div></div><div class="grid">
-<article class="card"><div class="icon">📦</div><span class="status live">● Disponible</span><h3>IPG WMS</h3><p>Recepción, ubicación, inventario, picking, packing, despacho, contingencias y evidencia académica.</p><div class="tagrow"><span class="tag">WMS</span><span class="tag">Inventario</span><span class="tag">KPI</span></div><a class="cardlink" href="wms/">Abrir simulador →</a></article>
-<article class="card"><div class="icon">🌐</div><span class="status live">● Disponible</span><h3>IPG COMEX</h3><p>Importación, booking, documentos, BL, Incoterms, costos, ETA/ETD, aduana y entrega.</p><div class="tagrow"><span class="tag">COMEX</span><span class="tag">Forwarding</span><span class="tag">Costeo</span></div><a class="cardlink" href="comex/">Abrir simulador →</a></article>
-<article class="card"><div class="icon">⚓</div><span class="status live">● Disponible</span><h3>IPG PORTSIM</h3><p>Gate, patio, contenedores, reefer/IMO, planificación de nave, grúas, retiro y productividad portuaria.</p><div class="tagrow"><span class="tag">TOS</span><span class="tag">Yard</span><span class="tag">Vessel</span></div><a class="cardlink" href="portsim/">Abrir simulador →</a></article>
-<article class="card"><div class="icon">👥</div><span class="status live">● Disponible</span><h3>IPG PEOPLE</h3><p>Fichas de colaboradores, asistencia, remuneraciones simplificadas, desempeño, capacitación y People Analytics.</p><div class="tagrow"><span class="tag">HRIS</span><span class="tag">HCM</span><span class="tag">Analytics</span></div><a class="cardlink" href="rrhh/">Abrir simulador →</a></article>
-<article class="card disabled"><div class="icon">📊</div><span class="status soon">◐ En desarrollo</span><h3>IPG FIN-SIM</h3><p>Presupuesto, flujo de caja, costos, desviaciones, forecast y control de gestión.</p><div class="tagrow"><span class="tag">Finanzas</span><span class="tag">BI</span><span class="tag">Forecast</span></div><a class="cardlink" href="finanzas/">Ver alcance →</a></article>
-<article class="card disabled"><div class="icon">📣</div><span class="status soon">◐ En desarrollo</span><h3>IPG MARKETING</h3><p>CRM, leads, campañas, embudo, indicadores digitales, conversiones y ROI.</p><div class="tagrow"><span class="tag">CRM</span><span class="tag">Ads</span><span class="tag">Analytics</span></div><a class="cardlink" href="marketing/">Ver alcance →</a></article>
-</div></div></section>
+<div class="layout">
+<aside class="side">
+<button class="tab active" data-v="inicio">1. Inicio</button>
+<button class="tab" data-v="personas">2. Fichas</button>
+<button class="tab" data-v="asistencia">3. Asistencia</button>
+<button class="tab" data-v="remu">4. Remuneraciones</button>
+<button class="tab" data-v="desempeno">5. Desempeño</button>
+<button class="tab" data-v="analytics">6. People Analytics</button>
+<button class="tab" data-v="cont">7. Contingencias</button>
+<button class="tab" data-v="log">8. Bitácora</button>
+<button class="tab" data-v="evidencia">9. Evidencia</button>
+</aside>
 
-<section id="ruta" class="band"><div class="wrap"><div class="section-head"><div><span class="pill">METODOLOGÍA</span><h2>Una ruta de simulación común</h2><p>Todos los módulos utilizan una secuencia reconocible para que el estudiante se concentre en el proceso profesional y no en aprender cada portal desde cero.</p></div></div><div class="path"><div class="step"><div class="num">1</div><h4>Contextualizar</h4><p>Qué sistema se simula, dónde se usa, roles y conceptos indispensables.</p></div><div class="step"><div class="num">2</div><h4>Operar</h4><p>Ingreso al simulador, tareas guiadas, datos y transacciones.</p></div><div class="step"><div class="num">3</div><h4>Resolver</h4><p>Contingencias, restricciones, errores y decisiones justificadas.</p></div><div class="step"><div class="num">4</div><h4>Evidenciar</h4><p>Puntaje, bitácora, tiempo, reflexión y reporte para Moodle.</p></div></div></div></section>
+<main class="panel">
+<section class="view active" id="inicio">
+<h2>Inicio de simulación</h2><p class="sub">Administrarás una dotación ficticia de 12 colaboradores de IPG Retail SpA. Debes detectar inconsistencias, tomar decisiones y analizar indicadores.</p>
+<div class="form"><div class="f"><label>Nombre estudiante</label><input id="student"></div><div class="f"><label>ID / RUT</label><input id="studentId"></div><div class="f"><label>Carrera</label><input id="career" placeholder="Ej. TNS Administración de RR.HH."></div><div class="f"><label>Sección</label><input id="section"></div><div class="f"><label>Código actividad</label><input id="activity" value="RRHH-SIM01"></div><div class="f"><label>Docente</label><input id="teacher"></div></div>
+<div class="notice" style="margin-top:14px"><b>Misión:</b> completar la revisión mensual de personas, asistencia, remuneraciones y desempeño, identificando alertas y proponiendo acciones de gestión.</div>
+<div class="actions"><button class="btn pri" id="start">Iniciar simulación</button><button class="btn light" id="reset">Reiniciar caso</button></div>
+<div class="cards" style="margin-top:20px"><div class="kpi"><b>12</b><small>Colaboradores</small></div><div class="kpi"><b>3</b><small>Áreas</small></div><div class="kpi"><b>8,7%</b><small>Ausentismo Bodega</small></div><div class="kpi"><b>17%</b><small>Rotación Bodega</small></div></div>
+</section>
 
-<section id="docentes"><div class="wrap"><div class="section-head"><div><span class="pill">USO ACADÉMICO</span><h2>Para docentes y estudiantes</h2></div></div><div class="split"><div class="panel"><h3>Docentes</h3><ul class="check"><li>Seleccionar una simulación según resultado de aprendizaje.</li><li>Publicar el enlace en Moodle junto al caso y la rúbrica.</li><li>Definir código de actividad y sección.</li><li>Solicitar reporte final PDF/CSV como evidencia.</li><li>Usar contingencias para evaluar análisis y toma de decisiones.</li></ul><div class="notice"><b>Sugerencia:</b> comenzar con actividades de 45–60 minutos y una sola contingencia, antes de utilizar escenarios integrados.</div></div><div class="panel"><h3>Estudiantes</h3><ul class="check"><li>Ingresar desde computador usando navegador moderno.</li><li>Completar identificación académica antes de iniciar.</li><li>Seguir la misión y registrar las operaciones requeridas.</li><li>Revisar puntaje, errores y avance durante la actividad.</li><li>Finalizar y entregar la evidencia indicada por el docente.</li></ul><a class="btn primary" style="background:var(--navy);color:white" href="wms/">Practicar con WMS</a></div></div></div></section>
+<section class="view" id="personas">
+<h2>Fichas de colaboradores</h2><p class="sub">Revisa altas y antecedentes contractuales. Decide si cada caso puede quedar activo o requiere corrección.</p>
+<div class="tablewrap"><table class="table"><thead><tr><th>ID</th><th>Nombre</th><th>Área</th><th>Contrato</th><th>Jornada</th><th>Situación</th><th>Acción</th></tr></thead><tbody id="peopleBody"></tbody></table></div>
+</section>
 
-<section id="recursos" class="band"><div class="wrap"><div class="section-head"><div><span class="pill">PLATAFORMAS REALES</span><h2>Recursos complementarios</h2><p>El portal combina simuladores propios con plataformas externas de formación. La disponibilidad y condiciones de acceso dependen de cada proveedor.</p></div></div><div class="split"><div class="panel"><h3>ERP, datos y procesos</h3><div class="resource"><div><b>SAP Learning</b><small>Aprendizaje y rutas de práctica SAP.</small></div><a href="https://learning.sap.com/" target="_blank" rel="noopener">Visitar ↗</a></div><div class="resource"><div><b>Odoo Education</b><small>ERP y procesos empresariales integrados.</small></div><a href="https://www.odoo.com/education" target="_blank" rel="noopener">Visitar ↗</a></div><div class="resource"><div><b>Microsoft Learn</b><small>Power BI, Power Platform, datos y automatización.</small></div><a href="https://learn.microsoft.com/training/" target="_blank" rel="noopener">Visitar ↗</a></div><div class="resource"><div><b>Simio Academic</b><small>Simulación de procesos y sistemas.</small></div><a href="https://www.simio.com/academics/" target="_blank" rel="noopener">Visitar ↗</a></div></div><div class="panel"><h3>Marketing y analítica</h3><div class="resource"><div><b>HubSpot Academy</b><small>CRM, ventas, inbound y marketing digital.</small></div><a href="https://academy.hubspot.com/" target="_blank" rel="noopener">Visitar ↗</a></div><div class="resource"><div><b>Google Skillshop</b><small>Google Ads, Analytics y herramientas digitales.</small></div><a href="https://skillshop.withgoogle.com/" target="_blank" rel="noopener">Visitar ↗</a></div><div class="resource"><div><b>Looker Studio</b><small>Visualización y tableros para análisis de datos.</small></div><a href="https://lookerstudio.google.com/" target="_blank" rel="noopener">Visitar ↗</a></div></div></div></div></section>
-</main>
-<footer><div class="wrap foot"><div><strong>Centro de Simulación Digital IPG</strong><small>Escuela de Gestión, Negocios y Marítima · Prototipo académico</small></div><div>Fase inicial · 2026</div></div></footer>
+<section class="view" id="asistencia">
+<h2>Asistencia y ausentismo</h2><p class="sub">Clasifica correctamente las incidencias del período y define la acción de gestión.</p>
+<div class="tablewrap"><table class="table"><thead><tr><th>ID</th><th>Área</th><th>Incidencia</th><th>Días/Horas</th><th>Respaldo</th><th>Decisión</th></tr></thead><tbody id="attBody"></tbody></table></div>
+</section>
+
+<section class="view" id="remu">
+<h2>Remuneraciones simplificadas</h2><p class="sub">Calcula el total imponible pedagógico según sueldo base + bono + horas extra del caso. No representa una liquidación legal completa.</p>
+<div class="form"><div class="f"><label>Sueldo base</label><input id="base" type="number" value="850000"></div><div class="f"><label>Bono imponible</label><input id="bonus" type="number" value="120000"></div><div class="f"><label>Horas extra</label><input id="ot" type="number" value="10"></div></div>
+<div class="actions"><button class="btn pri" id="calcPay">Calcular caso</button></div>
+<div class="notice" id="payResult" style="margin-top:12px">Aún no has calculado el caso.</div>
+<div class="cards" style="margin-top:14px"><div class="kpi"><b id="hourValue">—</b><small>Valor hora pedagógico</small></div><div class="kpi"><b id="otValue">—</b><small>Horas extra</small></div><div class="kpi"><b id="taxable">—</b><small>Total imponible simulado</small></div><div class="kpi"><b>180 h</b><small>Base mensual del ejercicio</small></div></div>
+</section>
+
+<section class="view" id="desempeno">
+<h2>Desempeño y capacitación</h2><p class="sub">Asigna una acción de desarrollo coherente con el resultado de desempeño.</p>
+<div class="tablewrap"><table class="table"><thead><tr><th>Colaborador</th><th>Área</th><th>Meta</th><th>Conducta</th><th>Resultado</th><th>Acción</th></tr></thead><tbody id="perfBody"></tbody></table></div>
+</section>
+
+<section class="view" id="analytics">
+<h2>People Analytics</h2><p class="sub">Interpreta el tablero y selecciona el área que requiere intervención prioritaria según los datos del escenario.</p>
+<div class="cards"><div class="kpi"><b>2,1%</b><small>Ausentismo Finanzas</small></div><div class="kpi"><b>3,4%</b><small>Ausentismo Ventas</small></div><div class="kpi"><b>8,7%</b><small>Ausentismo Bodega</small></div><div class="kpi"><b>382 h</b><small>Horas extra Bodega</small></div></div>
+<div class="tablewrap" style="margin-top:14px"><table class="table"><thead><tr><th>Área</th><th>Ausentismo</th><th>Rotación</th><th>Horas extra</th><th>Clima</th></tr></thead><tbody><tr><td>Finanzas</td><td>2,1%</td><td>3%</td><td>45</td><td>82/100</td></tr><tr><td>Ventas</td><td>3,4%</td><td>8%</td><td>122</td><td>75/100</td></tr><tr><td><b>Bodega</b></td><td><b>8,7%</b></td><td><b>17%</b></td><td><b>382</b></td><td><b>61/100</b></td></tr></tbody></table></div>
+<div class="form" style="margin-top:14px"><div class="f"><label>Área prioritaria</label><select id="priority"><option>Finanzas</option><option>Ventas</option><option>Bodega</option></select></div><div class="f" style="grid-column:span 2"><label>Justificación</label><textarea id="priorityWhy"></textarea></div></div>
+<div class="actions"><button class="btn teal" id="evalAnalytics">Registrar análisis</button></div>
+</section>
+
+<section class="view" id="cont">
+<h2>Contingencias de gestión de personas</h2><p class="sub">Resuelve al menos una contingencia con acciones concretas y trazables.</p>
+<div class="report"><h3>Contingencia A · Aumento sostenido de ausentismo</h3><p>Bodega duplica su ausentismo en tres meses. Explica qué datos revisarías y qué medidas implementarías antes de concluir las causas.</p><div class="f"><textarea id="ansA"></textarea></div><button class="btn warn" onclick="incident('A')">Registrar respuesta</button></div>
+<div class="report" style="margin-top:12px"><h3>Contingencia B · Error de remuneración</h3><p>Un colaborador informa que 8 horas extra no fueron incorporadas. Define el procedimiento de revisión, corrección y trazabilidad.</p><div class="f"><textarea id="ansB"></textarea></div><button class="btn warn" onclick="incident('B')">Registrar respuesta</button></div>
+<div class="report" style="margin-top:12px"><h3>Contingencia C · Brecha de desempeño</h3><p>Una jefatura cumple metas, pero registra baja evaluación conductual y conflictos recurrentes. Propón una intervención.</p><div class="f"><textarea id="ansC"></textarea></div><button class="btn warn" onclick="incident('C')">Registrar respuesta</button></div>
+</section>
+
+<section class="view" id="log"><h2>Bitácora</h2><p class="sub">Registro de operaciones y decisiones.</p><div class="timeline" id="logBox"></div></section>
+
+<section class="view" id="evidencia">
+<h2>Evidencia y cierre</h2><p class="sub">Genera el respaldo individual de la actividad.</p>
+<div class="cards"><div class="kpi"><b id="scF">0</b><small>Puntaje</small></div><div class="kpi"><b id="erF">0</b><small>Errores</small></div><div class="kpi"><b id="avF">0%</b><small>Avance</small></div><div class="kpi"><b id="tmF">00:00</b><small>Tiempo</small></div></div>
+<div class="report" style="margin-top:14px"><h3>Identificación</h3><div id="stuSum" class="mono">Aún no inicia.</div></div>
+<div class="report" style="margin-top:12px"><h3>Resumen</h3><div id="opSum"></div></div>
+<div class="actions no-print"><button class="btn pri" onclick="traceFinalizeAndPrint(event)">Finalizar / Guardar PDF</button><button class="btn teal" id="csv">Descargar CSV</button><button class="btn light" id="json">Descargar JSON</button></div>
+<div class="notice w no-print" style="margin-top:12px">Este simulador es pedagógico. Los cálculos y casos simplifican procesos reales y no sustituyen un sistema de remuneraciones, asesoría laboral ni procedimientos institucionales.</div>
+</section>
+</main></div></div>
+<footer>IPG PEOPLE V1 · Simulación académica de HRIS/HCM y People Analytics.</footer><div id="ipgTraceState" style="max-width:1200px;margin:10px auto 18px;padding:10px 14px;border:1px solid #dce5ed;border-radius:10px;background:#f7fafc;font:13px/1.4 system-ui;color:#425466"><b>Registro institucional:</b> <span id="ipgTraceText">listo para iniciar.</span></div>
+
+<script>
+const KEY="ipg_people_v1";const init=()=>({started:false,start:0,elapsed:0,score:0,errors:0,student:"",studentId:"",career:"",section:"",activity:"RRHH-SIM01",teacher:"",people:{},att:{},pay:false,perf:{},analytics:false,inc:{},logs:[]});
+let s=(()=>{try{return JSON.parse(localStorage.getItem(KEY))||init()}catch(e){return init()}})();
+const P=[["C001","Ana Rojas","Finanzas","Indefinido","44 h","Completo",1],["C002","Luis Vega","Ventas","Plazo fijo","44 h","Falta fecha término",0],["C003","Camila Soto","Bodega","Indefinido","44 h","Completo",1],["C004","Diego Mora","Bodega","Indefinido","30 h","Jornada registrada 44 h",0]];
+const A=[["C003","Bodega","Licencia médica","5 días","Sí",1],["C005","Ventas","Ausencia injustificada","1 día","No",0],["C006","Bodega","Permiso autorizado","4 h","Sí",1],["C007","Finanzas","Marcación faltante","1 ingreso","No",0]];
+const PF=[["Ana Rojas","Finanzas",92,88,"Alto","Mantener/reconocer"],["Luis Vega","Ventas",68,72,"Medio","Plan de mejora"],["Camila Soto","Bodega",81,58,"Brecha conductual","Coaching/acompañamiento"],["Diego Mora","Bodega",55,79,"Brecha de meta","Capacitación técnica"]];
+const $=x=>document.getElementById(x),save=()=>{localStorage.setItem(KEY,JSON.stringify(s));render()},fmt=x=>{x=Math.max(0,x||0);let m=Math.floor(x/60),q=x%60;return String(m).padStart(2,"0")+":"+String(q).padStart(2,"0")},elapsed=()=>s.started?s.elapsed+Math.floor((Date.now()-s.start)/1000):s.elapsed;
+function add(t,m,p=0){s.logs.unshift({ts:new Date().toLocaleString("es-CL"),t,m,p});s.score=Math.max(0,s.score+p)}function err(m){s.errors++;add("ERROR",m,-3)}
+function adv(){let n=Object.keys(s.people).length+Object.keys(s.att).length+(s.pay?1:0)+Object.keys(s.perf).length+(s.analytics?1:0)+(Object.keys(s.inc).length?1:0);return Math.min(100,Math.round(n/15*100))}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(b.dataset.v).classList.add("active");render()});
+$("start").onclick=()=>{for(let id of ["student","studentId","career","section"])if(!$(id).value.trim())return alert("Completa identificación académica.");Object.assign(s,{student:$("student").value,studentId:$("studentId").value,career:$("career").value,section:$("section").value,activity:$("activity").value||"RRHH-SIM01",teacher:$("teacher").value,started:true,start:Date.now()});add("INICIO","Simulación iniciada",5);save();alert("Simulación iniciada.")};
+$("reset").onclick=()=>{if(confirm("¿Reiniciar el caso?")){localStorage.removeItem(KEY);location.reload()}};
+
+function people(){let h="";P.forEach((p,i)=>{let d=s.people[p[0]];h+=`<tr><td>${p[0]}</td><td><b>${p[1]}</b></td><td>${p[2]}</td><td>${p[3]}</td><td>${p[4]}</td><td>${p[5]}</td><td>${d?`<span class="pill ${d.ok?'p-ok':'p-bad'}">${d.a}</span>`:`<button class="btn light" onclick="pd(${i},1)">Activar</button> <button class="btn bad" onclick="pd(${i},0)">Corregir</button>`}</td></tr>`});$("peopleBody").innerHTML=h}
+window.pd=(i,a)=>{if(!s.started)return alert("Primero inicia.");let p=P[i],ok=Number(a)===p[6];s.people[p[0]]={a:a?"Activado":"Corregir",ok};ok?add("FICHA",p[0]+": decisión correcta",7):err("Ficha "+p[0]+": decisión incorrecta");save()};
+
+function att(){let h="";A.forEach((a,i)=>{let d=s.att[a[0]];h+=`<tr><td>${a[0]}</td><td>${a[1]}</td><td>${a[2]}</td><td>${a[3]}</td><td>${a[4]}</td><td>${d?`<span class="pill ${d.ok?'p-ok':'p-bad'}">${d.a}</span>`:`<button class="btn light" onclick="ad(${i},1)">Validar</button> <button class="btn bad" onclick="ad(${i},0)">Regularizar</button>`}</td></tr>`});$("attBody").innerHTML=h}
+window.ad=(i,a)=>{if(!s.started)return alert("Primero inicia.");let x=A[i],ok=Number(a)===x[5];s.att[x[0]]={a:a?"Validado":"Regularizar",ok};ok?add("ASISTENCIA",x[0]+": tratamiento correcto",7):err("Asistencia "+x[0]+": tratamiento incorrecto");save()};
+
+$("calcPay").onclick=()=>{if(!s.started)return alert("Primero inicia.");let b=$("base").valueAsNumber||0,bo=$("bonus").valueAsNumber||0,ot=$("ot").valueAsNumber||0;let hv=b/180,otv=hv*1.5*ot,total=b+bo+otv;$("hourValue").textContent="$"+Math.round(hv).toLocaleString("es-CL");$("otValue").textContent="$"+Math.round(otv).toLocaleString("es-CL");$("taxable").textContent="$"+Math.round(total).toLocaleString("es-CL");$("payResult").innerHTML=`<b>Resultado pedagógico:</b> sueldo base + bono imponible + horas extra = <b>$${Math.round(total).toLocaleString("es-CL")}</b>.`;if(!s.pay){s.pay=true;add("REMUNERACIÓN","Caso de remuneración calculado",10);save()}};
+
+function perf(){let h="";PF.forEach((p,i)=>{let d=s.perf[p[0]];h+=`<tr><td><b>${p[0]}</b></td><td>${p[1]}</td><td>${p[2]}%</td><td>${p[3]}/100</td><td>${p[4]}</td><td>${d?`<span class="pill ${d.ok?'p-ok':'p-bad'}">${d.a}</span>`:`<select id="pf${i}"><option>Mantener/reconocer</option><option>Plan de mejora</option><option>Coaching/acompañamiento</option><option>Capacitación técnica</option></select> <button class="btn light" onclick="pf(${i})">Registrar</button>`}</td></tr>`});$("perfBody").innerHTML=h}
+window.pf=i=>{if(!s.started)return alert("Primero inicia.");let p=PF[i],a=$("pf"+i).value,ok=a===p[5];s.perf[p[0]]={a,ok};ok?add("DESEMPEÑO",p[0]+": acción coherente",7):err("Desempeño "+p[0]+": acción poco coherente con el caso");save()};
+
+$("evalAnalytics").onclick=()=>{if(!s.started)return alert("Primero inicia.");let ar=$("priority").value,why=$("priorityWhy").value.trim();if(why.length<35)return alert("Fundamenta tu decisión.");let ok=ar==="Bodega";if(!s.analytics){s.analytics=true;ok?add("ANALYTICS","Área prioritaria correctamente identificada: Bodega",12):err("People Analytics: área prioritaria incorrecta");save()}else alert("Análisis ya registrado.")};
+
+window.incident=id=>{if(!s.started)return alert("Primero inicia.");let t=$("ans"+id).value.trim();if(t.length<40)return alert("Desarrolla una respuesta de al menos 40 caracteres.");if(s.inc[id])return alert("Ya registrada.");s.inc[id]=t;add("CONTINGENCIA","Contingencia "+id+" respondida",10);save();alert("Respuesta registrada.")};
+
+function logs(){$("logBox").innerHTML=s.logs.length?s.logs.map(x=>`<div class="ev"><b>${x.t}</b> · ${x.m}${x.p?` <span class="pill ${x.p>0?'p-ok':'p-bad'}">${x.p>0?'+':''}${x.p}</span>`:""}<small>${x.ts}</small></div>`).join(""):"<div class='ev'><b>Sin movimientos registrados</b></div>"}
+function summary(){$("stuSum").innerHTML=s.student?`Estudiante: ${s.student}<br>ID/RUT: ${s.studentId}<br>Carrera: ${s.career}<br>Sección: ${s.section}<br>Actividad: ${s.activity}<br>Docente: ${s.teacher||"—"}`:"Aún no inicia.";$("opSum").innerHTML=`<p><b>Fichas revisadas:</b> ${Object.keys(s.people).length}/4</p><p><b>Incidencias asistencia:</b> ${Object.keys(s.att).length}/4</p><p><b>Remuneración:</b> ${s.pay?"Calculada":"Pendiente"}</p><p><b>Desempeño:</b> ${Object.keys(s.perf).length}/4</p><p><b>People Analytics:</b> ${s.analytics?"Registrado":"Pendiente"}</p><p><b>Contingencias:</b> ${Object.keys(s.inc).length}/3</p><p><b>Resultado:</b> ${s.score} puntos · ${s.errors} errores · ${adv()}% avance.</p>`}
+function dl(n,c,t){let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=n;a.click()}
+$("csv").onclick=()=>{let r=[["Campo","Valor"],["Estudiante",s.student],["ID",s.studentId],["Carrera",s.career],["Sección",s.section],["Actividad",s.activity],["Puntaje",s.score],["Errores",s.errors],["Avance",adv()+"%"],["Tiempo",fmt(elapsed())],[],["Fecha","Tipo","Detalle","Puntos"]];s.logs.slice().reverse().forEach(x=>r.push([x.ts,x.t,x.m,x.p]));dl("PEOPLE_"+(s.studentId||"estudiante")+".csv","\ufeff"+r.map(a=>a.map(v=>`"${String(v??"").replaceAll('"','""')}"`).join(";")).join("\n"),"text/csv;charset=utf-8")};
+$("json").onclick=()=>dl("PEOPLE_"+(s.studentId||"estudiante")+".json",JSON.stringify({...s,elapsed:elapsed()},null,2),"application/json");
+function render(){people();att();perf();logs();summary();$("scH").textContent=$("scF").textContent=s.score;$("erH").textContent=$("erF").textContent=s.errors;$("avH").textContent=$("avF").textContent=adv()+"%"}
+setInterval(()=>{$("tmH").textContent=$("tmF").textContent=fmt(elapsed())},1000);["student","studentId","career","section","activity","teacher"].forEach(id=>$(id).value=s[id]||"");if(s.started){s.elapsed=elapsed();s.start=Date.now()}render();
+
+/* ===== IPG TRAZABILIDAD CENTRAL ===== */
+const IPG_TRACE_URL="https://uegxxazgqvjjqnmpodln.supabase.co";
+const IPG_TRACE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlZ3h4YXpncXZqanFubXBvZGxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTMxMDksImV4cCI6MjEwNjI2OTEwOX0.93hHsgPuCrPWZma29meYK2w5EDBff4tv80aUky4v_UQ";
+const IPG_TRACE_KEY="ipg_trace_people_v2";
+const IPG_TRACE_SIM="IPG PEOPLE";
+let ipgTrace=(()=>{try{return JSON.parse(localStorage.getItem(IPG_TRACE_KEY))||{}}catch(e){return {}}})();
+let ipgTraceLastSig="";
+function ipgTraceUUID(){if(window.crypto&&crypto.randomUUID)return crypto.randomUUID();return "ipg-"+Date.now()+"-"+Math.random().toString(36).slice(2,10)}
+function ipgTraceStatus(msg,bad=false){const e=document.getElementById("ipgTraceText");if(!e)return;e.textContent=msg;e.parentElement.style.borderColor=bad?"#f3c2c2":"#dce5ed";e.parentElement.style.background=bad?"#fff7f7":"#f7fafc"}
+
+function ipgTraceStarted(){return !!(s&&s.started)}
+function ipgTraceMeta(){return {nombre:s?.student||"",studentId:s?.studentId||"",carrera:s?.career||"",seccion:s?.section||"",docente:s?.teacher||"",actividad:s?.activity||""}}
+function ipgTraceAdvance(){try{return Number(adv())||0}catch(e){return 0}}
+function ipgTraceScore(){return Number.isFinite(Number(s?.score))?Number(s.score):null}
+function ipgTraceTime(){try{return Math.max(0,Math.floor(elapsed()))}catch(e){return 0}}
+
+function ipgTraceEnsureSession(force=false){const m=ipgTraceMeta();if(force||!ipgTrace.sessionId||ipgTrace.studentId!==m.studentId||ipgTrace.finished){ipgTrace={sessionId:ipgTraceUUID(),studentId:m.studentId||"",finished:false,createdAt:new Date().toISOString()};localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace))}return ipgTrace.sessionId}
+async function ipgTraceSync(evento,estado){
+ if(!ipgTraceStarted())return false;
+ const m=ipgTraceMeta();
+ if(!m.studentId)return false;
+ ipgTraceEnsureSession(false);
+ const row={session_id:ipgTrace.sessionId,evento,nombre:m.nombre||null,rut_id:m.studentId,carrera:m.carrera||null,seccion:m.seccion||null,docente:m.docente||null,simulador:IPG_TRACE_SIM,actividad:m.actividad||null,estado,avance:ipgTraceAdvance(),puntaje:ipgTraceScore(),intentos:null,tiempo_segundos:ipgTraceTime(),unidad_1:null,unidad_2:null,unidad_3:null};
+ ipgTraceStatus("enviando "+evento+"...");
+ try{
+   const r=await fetch(IPG_TRACE_URL+"/rest/v1/participaciones",{method:"POST",headers:{"Content-Type":"application/json","apikey":IPG_TRACE_ANON,"Authorization":"Bearer "+IPG_TRACE_ANON,"Prefer":"return=minimal"},body:JSON.stringify(row)});
+   if(!r.ok)throw new Error("HTTP "+r.status+" "+await r.text());
+   ipgTrace.lastSync=new Date().toISOString();
+   if(evento==="finalizacion")ipgTrace.finished=true;
+   localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
+   ipgTraceStatus("sincronizado · "+new Date().toLocaleTimeString("es-CL"));
+   return true
+ }catch(e){
+   console.error("Trazabilidad IPG:",e);
+   ipgTraceStatus("sin conexión central; el progreso local continúa guardado.",true);
+   return false
+ }
+}
+function ipgTraceSignature(){return [ipgTraceAdvance(),ipgTraceScore()].join("|")}
+function ipgTraceWatch(){
+ document.addEventListener("click",ev=>{
+   const b=ev.target.closest("button");
+   if(!b)return;
+   const txt=(b.textContent||"").trim().toLowerCase(),id=b.id||"";
+   if(id==="reset"||txt.includes("reiniciar")||txt.includes("restablecer")){if(txt.includes("reiniciar"))localStorage.removeItem(IPG_TRACE_KEY);return}
+   if(id==="start"||txt.includes("guardar e iniciar")||txt==="iniciar simulación"){
+     setTimeout(async()=>{if(ipgTraceStarted()){ipgTraceEnsureSession(ipgTrace.finished||false);ipgTraceLastSig=ipgTraceSignature();await ipgTraceSync("inicio","Iniciado")}},250);
+     return
+   }
+   if(txt.includes("finalizar")||txt.includes("guardar / imprimir pdf"))return;
+   setTimeout(async()=>{if(!ipgTraceStarted())return;const sig=ipgTraceSignature();if(sig!==ipgTraceLastSig){ipgTraceLastSig=sig;await ipgTraceSync("avance","En progreso")}},300)
+ })
+}
+async function traceFinalizeAndPrint(ev){if(ev)ev.preventDefault();if(ipgTraceStarted())await ipgTraceSync("finalizacion","Finalizado");window.print()}
+
+ipgTraceWatch();
+if(ipgTrace.lastSync)ipgTraceStatus("última sincronización · "+new Date(ipgTrace.lastSync).toLocaleString("es-CL"));
+/* ===== FIN IPG TRAZABILIDAD CENTRAL ===== */
+
+</script>
 </body></html>
