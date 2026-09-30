@@ -22,7 +22,7 @@ footer{max-width:1380px;margin:auto;padding:0 20px 30px;color:#728197;font-size:
 
 <div class="shell">
 <section class="hero">
-<div><span class="badge">RECURSOS ACADÉMICOS · V1.1</span><h1>Instrumentos para enseñar, practicar y evaluar.</h1><p>Repositorio organizado de guías de ejercicios, casos aplicados, ejemplos de evaluaciones, rúbricas, talleres, recursos ENT y material de reforzamiento.</p></div>
+<div><span class="badge">RECURSOS ACADÉMICOS · V1.2</span><h1>Instrumentos para enseñar, practicar y evaluar.</h1><p>Repositorio organizado de guías de ejercicios, casos aplicados, ejemplos de evaluaciones, rúbricas, talleres, recursos ENT y material de reforzamiento.</p></div>
 <div class="hero-stat"><div class="hs"><b id="countResources">0</b><span>Recursos visibles</span></div><div class="hs"><b id="countTypes">0</b><span>Tipos de recurso</span></div><div class="hs"><b id="countCareers">0</b><span>Carreras</span></div><div class="hs"><b id="sessionState">Público</b><span>Acceso actual</span></div></div>
 </section>
 
@@ -135,26 +135,26 @@ function render(){
 window.openResource=async id=>{
  let x=allResources.find(r=>String(r.id)===String(id)); if(!x)return;
  const safePath=String(x.storage_path||'').split('/').map(encodeURIComponent).join('/');
- const endpoint=SUPABASE_URL+'/storage/v1/object/sign/recursos-academicos/'+safePath;
+ const endpoint=SUPABASE_URL+'/storage/v1/object/authenticated/recursos-academicos/'+safePath;
  try{
-   let r=await fetch(endpoint,{
-     method:'POST',
-     headers:{...apiHeaders(!!accessToken),'Content-Type':'application/json'},
-     body:JSON.stringify({expiresIn:3600})
+   const r=await fetch(endpoint,{
+     method:'GET',
+     headers:apiHeaders(!!accessToken)
    });
    if(!r.ok){
      const detail=await r.text();
-     console.error('Error al generar enlace firmado:',r.status,detail);
-     return alert('No fue posible generar el enlace de descarga. Código '+r.status+'. Revisa las políticas de Storage.');
+     console.error('Error de descarga:',r.status,detail);
+     return alert('No fue posible descargar el recurso. Código '+r.status+'.');
    }
-   let j=await r.json();
-   const signed=j.signedURL||j.signedUrl;
-   if(!signed){
-     console.error('Respuesta sin signedURL:',j);
-     return alert('Supabase respondió sin un enlace de descarga válido.');
-   }
-   const finalUrl=signed.startsWith('http')?signed:SUPABASE_URL+'/storage/v1'+signed;
-   window.open(finalUrl,'_blank','noopener');
+   const blob=await r.blob();
+   const url=URL.createObjectURL(blob);
+   const a=document.createElement('a');
+   a.href=url;
+   a.download=x.archivo_nombre||'recurso';
+   document.body.appendChild(a);
+   a.click();
+   a.remove();
+   setTimeout(()=>URL.revokeObjectURL(url),1500);
  }catch(e){
    console.error('Error de descarga:',e);
    alert('No fue posible conectar con el almacenamiento para descargar el recurso.');
