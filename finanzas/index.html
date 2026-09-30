@@ -199,23 +199,83 @@ function ipgPauseLocalTimer(){
 }
 
 async function ipgReturnPortal(finalize=false){
+  if(finalize){
+    // Captura la sesión antes de detener el cronómetro.
+    const wasStarted=!!(s&&s.started);
+    const m=ipgTraceMeta();
+    const totalTime=ipgTraceTime();
+    const finalAdvance=ipgTraceAdvance();
+    const finalScore=ipgTraceScore();
+
+    // Cierre local inmediato: el tiempo deja de correr aunque falle la red.
+    if(wasStarted){
+      s.elapsed=totalTime;
+      s.started=false;
+      s.start=0;
+      localStorage.setItem(KEY,JSON.stringify(s));
+      render();
+    }
+
+    ipgTraceEnsureSession(false);
+    ipgTrace.finished=true;
+    ipgTrace.paused=false;
+    localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
+
+    const row={
+      session_id:ipgTrace.sessionId,
+      evento:"finalizacion",
+      nombre:m.nombre||null,
+      rut_id:m.studentId||null,
+      carrera:m.carrera||null,
+      seccion:m.seccion||null,
+      docente:m.docente||null,
+      simulador:IPG_TRACE_SIM,
+      actividad:m.actividad||null,
+      estado:"Finalizado",
+      avance:finalAdvance,
+      puntaje:finalScore,
+      intentos:null,
+      tiempo_segundos:totalTime,
+      unidad_1:null,
+      unidad_2:null,
+      unidad_3:null
+    };
+
+    try{
+      ipgTraceStatus("cerrando sesión...");
+      const send=fetch(IPG_TRACE_URL+"/rest/v1/participaciones",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "apikey":IPG_TRACE_ANON,
+          "Authorization":"Bearer "+IPG_TRACE_ANON,
+          "Prefer":"return=minimal"
+        },
+        body:JSON.stringify(row)
+      });
+      const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error("timeout")),2500));
+      const r=await Promise.race([send,timeout]);
+      if(r && !r.ok)throw new Error("HTTP "+r.status);
+      ipgTraceStatus("sesión finalizada.");
+    }catch(e){
+      console.error("Cierre central:",e);
+      ipgTraceStatus("sesión cerrada localmente; sincronización pendiente.",true);
+    }
+
+    window.location.href="../";
+    return;
+  }
+
+  // Suspender conserva la sesión para reanudar.
   try{
     if(ipgTraceStarted()){
-      if(finalize){
-        await ipgTraceSync("finalizacion","Finalizado");
-        ipgTrace.finished=true;
-        ipgTrace.paused=false;
-      }else{
-        await ipgTraceSync("suspension","Suspendido");
-        ipgTrace.paused=true;
-      }
+      await ipgTraceSync("suspension","Suspendido");
+      ipgTrace.paused=true;
       localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
     }
   }catch(e){
-    console.error("Salida portal:",e);
+    console.error("Suspensión:",e);
   }
-
-  // Detiene físicamente el cronómetro local antes de abandonar la página.
   ipgPauseLocalTimer();
   window.location.href="../";
 }
@@ -224,10 +284,22 @@ document.getElementById("ipgBackPortal")?.addEventListener("click",async()=>{
   await ipgReturnPortal(false);
 });
 
-document.getElementById("ipgFinishPortal")?.addEventListener("click",async()=>{
-  if(confirm("¿Deseas finalizar esta sesión y volver al portal?")){
-    await ipgReturnPortal(true);
+document.getElementById("ipgFinishPortal")?.addEventListener("click",async(e)=>{
+  const btn=e.currentTarget;
+  if(btn.dataset.confirmed!=="1"){
+    btn.dataset.confirmed="1";
+    btn.textContent="Confirmar finalización";
+    setTimeout(()=>{
+      if(btn.dataset.confirmed==="1"){
+        btn.dataset.confirmed="0";
+        btn.textContent="Finalizar y volver al portal";
+      }
+    },5000);
+    return;
   }
+  btn.disabled=true;
+  btn.textContent="Finalizando...";
+  await ipgReturnPortal(true);
 });
 
 </script>
