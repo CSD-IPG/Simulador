@@ -146,6 +146,68 @@ function renderGuide(){document.getElementById('guide').innerHTML=`<h2>Guía rá
 function renderAll(){renderDashboard();renderReception();renderInventory();renderPicking();renderPacking();renderDispatch();renderCases();renderReport();renderGuide();persist(false)}
 window.addEventListener('beforeunload',()=>{if(state){pauseClock();persist(false)}});
 const saved=localStorage.getItem(STORAGE);if(saved){try{const s=JSON.parse(saved);if(s?.meta?.name){document.getElementById('loginName').value=s.meta.name;document.getElementById('loginId').value=s.meta.studentId||'';document.getElementById('loginCareer').value=s.meta.career||'';document.getElementById('loginSection').value=s.meta.section||'';document.getElementById('loginActivity').value=s.meta.activity||'';document.getElementById('loginTeacher').value=s.meta.teacher||'';}}catch(e){}}
+
+/* ===== IPG TRAZABILIDAD CENTRAL ===== */
+const IPG_TRACE_URL="https://uegxxazgqvjjqnmpodln.supabase.co";
+const IPG_TRACE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlZ3h4YXpncXZqanFubXBvZGxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTMxMDksImV4cCI6MjEwNjI2OTEwOX0.93hHsgPuCrPWZma29meYK2w5EDBff4tv80aUky4v_UQ";
+const IPG_TRACE_KEY="ipg_trace_wms_v3";
+const IPG_TRACE_SIM="IPG WMS";
+let ipgTrace=(()=>{try{return JSON.parse(localStorage.getItem(IPG_TRACE_KEY))||{}}catch(e){return {}}})();
+let ipgTraceLastSig="";
+function ipgTraceUUID(){if(window.crypto&&crypto.randomUUID)return crypto.randomUUID();return "ipg-"+Date.now()+"-"+Math.random().toString(36).slice(2,10)}
+function ipgTraceStatus(msg,bad=false){const e=document.getElementById("ipgTraceText");if(!e)return;e.textContent=msg;e.parentElement.style.borderColor=bad?"#f3c2c2":"#dce5ed";e.parentElement.style.background=bad?"#fff7f7":"#f7fafc"}
+
+function ipgTraceStarted(){return !!(state&&state.meta&&state.startedAt)}
+function ipgTraceMeta(){return {nombre:state?.meta?.name||"",studentId:state?.meta?.studentId||"",carrera:state?.meta?.career||"",seccion:state?.meta?.section||"",docente:state?.meta?.teacher||"",actividad:state?.meta?.activity||""}}
+function ipgTraceAdvance(){try{return Number(completion())||0}catch(e){return 0}}
+function ipgTraceScore(){return Number.isFinite(Number(state?.score))?Number(state.score):null}
+function ipgTraceTime(){try{return Math.max(0,Math.floor(elapsedSeconds()))}catch(e){return 0}}
+
+function ipgTraceEnsureSession(force=false){const m=ipgTraceMeta();if(force||!ipgTrace.sessionId||ipgTrace.studentId!==m.studentId||ipgTrace.finished){ipgTrace={sessionId:ipgTraceUUID(),studentId:m.studentId||"",finished:false,createdAt:new Date().toISOString()};localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace))}return ipgTrace.sessionId}
+async function ipgTraceSync(evento,estado){
+ if(!ipgTraceStarted())return false;
+ const m=ipgTraceMeta();
+ if(!m.studentId)return false;
+ ipgTraceEnsureSession(false);
+ const row={session_id:ipgTrace.sessionId,evento,nombre:m.nombre||null,rut_id:m.studentId,carrera:m.carrera||null,seccion:m.seccion||null,docente:m.docente||null,simulador:IPG_TRACE_SIM,actividad:m.actividad||null,estado,avance:ipgTraceAdvance(),puntaje:ipgTraceScore(),intentos:null,tiempo_segundos:ipgTraceTime(),unidad_1:null,unidad_2:null,unidad_3:null};
+ ipgTraceStatus("enviando "+evento+"...");
+ try{
+   const r=await fetch(IPG_TRACE_URL+"/rest/v1/participaciones",{method:"POST",headers:{"Content-Type":"application/json","apikey":IPG_TRACE_ANON,"Authorization":"Bearer "+IPG_TRACE_ANON,"Prefer":"return=minimal"},body:JSON.stringify(row)});
+   if(!r.ok)throw new Error("HTTP "+r.status+" "+await r.text());
+   ipgTrace.lastSync=new Date().toISOString();
+   if(evento==="finalizacion")ipgTrace.finished=true;
+   localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
+   ipgTraceStatus("sincronizado · "+new Date().toLocaleTimeString("es-CL"));
+   return true
+ }catch(e){
+   console.error("Trazabilidad IPG:",e);
+   ipgTraceStatus("sin conexión central; el progreso local continúa guardado.",true);
+   return false
+ }
+}
+function ipgTraceSignature(){return [ipgTraceAdvance(),ipgTraceScore()].join("|")}
+function ipgTraceWatch(){
+ document.addEventListener("click",ev=>{
+   const b=ev.target.closest("button");
+   if(!b)return;
+   const txt=(b.textContent||"").trim().toLowerCase(),id=b.id||"";
+   if(id==="reset"||txt.includes("reiniciar")||txt.includes("restablecer")){if(txt.includes("reiniciar"))localStorage.removeItem(IPG_TRACE_KEY);return}
+   if(id==="start"||txt.includes("guardar e iniciar")||txt==="iniciar simulación"){
+     setTimeout(async()=>{if(ipgTraceStarted()){ipgTraceEnsureSession(ipgTrace.finished||false);ipgTraceLastSig=ipgTraceSignature();await ipgTraceSync("inicio","Iniciado")}},250);
+     return
+   }
+   if(txt.includes("finalizar")||txt.includes("guardar / imprimir pdf"))return;
+   setTimeout(async()=>{if(!ipgTraceStarted())return;const sig=ipgTraceSignature();if(sig!==ipgTraceLastSig){ipgTraceLastSig=sig;await ipgTraceSync("avance","En progreso")}},300)
+ })
+}
+async function traceFinalizeAndPrint(ev){if(ev)ev.preventDefault();if(ipgTraceStarted())await ipgTraceSync("finalizacion","Finalizado");window.print()}
+
+finishAndPrint=async function(){finishSession();await ipgTraceSync("finalizacion","Finalizado");setTimeout(()=>window.print(),100)};
+
+ipgTraceWatch();
+if(ipgTrace.lastSync)ipgTraceStatus("última sincronización · "+new Date(ipgTrace.lastSync).toLocaleString("es-CL"));
+/* ===== FIN IPG TRAZABILIDAD CENTRAL ===== */
+
 </script>
-</body>
+<div id="ipgTraceState" style="max-width:1200px;margin:10px auto 18px;padding:10px 14px;border:1px solid #dce5ed;border-radius:10px;background:#f7fafc;font:13px/1.4 system-ui;color:#425466"><b>Registro institucional:</b> <span id="ipgTraceText">listo para iniciar.</span></div></body>
 </html>
