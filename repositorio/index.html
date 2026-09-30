@@ -22,8 +22,8 @@ footer{max-width:1380px;margin:auto;padding:0 20px 30px;color:#728197;font-size:
 
 <div class="shell">
 <section class="hero">
-<div><span class="badge">RECURSOS ACADÉMICOS · V1.2</span><h1>Instrumentos para enseñar, practicar y evaluar.</h1><p>Repositorio organizado de guías de ejercicios, casos aplicados, ejemplos de evaluaciones, rúbricas, talleres, recursos ENT y material de reforzamiento.</p></div>
-<div class="hero-stat"><div class="hs"><b id="countResources">0</b><span>Recursos visibles</span></div><div class="hs"><b id="countTypes">0</b><span>Tipos de recurso</span></div><div class="hs"><b id="countCareers">0</b><span>Carreras</span></div><div class="hs"><b id="sessionState">Público</b><span>Acceso actual</span></div></div>
+<div><span class="badge">RECURSOS ACADÉMICOS · V1.3</span><h1>Instrumentos para enseñar, practicar y evaluar.</h1><p>Repositorio organizado de guías de ejercicios, casos aplicados, ejemplos de evaluaciones, rúbricas, talleres, recursos ENT y material de reforzamiento.</p></div>
+<div class="hero-stat"><div class="hs"><b id="countResources">0</b><span>Recursos visibles</span></div><div class="hs"><b id="countTypes">0</b><span>Tipos de recurso</span></div><div class="hs"><b id="countCareers">0</b><span>Carreras</span></div><div class="hs"><b id="sessionState">Estudiante</b><span>Vista actual</span></div></div>
 </section>
 
 <section class="toolbar">
@@ -35,6 +35,7 @@ footer{max-width:1380px;margin:auto;padding:0 20px 30px;color:#728197;font-size:
 </section>
 
 <div class="section-head"><div><h2>Recursos disponibles</h2><div class="muted" id="resultCount">Cargando…</div></div></div>
+<div id="viewBanner" class="notice"><b>Vista Estudiante:</b> se muestran recursos públicos y materiales liberados para estudiantes.</div>
 <section id="resources" class="grid"></section>
 
 <section class="admin">
@@ -52,6 +53,15 @@ footer{max-width:1380px;margin:auto;padding:0 20px 30px;color:#728197;font-size:
 
 <div id="adminBox" class="hidden">
 <div class="notice"><b id="userLabel">Sesión activa</b> · <button class="btn light" id="logoutBtn">Cerrar sesión</button></div>
+<div id="schoolStats" class="report hidden">
+<h3>Resumen de uso del repositorio</h3>
+<div class="cards">
+  <div class="kpi"><b id="downloadsTotal">0</b><small>Descargas totales</small></div>
+  <div class="kpi"><b id="downloadsStudent">0</b><small>Descargas estudiante</small></div>
+  <div class="kpi"><b id="downloadsTeacher">0</b><small>Descargas docente</small></div>
+  <div class="kpi"><b id="downloadsSchool">0</b><small>Descargas escuela</small></div>
+</div>
+</div>
 
 <div class="form">
 <div class="f span2"><label>Título</label><input id="titulo"></div>
@@ -63,7 +73,7 @@ footer{max-width:1380px;margin:auto;padding:0 20px 30px;color:#728197;font-size:
 
 <div class="f"><label>Modalidad</label><select id="modalidad"><option>Virtual</option><option>Presencial</option><option>Mixta</option><option>Transversal</option></select></div>
 <div class="f"><label>Ciclo / nivel</label><input id="ciclo" placeholder="Ej.: Ciclo 4"></div>
-<div class="f"><label>Visibilidad</label><select id="visibilidad"><option value="publico">Público</option><option value="docentes">Docentes</option><option value="escuela">Escuela</option></select></div>
+<div class="f"><label>Visibilidad</label><select id="visibilidad"><option value="estudiantes">Estudiantes</option><option value="publico">Público</option><option value="docentes">Docentes</option><option value="escuela">Escuela</option></select></div>
 
 <div class="f span3"><label>Descripción</label><textarea id="descripcion" rows="3" placeholder="Breve descripción del instrumento y su uso sugerido"></textarea></div>
 <div class="f"><label>Autor / responsable</label><input id="autor"></div>
@@ -89,8 +99,20 @@ function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&l
 function show(id,msg,warn=false){let e=$(id);e.textContent=msg;e.className='notice'+(warn?' warn':'')}
 function hide(id){$(id).classList.add('hidden')}
 
+async function loadUsageStats(){
+ if(currentRole!=='escuela'||!accessToken)return;
+ let r=await fetch(SUPABASE_URL+'/rest/v1/resumen_descargas_repositorio?select=*',{headers:apiHeaders(true)});
+ if(!r.ok)return;
+ let rows=await r.json(), s=rows[0]||{};
+ $('downloadsTotal').textContent=s.total_descargas||0;
+ $('downloadsStudent').textContent=s.descargas_estudiante||0;
+ $('downloadsTeacher').textContent=s.descargas_docente||0;
+ $('downloadsSchool').textContent=s.descargas_escuela||0;
+ $('schoolStats').classList.remove('hidden');
+}
+
 async function loadResources(){
- let url=SUPABASE_URL+'/rest/v1/recursos_academicos?select=*&estado=eq.activo&order=creado_en.desc';
+ let url=SUPABASE_URL+'/rest/v1/recursos_academicos_con_descargas?select=*&estado=eq.activo&order=creado_en.desc';
  let r=await fetch(url,{headers:apiHeaders(!!accessToken)});
  if(!r.ok){$('resources').innerHTML='<div class="empty">Aún no se puede consultar el repositorio. Verifica que el SQL de configuración haya sido ejecutado.</div>';return}
  allResources=await r.json(); fillFilters(); render();
@@ -127,7 +149,7 @@ function render(){
      ${x.unidad?`<span class="tag">${esc(x.unidad)}</span>`:''}
      ${x.modalidad?`<span class="tag">${esc(x.modalidad)}</span>`:''}
    </div>
-   <small class="muted">${esc(x.autor||'IPG')} · Versión ${esc(x.version||'1.0')}</small>
+   <small class="muted">${esc(x.autor||'IPG')} · Versión ${esc(x.version||'1.0')} · <b>${Number(x.descargas_total||0)}</b> descarga(s)</small>
    <div class="actions"><button class="btn pri" onclick="openResource('${x.id}')">Abrir / descargar</button></div>
  </article>`).join('');
 }
@@ -137,10 +159,21 @@ window.openResource=async id=>{
  const safePath=String(x.storage_path||'').split('/').map(encodeURIComponent).join('/');
  const endpoint=SUPABASE_URL+'/storage/v1/object/authenticated/recursos-academicos/'+safePath;
  try{
-   const r=await fetch(endpoint,{
-     method:'GET',
-     headers:apiHeaders(!!accessToken)
+   const rr=await fetch(SUPABASE_URL+'/rest/v1/rpc/registrar_descarga',{
+     method:'POST',
+     headers:{...apiHeaders(!!accessToken),'Content-Type':'application/json'},
+     body:JSON.stringify({p_recurso_id:Number(x.id)})
    });
+   if(rr.ok){
+     const total=await rr.json();
+     x.descargas_total=Number(total||x.descargas_total||0);
+     render();
+     if(currentRole==='escuela') loadUsageStats();
+   }else{
+     console.warn('No se pudo registrar contador de descarga:',await rr.text());
+   }
+
+   const r=await fetch(endpoint,{method:'GET',headers:apiHeaders(!!accessToken)});
    if(!r.ok){
      const detail=await r.text();
      console.error('Error de descarga:',r.status,detail);
@@ -174,12 +207,16 @@ $('loginBtn').onclick=async()=>{
  if(!rows.length||!rows[0].activo){accessToken=null;currentUser=null;return show('loginMsg','Tu usuario no tiene un perfil CSD activo.',true)}
  currentRole=rows[0].rol;
  $('sessionState').textContent=currentRole==='escuela'?'Escuela':'Docente';
+ $('viewBanner').innerHTML=currentRole==='escuela'
+   ? '<b>Vista Escuela:</b> se muestran todos los recursos activos, incluidos los reservados para Escuela.'
+   : '<b>Vista Docente:</b> se muestran recursos públicos, para estudiantes y exclusivos para docentes.';
  $('userLabel').textContent=(rows[0].nombre||currentUser.email)+' · '+currentRole;
  $('loginBox').classList.add('hidden'); $('adminBox').classList.remove('hidden');
  await loadResources();
+ if(currentRole==='escuela') await loadUsageStats();
 };
 
-$('logoutBtn').onclick=()=>{accessToken=null;currentUser=null;currentRole='anon';$('sessionState').textContent='Público';$('adminBox').classList.add('hidden');$('loginBox').classList.remove('hidden');loadResources()};
+$('logoutBtn').onclick=()=>{accessToken=null;currentUser=null;currentRole='anon';$('sessionState').textContent='Estudiante';$('viewBanner').innerHTML='<b>Vista Estudiante:</b> se muestran recursos públicos y materiales liberados para estudiantes.';$('schoolStats').classList.add('hidden');$('adminBox').classList.add('hidden');$('loginBox').classList.remove('hidden');loadResources()};
 
 $('uploadBtn').onclick=async()=>{
  if(!accessToken)return;
