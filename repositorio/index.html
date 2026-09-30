@@ -22,7 +22,7 @@ footer{max-width:1380px;margin:auto;padding:0 20px 30px;color:#728197;font-size:
 
 <div class="shell">
 <section class="hero">
-<div><span class="badge">RECURSOS ACADÉMICOS · V1</span><h1>Instrumentos para enseñar, practicar y evaluar.</h1><p>Repositorio organizado de guías de ejercicios, casos aplicados, ejemplos de evaluaciones, rúbricas, talleres, recursos ENT y material de reforzamiento.</p></div>
+<div><span class="badge">RECURSOS ACADÉMICOS · V1.1</span><h1>Instrumentos para enseñar, practicar y evaluar.</h1><p>Repositorio organizado de guías de ejercicios, casos aplicados, ejemplos de evaluaciones, rúbricas, talleres, recursos ENT y material de reforzamiento.</p></div>
 <div class="hero-stat"><div class="hs"><b id="countResources">0</b><span>Recursos visibles</span></div><div class="hs"><b id="countTypes">0</b><span>Tipos de recurso</span></div><div class="hs"><b id="countCareers">0</b><span>Carreras</span></div><div class="hs"><b id="sessionState">Público</b><span>Acceso actual</span></div></div>
 </section>
 
@@ -84,7 +84,7 @@ const ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 let accessToken=null, currentUser=null, currentRole='anon', allResources=[];
 
 const $=id=>document.getElementById(id);
-function apiHeaders(auth=false){let h={apikey:ANON_KEY}; if(auth&&accessToken)h.Authorization='Bearer '+accessToken; return h}
+function apiHeaders(auth=false){let token=(auth&&accessToken)?accessToken:ANON_KEY;return {apikey:ANON_KEY,Authorization:'Bearer '+token}}
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function show(id,msg,warn=false){let e=$(id);e.textContent=msg;e.className='notice'+(warn?' warn':'')}
 function hide(id){$(id).classList.add('hidden')}
@@ -134,13 +134,31 @@ function render(){
 
 window.openResource=async id=>{
  let x=allResources.find(r=>String(r.id)===String(id)); if(!x)return;
- let r=await fetch(SUPABASE_URL+'/storage/v1/object/sign/recursos-academicos/'+encodeURIComponent(x.storage_path),{
-   method:'POST',
-   headers:{...apiHeaders(!!accessToken),'Content-Type':'application/json'},
-   body:JSON.stringify({expiresIn:3600})
- });
- if(!r.ok)return alert('No fue posible generar el enlace de descarga.');
- let j=await r.json(); window.open(SUPABASE_URL+'/storage/v1'+j.signedURL,'_blank');
+ const safePath=String(x.storage_path||'').split('/').map(encodeURIComponent).join('/');
+ const endpoint=SUPABASE_URL+'/storage/v1/object/sign/recursos-academicos/'+safePath;
+ try{
+   let r=await fetch(endpoint,{
+     method:'POST',
+     headers:{...apiHeaders(!!accessToken),'Content-Type':'application/json'},
+     body:JSON.stringify({expiresIn:3600})
+   });
+   if(!r.ok){
+     const detail=await r.text();
+     console.error('Error al generar enlace firmado:',r.status,detail);
+     return alert('No fue posible generar el enlace de descarga. Código '+r.status+'. Revisa las políticas de Storage.');
+   }
+   let j=await r.json();
+   const signed=j.signedURL||j.signedUrl;
+   if(!signed){
+     console.error('Respuesta sin signedURL:',j);
+     return alert('Supabase respondió sin un enlace de descarga válido.');
+   }
+   const finalUrl=signed.startsWith('http')?signed:SUPABASE_URL+'/storage/v1'+signed;
+   window.open(finalUrl,'_blank','noopener');
+ }catch(e){
+   console.error('Error de descarga:',e);
+   alert('No fue posible conectar con el almacenamiento para descargar el recurso.');
+ }
 };
 
 ['q','careerFilter','subjectFilter','typeFilter','modalityFilter'].forEach(id=>$(id).addEventListener(id==='q'?'input':'change',render));
