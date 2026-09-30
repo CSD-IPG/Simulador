@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Repositorio Académico IPG</title>
+<style>
+:root{--n:#10233e;--c:#16a6b6;--t:#0c7f88;--bg:#f4f7fa;--tx:#1d2a3a;--m:#64748b;--ln:#dde5ed;--ok:#18794e;--warn:#8a6200}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Arial;background:var(--bg);color:var(--tx)}button,input,select,textarea{font:inherit}
+.top{background:#fff;border-bottom:1px solid var(--ln);position:sticky;top:0;z-index:10}.nav{max-width:1380px;margin:auto;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;gap:16px}.brand{display:flex;gap:11px;align-items:center}.mark{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,var(--n),var(--c));display:grid;place-items:center;color:#fff;font-weight:900}.brand strong{display:block;color:var(--n)}.brand small{color:var(--m)}.nav a{color:var(--t);font-weight:800;text-decoration:none}
+.shell{max-width:1380px;margin:auto;padding:24px 20px 48px}.hero{background:linear-gradient(135deg,var(--n),#174567);color:#fff;border-radius:18px;padding:26px;display:grid;grid-template-columns:1.5fr .7fr;gap:20px}.hero h1{margin:5px 0;font-size:34px}.hero p{color:#dce8f4;line-height:1.55}.badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#ffffff18;border:1px solid #ffffff30;font-size:12px;font-weight:800}.hero-stat{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hs{background:#ffffff12;border:1px solid #ffffff22;border-radius:12px;padding:13px}.hs b{display:block;font-size:24px}
+.toolbar{background:#fff;border:1px solid var(--ln);border-radius:14px;padding:16px;margin-top:18px;display:grid;grid-template-columns:2fr repeat(4,1fr);gap:10px}.toolbar input,.toolbar select,.form input,.form select,.form textarea{width:100%;padding:10px;border:1px solid #cad6e1;border-radius:9px;background:#fff}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:24px 0 12px}.section-head h2{margin:0;color:var(--n)}.muted{color:var(--m)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card{background:#fff;border:1px solid var(--ln);border-radius:14px;padding:17px;display:flex;flex-direction:column;min-height:265px}.card h3{color:var(--n);margin:8px 0}.card p{color:#5e6f82;line-height:1.5;flex:1}.meta{display:flex;gap:6px;flex-wrap:wrap;margin:7px 0}.tag{font-size:11px;font-weight:800;padding:5px 8px;border-radius:999px;background:#edf4f8;color:#385168}.vis{font-size:11px;font-weight:800;padding:5px 8px;border-radius:999px;background:#eef8f2;color:var(--ok)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btn{border:0;border-radius:9px;padding:10px 13px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-block}.pri{background:var(--n);color:#fff}.teal{background:var(--t);color:#fff}.light{background:#edf2f6;color:#31475f}.danger{background:#fff0f0;color:#9d3434}.notice{padding:12px;border-radius:10px;background:#eef8fa;border:1px solid #cde9ec;color:#315b61;font-size:13px;margin-top:12px}.warn{background:#fff8df;border-color:#efd98a;color:#745d17}
+.admin{background:#fff;border:1px solid var(--ln);border-radius:14px;margin-top:24px;padding:18px}.admin h2{margin-top:0}.login{display:grid;grid-template-columns:1fr 1fr auto;gap:10px}.form{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:14px}.f label{display:block;font-size:12px;font-weight:800;color:#53677e;margin-bottom:5px}.span2{grid-column:span 2}.span3{grid-column:1/-1}.hidden{display:none!important}.empty{background:#fff;border:1px dashed #cfd9e2;border-radius:14px;padding:28px;text-align:center;color:var(--m)}
+footer{max-width:1380px;margin:auto;padding:0 20px 30px;color:#728197;font-size:12px}
+@media(max-width:1000px){.toolbar{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr 1fr}.form{grid-template-columns:1fr 1fr}.hero{grid-template-columns:1fr}}
+@media(max-width:650px){.toolbar,.grid,.form,.login{grid-template-columns:1fr}.span2,.span3{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="top"><div class="nav"><div class="brand"><div class="mark">IPG</div><div><strong>Repositorio Académico</strong><small>Escuela de Gestión, Negocios y Marítima</small></div></div><a href="../">← Volver al portal</a></div></div>
+
+<div class="shell">
+<section class="hero">
+<div><span class="badge">RECURSOS ACADÉMICOS · V1</span><h1>Instrumentos para enseñar, practicar y evaluar.</h1><p>Repositorio organizado de guías de ejercicios, casos aplicados, ejemplos de evaluaciones, rúbricas, talleres, recursos ENT y material de reforzamiento.</p></div>
+<div class="hero-stat"><div class="hs"><b id="countResources">0</b><span>Recursos visibles</span></div><div class="hs"><b id="countTypes">0</b><span>Tipos de recurso</span></div><div class="hs"><b id="countCareers">0</b><span>Carreras</span></div><div class="hs"><b id="sessionState">Público</b><span>Acceso actual</span></div></div>
+</section>
+
+<section class="toolbar">
+<input id="q" placeholder="Buscar por título, asignatura, carrera o palabra clave">
+<select id="careerFilter"><option value="">Todas las carreras</option></select>
+<select id="subjectFilter"><option value="">Todas las asignaturas</option></select>
+<select id="typeFilter"><option value="">Todos los tipos</option></select>
+<select id="modalityFilter"><option value="">Todas las modalidades</option></select>
+</section>
+
+<div class="section-head"><div><h2>Recursos disponibles</h2><div class="muted" id="resultCount">Cargando…</div></div></div>
+<section id="resources" class="grid"></section>
+
+<section class="admin">
+<h2>Gestión del repositorio</h2>
+<p class="muted">Los usuarios autorizados pueden iniciar sesión para incorporar nuevos recursos. Los permisos se controlan desde Supabase.</p>
+
+<div id="loginBox">
+<div class="login">
+<input id="email" type="email" placeholder="Correo">
+<input id="password" type="password" placeholder="Contraseña">
+<button class="btn pri" id="loginBtn">Ingresar</button>
+</div>
+<div id="loginMsg" class="notice hidden"></div>
+</div>
+
+<div id="adminBox" class="hidden">
+<div class="notice"><b id="userLabel">Sesión activa</b> · <button class="btn light" id="logoutBtn">Cerrar sesión</button></div>
+
+<div class="form">
+<div class="f span2"><label>Título</label><input id="titulo"></div>
+<div class="f"><label>Tipo de recurso</label><select id="tipo"><option>Guía de ejercicios</option><option>Caso aplicado</option><option>Ejemplo de evaluación</option><option>Pauta o rúbrica</option><option>Taller o actividad</option><option>Material de reforzamiento</option><option>Instrumento ENT</option><option>Recurso para simulador</option><option>Otro</option></select></div>
+
+<div class="f"><label>Carrera</label><input id="carrera" placeholder="Ej.: Ingeniería en Administración de Empresas"></div>
+<div class="f"><label>Asignatura</label><input id="asignatura" placeholder="Ej.: Matemática Financiera"></div>
+<div class="f"><label>Unidad</label><input id="unidad" placeholder="Ej.: Unidad II"></div>
+
+<div class="f"><label>Modalidad</label><select id="modalidad"><option>Virtual</option><option>Presencial</option><option>Mixta</option><option>Transversal</option></select></div>
+<div class="f"><label>Ciclo / nivel</label><input id="ciclo" placeholder="Ej.: Ciclo 4"></div>
+<div class="f"><label>Visibilidad</label><select id="visibilidad"><option value="publico">Público</option><option value="docentes">Docentes</option><option value="escuela">Escuela</option></select></div>
+
+<div class="f span3"><label>Descripción</label><textarea id="descripcion" rows="3" placeholder="Breve descripción del instrumento y su uso sugerido"></textarea></div>
+<div class="f"><label>Autor / responsable</label><input id="autor"></div>
+<div class="f"><label>Versión</label><input id="version" value="1.0"></div>
+<div class="f"><label>Archivo</label><input id="archivo" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.csv,.zip,.html,.txt"></div>
+</div>
+
+<div class="actions"><button class="btn teal" id="uploadBtn">Subir recurso</button></div>
+<div id="uploadMsg" class="notice hidden"></div>
+</div>
+</section>
+</div>
+<footer>Centro de Simulación Digital IPG · Repositorio Académico · Escuela de Gestión, Negocios y Marítima</footer>
+
+<script>
+const SUPABASE_URL="https://uegxxazgqvjjqnmpodln.supabase.co";
+const ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlZ3h4YXpncXZqanFubXBvZGxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTMxMDksImV4cCI6MjEwNjI2OTEwOX0.93hHsgPuCrPWZma29meYK2w5EDBff4tv80aUky4v_UQ";
+let accessToken=null, currentUser=null, currentRole='anon', allResources=[];
+
+const $=id=>document.getElementById(id);
+function apiHeaders(auth=false){let h={apikey:ANON_KEY}; if(auth&&accessToken)h.Authorization='Bearer '+accessToken; return h}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function show(id,msg,warn=false){let e=$(id);e.textContent=msg;e.className='notice'+(warn?' warn':'')}
+function hide(id){$(id).classList.add('hidden')}
+
+async function loadResources(){
+ let url=SUPABASE_URL+'/rest/v1/recursos_academicos?select=*&estado=eq.activo&order=creado_en.desc';
+ let r=await fetch(url,{headers:apiHeaders(!!accessToken)});
+ if(!r.ok){$('resources').innerHTML='<div class="empty">Aún no se puede consultar el repositorio. Verifica que el SQL de configuración haya sido ejecutado.</div>';return}
+ allResources=await r.json(); fillFilters(); render();
+}
+
+function fillFilters(){
+ const uniq=(arr)=>[...new Set(arr.filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+ const setOpts=(id,vals,label)=>{let el=$(id),cur=el.value;el.innerHTML='<option value="">'+label+'</option>'+vals.map(v=>'<option>'+esc(v)+'</option>').join('');el.value=cur};
+ setOpts('careerFilter',uniq(allResources.map(x=>x.carrera)),'Todas las carreras');
+ setOpts('subjectFilter',uniq(allResources.map(x=>x.asignatura)),'Todas las asignaturas');
+ setOpts('typeFilter',uniq(allResources.map(x=>x.tipo_recurso)),'Todos los tipos');
+ setOpts('modalityFilter',uniq(allResources.map(x=>x.modalidad)),'Todas las modalidades');
+}
+
+function render(){
+ let q=$('q').value.toLowerCase().trim(),car=$('careerFilter').value,sub=$('subjectFilter').value,typ=$('typeFilter').value,mod=$('modalityFilter').value;
+ let rows=allResources.filter(x=>{
+   let bag=[x.titulo,x.descripcion,x.carrera,x.asignatura,x.unidad,x.tipo_recurso,x.autor].join(' ').toLowerCase();
+   return (!q||bag.includes(q))&&(!car||x.carrera===car)&&(!sub||x.asignatura===sub)&&(!typ||x.tipo_recurso===typ)&&(!mod||x.modalidad===mod);
+ });
+ $('resultCount').textContent=rows.length+' recurso(s) encontrado(s)';
+ $('countResources').textContent=allResources.length;
+ $('countTypes').textContent=new Set(allResources.map(x=>x.tipo_recurso).filter(Boolean)).size;
+ $('countCareers').textContent=new Set(allResources.map(x=>x.carrera).filter(Boolean)).size;
+ if(!rows.length){$('resources').innerHTML='<div class="empty">No hay recursos que coincidan con los filtros seleccionados.</div>';return}
+ $('resources').innerHTML=rows.map(x=>`
+ <article class="card">
+   <div class="meta"><span class="tag">${esc(x.tipo_recurso)}</span><span class="vis">${esc(x.visibilidad)}</span></div>
+   <h3>${esc(x.titulo)}</h3>
+   <p>${esc(x.descripcion||'Sin descripción')}</p>
+   <div class="meta">
+     ${x.carrera?`<span class="tag">${esc(x.carrera)}</span>`:''}
+     ${x.asignatura?`<span class="tag">${esc(x.asignatura)}</span>`:''}
+     ${x.unidad?`<span class="tag">${esc(x.unidad)}</span>`:''}
+     ${x.modalidad?`<span class="tag">${esc(x.modalidad)}</span>`:''}
+   </div>
+   <small class="muted">${esc(x.autor||'IPG')} · Versión ${esc(x.version||'1.0')}</small>
+   <div class="actions"><button class="btn pri" onclick="openResource('${x.id}')">Abrir / descargar</button></div>
+ </article>`).join('');
+}
+
+window.openResource=async id=>{
+ let x=allResources.find(r=>String(r.id)===String(id)); if(!x)return;
+ let r=await fetch(SUPABASE_URL+'/storage/v1/object/sign/recursos-academicos/'+encodeURIComponent(x.storage_path),{
+   method:'POST',
+   headers:{...apiHeaders(!!accessToken),'Content-Type':'application/json'},
+   body:JSON.stringify({expiresIn:3600})
+ });
+ if(!r.ok)return alert('No fue posible generar el enlace de descarga.');
+ let j=await r.json(); window.open(SUPABASE_URL+'/storage/v1'+j.signedURL,'_blank');
+};
+
+['q','careerFilter','subjectFilter','typeFilter','modalityFilter'].forEach(id=>$(id).addEventListener(id==='q'?'input':'change',render));
+
+$('loginBtn').onclick=async()=>{
+ let email=$('email').value.trim(),password=$('password').value;
+ if(!email||!password)return show('loginMsg','Completa correo y contraseña.',true);
+ let r=await fetch(SUPABASE_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+ if(!r.ok)return show('loginMsg','No fue posible iniciar sesión. Revisa tus credenciales.',true);
+ let j=await r.json(); accessToken=j.access_token; currentUser=j.user;
+ let pr=await fetch(SUPABASE_URL+'/rest/v1/perfiles_csd?select=rol,nombre,activo&user_id=eq.'+currentUser.id,{headers:apiHeaders(true)});
+ let rows=pr.ok?await pr.json():[];
+ if(!rows.length||!rows[0].activo){accessToken=null;currentUser=null;return show('loginMsg','Tu usuario no tiene un perfil CSD activo.',true)}
+ currentRole=rows[0].rol;
+ $('sessionState').textContent=currentRole==='escuela'?'Escuela':'Docente';
+ $('userLabel').textContent=(rows[0].nombre||currentUser.email)+' · '+currentRole;
+ $('loginBox').classList.add('hidden'); $('adminBox').classList.remove('hidden');
+ await loadResources();
+};
+
+$('logoutBtn').onclick=()=>{accessToken=null;currentUser=null;currentRole='anon';$('sessionState').textContent='Público';$('adminBox').classList.add('hidden');$('loginBox').classList.remove('hidden');loadResources()};
+
+$('uploadBtn').onclick=async()=>{
+ if(!accessToken)return;
+ const file=$('archivo').files[0];
+ if(!file)return show('uploadMsg','Selecciona un archivo.',true);
+ const titulo=$('titulo').value.trim(),carrera=$('carrera').value.trim(),asignatura=$('asignatura').value.trim();
+ if(!titulo||!carrera||!asignatura)return show('uploadMsg','Completa al menos título, carrera y asignatura.',true);
+ const clean=file.name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]+/g,'_');
+ const path=(new Date().toISOString().slice(0,10))+'/'+crypto.randomUUID()+'_'+clean;
+ show('uploadMsg','Subiendo archivo...');
+ let up=await fetch(SUPABASE_URL+'/storage/v1/object/recursos-academicos/'+path,{method:'POST',headers:{...apiHeaders(true),'Content-Type':file.type||'application/octet-stream','x-upsert':'false'},body:file});
+ if(!up.ok)return show('uploadMsg','No fue posible subir el archivo: '+await up.text(),true);
+ let row={
+   titulo,descripcion:$('descripcion').value.trim(),escuela:'Gestión, Negocios y Marítima',
+   carrera,asignatura,unidad:$('unidad').value.trim(),tipo_recurso:$('tipo').value,
+   modalidad:$('modalidad').value,ciclo:$('ciclo').value.trim(),storage_path:path,
+   archivo_nombre:file.name,archivo_tipo:file.type||null,autor:$('autor').value.trim()||currentUser.email,
+   version:$('version').value.trim()||'1.0',visibilidad:$('visibilidad').value,estado:'activo',creado_por:currentUser.id
+ };
+ let ins=await fetch(SUPABASE_URL+'/rest/v1/recursos_academicos',{method:'POST',headers:{...apiHeaders(true),'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(row)});
+ if(!ins.ok)return show('uploadMsg','El archivo subió, pero no fue posible registrar sus datos: '+await ins.text(),true);
+ show('uploadMsg','Recurso incorporado correctamente.');
+ ['titulo','carrera','asignatura','unidad','ciclo','descripcion','autor'].forEach(id=>$(id).value='');$('archivo').value=''; await loadResources();
+};
+
+loadResources();
+</script>
+</body>
+</html>
