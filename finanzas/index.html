@@ -43,11 +43,12 @@ footer{max-width:1280px;margin:auto;padding:0 20px 28px;color:#728197;font-size:
 <body>
 
 <div class="ipg-exitbar">
-  <button class="ipg-back" id="ipgBackPortal">← Volver al portal</button>
+  <button class="ipg-back" id="ipgBackPortal">← Guardar y volver al portal</button>
   <button class="ipg-finish" id="ipgFinishPortal">Finalizar y volver al portal</button>
+<span style="display:block;width:100%;font-size:11px;color:#64748b">Guardar y volver detiene el tiempo y permite reanudar después.</span>
 </div>
 
-<div class="top"><div class="nav"><div class="brand"><div class="mark">IPG</div><div><strong>IPG FIN-SIM V1</strong><small>Centro de Simulación Digital · Escuela de Gestión, Negocios y Marítima</small></div></div><a href="#">← Volver al portal</a></div></div>
+<div class="top"><div class="nav"><div class="brand"><div class="mark">IPG</div><div><strong>IPG FIN-SIM V1</strong><small>Centro de Simulación Digital · Escuela de Gestión, Negocios y Marítima</small></div></div></div></div>
 <div class="shell">
 <section class="hero"><div><span class="badge">SIMULADOR ACADÉMICO · FINANZAS / CONTROL DE GESTIÓN</span><h1>Planificación financiera y toma de decisiones</h1><p>Trabaja presupuesto, estado de resultados, flujo de caja, desviaciones, forecast, costos e indicadores. El objetivo es analizar información y tomar decisiones, no solo calcular.</p></div><div class="stats"><div class="st"><b id="scH">0</b><span>Puntaje</span></div><div class="st"><b id="tmH">00:00</b><span>Tiempo</span></div><div class="st"><b id="erH">0</b><span>Errores</span></div><div class="st"><b id="avH">0%</b><span>Avance</span></div></div></section>
 <div class="layout">
@@ -163,7 +164,16 @@ function ipgTraceWatch(){
    const txt=(b.textContent||"").trim().toLowerCase(),id=b.id||"";
    if(id==="reset"||txt.includes("reiniciar")||txt.includes("restablecer")){if(txt.includes("reiniciar"))localStorage.removeItem(IPG_TRACE_KEY);return}
    if(id==="start"||txt.includes("guardar e iniciar")||txt==="iniciar simulación"){
-     setTimeout(async()=>{if(ipgTraceStarted()){ipgTraceEnsureSession(ipgTrace.finished||false);ipgTraceLastSig=ipgTraceSignature();await ipgTraceSync("inicio","Iniciado")}},250);
+     setTimeout(async()=>{
+       if(ipgTraceStarted()){
+         ipgTraceEnsureSession(ipgTrace.finished||false);
+         ipgTraceLastSig=ipgTraceSignature();
+         const wasPaused=!!ipgTrace.paused;
+         ipgTrace.paused=false;
+         localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
+         await ipgTraceSync(wasPaused?"reanudacion":"inicio",wasPaused?"En progreso":"Iniciado");
+       }
+     },250);
      return
    }
    if(txt.includes("finalizar")||txt.includes("guardar / imprimir pdf"))return;
@@ -177,18 +187,36 @@ if(ipgTrace.lastSync)ipgTraceStatus("última sincronización · "+new Date(ipgTr
 /* ===== FIN IPG TRAZABILIDAD CENTRAL ===== */
 
 
+
+function ipgPauseLocalTimer(){
+  if(!s || !s.started) return;
+  const total=elapsed();
+  s.elapsed=total;
+  s.started=false;
+  s.start=0;
+  localStorage.setItem(KEY,JSON.stringify(s));
+  render();
+}
+
 async function ipgReturnPortal(finalize=false){
   try{
     if(ipgTraceStarted()){
       if(finalize){
         await ipgTraceSync("finalizacion","Finalizado");
+        ipgTrace.finished=true;
+        ipgTrace.paused=false;
       }else{
-        await ipgTraceSync("avance","En progreso");
+        await ipgTraceSync("suspension","Suspendido");
+        ipgTrace.paused=true;
       }
+      localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
     }
   }catch(e){
     console.error("Salida portal:",e);
   }
+
+  // Detiene físicamente el cronómetro local antes de abandonar la página.
+  ipgPauseLocalTimer();
   window.location.href="../";
 }
 
