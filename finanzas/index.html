@@ -19,9 +19,34 @@ h2{color:var(--n);margin:0 0 8px}.sub{color:var(--m);line-height:1.55}.cards{dis
 footer{max-width:1280px;margin:auto;padding:0 20px 28px;color:#728197;font-size:12px}
 @media(max-width:960px){.layout{grid-template-columns:1fr}.side{position:static;display:grid;grid-template-columns:repeat(3,1fr)}.hero{grid-template-columns:1fr}.form{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr 1fr}}@media(max-width:620px){.side{grid-template-columns:1fr 1fr}.form,.cards{grid-template-columns:1fr}}
 @media print{.top,.side,.actions,.no-print{display:none!important}.layout{display:block}.panel{border:0}.view{display:none!important}#evidencia{display:block!important}.hero{display:none}}
+
+.ipg-exitbar{
+  position:fixed;top:12px;right:12px;z-index:9999;
+  display:flex;gap:8px;flex-wrap:wrap;
+  background:rgba(255,255,255,.96);
+  border:1px solid #dce5ed;
+  border-radius:12px;
+  padding:8px;
+  box-shadow:0 6px 18px rgba(0,0,0,.08)
+}
+.ipg-exitbar button{
+  border:0;border-radius:8px;padding:9px 12px;
+  font-weight:700;cursor:pointer
+}
+.ipg-back{background:#eef3f7;color:#16324f}
+.ipg-finish{background:#0f766e;color:white}
+@media(max-width:700px){
+  .ipg-exitbar{position:sticky;top:0;right:auto;margin:0 0 10px 0}
+}
 </style>
 </head>
 <body>
+
+<div class="ipg-exitbar">
+  <button class="ipg-back" id="ipgBackPortal">← Volver al portal</button>
+  <button class="ipg-finish" id="ipgFinishPortal">Finalizar y volver al portal</button>
+</div>
+
 <div class="top"><div class="nav"><div class="brand"><div class="mark">IPG</div><div><strong>IPG FIN-SIM V1</strong><small>Centro de Simulación Digital · Escuela de Gestión, Negocios y Marítima</small></div></div><a href="#">← Volver al portal</a></div></div>
 <div class="shell">
 <section class="hero"><div><span class="badge">SIMULADOR ACADÉMICO · FINANZAS / CONTROL DE GESTIÓN</span><h1>Planificación financiera y toma de decisiones</h1><p>Trabaja presupuesto, estado de resultados, flujo de caja, desviaciones, forecast, costos e indicadores. El objetivo es analizar información y tomar decisiones, no solo calcular.</p></div><div class="stats"><div class="st"><b id="scH">0</b><span>Puntaje</span></div><div class="st"><b id="tmH">00:00</b><span>Tiempo</span></div><div class="st"><b id="erH">0</b><span>Errores</span></div><div class="st"><b id="avH">0%</b><span>Avance</span></div></div></section>
@@ -150,6 +175,32 @@ async function traceFinalizeAndPrint(ev){if(ev)ev.preventDefault();if(ipgTraceSt
 ipgTraceWatch();
 if(ipgTrace.lastSync)ipgTraceStatus("última sincronización · "+new Date(ipgTrace.lastSync).toLocaleString("es-CL"));
 /* ===== FIN IPG TRAZABILIDAD CENTRAL ===== */
+
+
+async function ipgReturnPortal(finalize=false){
+  try{
+    if(ipgTraceStarted()){
+      if(finalize){
+        await ipgTraceSync("finalizacion","Finalizado");
+      }else{
+        await ipgTraceSync("avance","En progreso");
+      }
+    }
+  }catch(e){
+    console.error("Salida portal:",e);
+  }
+  window.location.href="../";
+}
+
+document.getElementById("ipgBackPortal")?.addEventListener("click",async()=>{
+  await ipgReturnPortal(false);
+});
+
+document.getElementById("ipgFinishPortal")?.addEventListener("click",async()=>{
+  if(confirm("¿Deseas finalizar esta sesión y volver al portal?")){
+    await ipgReturnPortal(true);
+  }
+});
 
 </script>
 </body></html>
