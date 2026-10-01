@@ -49,6 +49,22 @@ main{padding:20px;max-width:1320px;width:100%;margin:auto}.grid{display:grid;gri
 .ipg-session-actions .go-evidence{background:#eef3f7;color:#16324f}
 .ipg-session-actions .save-exit{background:#e8f3f6;color:#0f5f69}
 .ipg-session-actions .finish-exit{background:#0f766e;color:white}
+
+.ipg-student-guide{
+  margin:0 0 18px 0;
+  padding:16px;
+  border:1px solid #dce5ed;
+  border-radius:14px;
+  background:#ffffff;
+}
+.ipg-student-guide h3{margin:0 0 8px;color:#17324d}
+.ipg-student-guide p{margin:0 0 10px;color:#5f6f7f;font-size:13px}
+.ipg-student-guide ol{margin:8px 0 12px 20px;padding:0}
+.ipg-student-guide li{margin:5px 0}
+.ipg-guide-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ipg-guide-box{background:#f8fbfd;border:1px solid #e3ebf1;border-radius:10px;padding:12px}
+.ipg-guide-box b{color:#17324d}
+@media(max-width:760px){.ipg-guide-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -91,6 +107,33 @@ main{padding:20px;max-width:1320px;width:100%;margin:auto}.grid{display:grid;gri
 <div class="app">
 <nav id="nav"></nav>
 <main>
+
+
+<div class="ipg-student-guide" id="ipgStudentGuide">
+  <h3>Guía rápida para comenzar</h3>
+  <p>Antes de iniciar, revisa este flujo. Puedes suspender tu sesión y volver más tarde sin perder el avance.</p>
+  <ol>
+    <li>Completa tu identificación y código de actividad.</li>
+    <li>Revisa el <b>Panel</b> y los indicadores iniciales.</li>
+    <li>Recepciona al menos una orden de compra.</li>
+    <li>Comprueba el inventario disponible.</li>
+    <li>Ejecuta el flujo <b>Picking → Packing → Despacho</b>.</li>
+    <li>Activa una contingencia y registra tu decisión.</li>
+    <li>Consulta <b>Evidencia</b> para revisar tu bitácora y resultados.</li>
+    <li>Al terminar, utiliza <b>Finalizar y volver al portal</b>.</li>
+  </ol>
+
+  <div class="ipg-guide-grid">
+    <div class="ipg-guide-box">
+      <b>Qué registra el sistema</b>
+      <p>Identificación, sección, actividad, tiempo efectivo, operaciones realizadas, avance, puntaje, errores, contingencias y respuestas registradas.</p>
+    </div>
+    <div class="ipg-guide-box">
+      <b>Si necesitas salir antes de terminar</b>
+      <p>Usa <b>Guardar y volver al portal</b>. El cronómetro se detiene y podrás continuar después desde la misma sesión.</p>
+    </div>
+  </div>
+</div>
 
 <div class="ipg-session-panel" id="ipgSessionPanel">
   <h3>Control de sesión</h3>
@@ -200,7 +243,7 @@ function downloadCSV(){const rows=[['IPG WMS Simulator V2'],['Estudiante',state.
 function downloadJSON(){downloadBlob(JSON.stringify(state,null,2),`WMS_${safeName(state.meta.studentId)}_${safeName(state.meta.activity)}.json`,'application/json')}
 function safeName(s){return String(s||'').replace(/[^a-z0-9_-]/gi,'_')}
 function downloadBlob(content,name,type){const blob=new Blob([content],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},100)}
-function renderGuide(){document.getElementById('guide').innerHTML=`<h2>Guía rápida V2</h2><div class="grid" style="margin-top:14px"><div class="card span-8"><h3>Flujo sugerido</h3><ol><li>Completa identificación y código de actividad.</li><li>Revisa el Panel.</li><li>Recepciona al menos una OC.</li><li>Comprueba inventario.</li><li>Ejecuta Picking → Packing → Despacho.</li><li>Activa una contingencia y registra tu decisión.</li><li>Abre <b>Evidencia</b> y revisa tu bitácora.</li><li>Finaliza y guarda el reporte como PDF; opcionalmente descarga CSV.</li></ol><h3>Qué registra el sistema</h3><ul><li>Identificación del estudiante y sección.</li><li>Código de actividad.</li><li>Hora de inicio y tiempo efectivo de sesión.</li><li>Operaciones ejecutadas.</li><li>Puntaje y errores.</li><li>Contingencias activadas.</li><li>Respuesta del estudiante.</li></ul><h3>Uso del PDF</h3><p>Al pulsar <b>Finalizar / Guardar PDF</b>, se abre la impresión del navegador. Selecciona “Guardar como PDF”. El reporte puede subirse luego al aula virtual.</p></div><div class="card span-4"><h3>Para el docente</h3><p><b>Sin servidor:</b> no existe un panel central. Cada estudiante entrega su evidencia descargada.</p><p><b>Ventaja:</b> costo cero de infraestructura y despliegue inmediato.</p><p><b>Siguiente evolución:</b> conectar el simulador a Google Sheets, Apps Script o una base de datos institucional para consolidar resultados automáticamente.</p><button class="btn danger" onclick="resetOps()">Restablecer ejercicio</button></div></div><div class="footer-note">Este entorno modela procesos WMS genéricos con propósito formativo.</div>`}
+function renderGuide(){document.getElementById('guide').innerHTML=`<h2>Guía rápida V2</h2><div class="grid" style="margin-top:14px"><div class="card span-8"><h3>Flujo sugerido</h3><ol><li>Completa identificación y código de actividad.</li><li>Revisa el Panel.</li><li>Recepciona al menos una OC.</li><li>Comprueba inventario.</li><li>Ejecuta Picking → Packing → Despacho.</li><li>Activa una contingencia y registra tu decisión.</li><li>Abre <b>Evidencia</b> y revisa tu bitácora.</li><li>Finaliza y guarda el reporte como PDF; opcionalmente descarga CSV.</li></ol><h3>Qué registra el sistema</h3><ul><li>Identificación del estudiante y sección.</li><li>Código de actividad.</li><li>Hora de inicio y tiempo efectivo de sesión.</li><li>Operaciones ejecutadas.</li><li>Puntaje y errores.</li><li>Contingencias activadas.</li><li>Respuesta del estudiante.</li></ul><h3>Uso del PDF</h3><p>Al pulsar <b>Guardar PDF</b>, se abre la impresión del navegador. Selecciona “Guardar como PDF” si necesitas conservar una copia de tu evidencia.</p></div><div class="card span-4"><button class="btn danger" onclick="resetOps()">Restablecer ejercicio</button></div></div><div class="footer-note">Este entorno modela procesos WMS genéricos con propósito formativo.</div>`}
 function renderAll(){renderDashboard();renderReception();renderInventory();renderPicking();renderPacking();renderDispatch();renderCases();renderReport();renderGuide();persist(false)}
 window.addEventListener('beforeunload',()=>{if(state){pauseClock();persist(false)}});
 const saved=localStorage.getItem(STORAGE);if(saved){try{const s=JSON.parse(saved);if(s?.meta?.name){document.getElementById('loginName').value=s.meta.name;document.getElementById('loginId').value=s.meta.studentId||'';document.getElementById('loginCareer').value=s.meta.career||'';document.getElementById('loginSection').value=s.meta.section||'';document.getElementById('loginActivity').value=s.meta.activity||'';document.getElementById('loginTeacher').value=s.meta.teacher||'';}}catch(e){}}
