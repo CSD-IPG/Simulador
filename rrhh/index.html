@@ -20,10 +20,30 @@ h2{color:var(--n);margin:0 0 8px}.sub{color:var(--m);line-height:1.55}.cards{dis
 footer{max-width:1280px;margin:auto;padding:0 20px 28px;color:#728197;font-size:12px}
 @media(max-width:960px){.layout{grid-template-columns:1fr}.side{position:static;display:grid;grid-template-columns:repeat(3,1fr)}.hero{grid-template-columns:1fr}.form{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr 1fr}}@media(max-width:620px){.side{grid-template-columns:1fr 1fr}.form,.cards{grid-template-columns:1fr}}
 @media print{.top,.side,.actions,.no-print{display:none!important}.layout{display:block}.panel{border:0}.view{display:none!important}#evidencia{display:block!important}.hero{display:none}}
+
+.ipg-exitbar{
+  position:fixed;top:12px;right:12px;z-index:9999;
+  display:flex;gap:8px;flex-wrap:wrap;max-width:430px;
+  background:rgba(255,255,255,.97);border:1px solid #dce5ed;border-radius:12px;
+  padding:8px;box-shadow:0 6px 18px rgba(0,0,0,.08)
+}
+.ipg-exitbar button{border:0;border-radius:8px;padding:9px 12px;font-weight:700;cursor:pointer}
+.ipg-exitbar .ipg-back{background:#eef3f7;color:#16324f}
+.ipg-exitbar .ipg-finish{background:#0f766e;color:white}
+.ipg-exitbar .ipg-note{display:block;width:100%;font-size:11px;color:#64748b}
+@media(max-width:700px){.ipg-exitbar{position:sticky;top:0;right:auto;margin:0;max-width:none;border-radius:0}}
+
 </style>
 </head>
 <body>
-<div class="top"><div class="nav"><div class="brand"><div class="mark">IPG</div><div><strong>IPG PEOPLE V1</strong><small>Centro de Simulación Digital · Escuela de Gestión, Negocios y Marítima</small></div></div><a href="#">← Volver al portal</a></div></div>
+
+<div class="ipg-exitbar">
+  <button class="ipg-back" id="ipgBackPortal">← Guardar y volver al portal</button>
+  <button class="ipg-finish" id="ipgFinishPortal">Finalizar y volver al portal</button>
+  <span class="ipg-note">Guardar y volver detiene el tiempo y permite reanudar después.</span>
+</div>
+
+<div class="top"><div class="nav"><div class="brand"><div class="mark">IPG</div><div><strong>IPG PEOPLE V1</strong><small>Centro de Simulación Digital · Escuela de Gestión, Negocios y Marítima</small></div></div></div></div>
 
 <div class="shell">
 <section class="hero">
@@ -185,8 +205,17 @@ function ipgTraceWatch(){
    if(!b)return;
    const txt=(b.textContent||"").trim().toLowerCase(),id=b.id||"";
    if(id==="reset"||txt.includes("reiniciar")||txt.includes("restablecer")){if(txt.includes("reiniciar"))localStorage.removeItem(IPG_TRACE_KEY);return}
-   if(id==="start"||txt.includes("guardar e iniciar")||txt==="iniciar simulación"){
-     setTimeout(async()=>{if(ipgTraceStarted()){ipgTraceEnsureSession(ipgTrace.finished||false);ipgTraceLastSig=ipgTraceSignature();await ipgTraceSync("inicio","Iniciado")}},250);
+   if(id==="start"||txt.includes("guardar e iniciar")||txt==="iniciar simulación"||txt.includes("continuar sesión guardada")){
+     setTimeout(async()=>{
+       if(ipgTraceStarted()){
+         ipgTraceEnsureSession(ipgTrace.finished||false);
+         ipgTraceLastSig=ipgTraceSignature();
+         const wasPaused=!!ipgTrace.paused;
+         ipgTrace.paused=false;
+         localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
+         await ipgTraceSync(wasPaused?"reanudacion":"inicio",wasPaused?"En progreso":"Iniciado");
+       }
+     },250);
      return
    }
    if(txt.includes("finalizar")||txt.includes("guardar / imprimir pdf"))return;
@@ -198,6 +227,45 @@ async function traceFinalizeAndPrint(ev){if(ev)ev.preventDefault();if(ipgTraceSt
 ipgTraceWatch();
 if(ipgTrace.lastSync)ipgTraceStatus("última sincronización · "+new Date(ipgTrace.lastSync).toLocaleString("es-CL"));
 /* ===== FIN IPG TRAZABILIDAD CENTRAL ===== */
+
+
+function ipgStopLocalClock(){
+  if(!s||!s.started)return;
+  s.elapsed=elapsed();
+  s.started=false;
+  s.start=0;
+  localStorage.setItem(KEY,JSON.stringify(s));
+  try{render()}catch(e){}
+}
+async function ipgPostFinalSnapshot(){
+  const m=ipgTraceMeta();
+  const totalTime=ipgTraceTime(), finalAdvance=ipgTraceAdvance(), finalScore=ipgTraceScore();
+  ipgTraceEnsureSession(false);
+  const row={session_id:ipgTrace.sessionId,evento:"finalizacion",nombre:m.nombre||null,rut_id:m.studentId||null,carrera:m.carrera||null,seccion:m.seccion||null,docente:m.docente||null,simulador:IPG_TRACE_SIM,actividad:m.actividad||null,estado:"Finalizado",avance:finalAdvance,puntaje:finalScore,intentos:null,tiempo_segundos:totalTime,unidad_1:null,unidad_2:null,unidad_3:null};
+  ipgStopLocalClock();
+  ipgTrace.finished=true;ipgTrace.paused=false;localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
+  try{
+    ipgTraceStatus("cerrando sesión...");
+    const send=fetch(IPG_TRACE_URL+"/rest/v1/participaciones",{method:"POST",headers:{"Content-Type":"application/json","apikey":IPG_TRACE_ANON,"Authorization":"Bearer "+IPG_TRACE_ANON,"Prefer":"return=minimal"},body:JSON.stringify(row)});
+    const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error("timeout")),2500));
+    const r=await Promise.race([send,timeout]); if(r&&!r.ok)throw new Error("HTTP "+r.status);
+    ipgTraceStatus("sesión finalizada.");
+  }catch(e){console.error("Cierre central:",e);ipgTraceStatus("sesión cerrada localmente; sincronización pendiente.",true)}
+}
+async function ipgGoPortal(finalize=false){
+  if(finalize){await ipgPostFinalSnapshot();window.location.href="../";return}
+  try{
+    if(ipgTraceStarted()){await ipgTraceSync("suspension","Suspendido");ipgTrace.paused=true;localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace))}
+  }catch(e){console.error("Suspensión:",e)}
+  ipgStopLocalClock();
+  window.location.href="../";
+}
+document.getElementById("ipgBackPortal")?.addEventListener("click",async()=>{await ipgGoPortal(false)});
+document.getElementById("ipgFinishPortal")?.addEventListener("click",async(e)=>{
+  const btn=e.currentTarget;
+  if(btn.dataset.confirmed!=="1"){btn.dataset.confirmed="1";btn.textContent="Confirmar finalización";setTimeout(()=>{if(btn.dataset.confirmed==="1"){btn.dataset.confirmed="0";btn.textContent="Finalizar y volver al portal"}},5000);return}
+  btn.disabled=true;btn.textContent="Finalizando...";await ipgGoPortal(true)
+});
 
 </script>
 </body></html>
