@@ -179,7 +179,8 @@ async function ipgTraceSync(evento,estado){
  const m=ipgTraceMeta();
  if(!m.studentId)return false;
  ipgTraceEnsureSession(false);
- const row={session_id:ipgTrace.sessionId,evento,nombre:m.nombre||null,rut_id:m.studentId,carrera:m.carrera||null,seccion:m.seccion||null,docente:m.docente||null,simulador:IPG_TRACE_SIM,actividad:m.actividad||null,estado,avance:ipgTraceAdvance(),puntaje:ipgTraceScore(),intentos:null,tiempo_segundos:ipgTraceTime(),unidad_1:null,unidad_2:null,unidad_3:null};
+ const row={session_id:ipgTrace.sessionId,evento,nombre:m.nombre||null,rut_id:m.studentId,
+    email_institucional:(window.IPG_INSTITUTIONAL_EMAIL||null),carrera:m.carrera||null,seccion:m.seccion||null,docente:m.docente||null,simulador:IPG_TRACE_SIM,actividad:m.actividad||null,estado,avance:ipgTraceAdvance(),puntaje:ipgTraceScore(),intentos:null,tiempo_segundos:ipgTraceTime(),unidad_1:null,unidad_2:null,unidad_3:null};
  ipgTraceStatus("enviando "+evento+"...");
  try{
    const r=await fetch(IPG_TRACE_URL+"/rest/v1/participaciones",{method:"POST",headers:{"Content-Type":"application/json","apikey":IPG_TRACE_ANON,"Authorization":"Bearer "+IPG_TRACE_ANON,"Prefer":"return=minimal"},body:JSON.stringify(row)});
@@ -354,6 +355,7 @@ function ipgAuthMsg(t,c=""){
 }
 function ipgStoredEmail(){return (localStorage.getItem(IPG_AUTH_KEY)||"").trim().toLowerCase()}
 function ipgGrantEmailAccess(email){
+  ipgRegistrarAcceso(email);
   localStorage.setItem(IPG_AUTH_KEY,email);
   document.body.classList.add("ipg-auth-ok");
   window.IPG_INSTITUTIONAL_EMAIL=email;
@@ -372,6 +374,38 @@ if(ipgInstitutional(_ipgSavedEmail)){
   ipgGrantEmailAccess(_ipgSavedEmail);
 }
 
+
+
+const IPG_ACCESS_URL="https://uegxxazgqvjjqnmpodln.supabase.co";
+const IPG_ACCESS_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlZ3h4YXpncXZqanFubXBvZGxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTMxMDksImV4cCI6MjEwNjI2OTEwOX0.93hHsgPuCrPWZma29meYK2w5EDBff4tv80aUky4v_UQ";
+const IPG_ACCESS_MODULE="IPG FIN-SIM";
+function ipgAccessSessionId(){
+  const k="ipg_access_sid_"+IPG_ACCESS_MODULE;
+  let v=sessionStorage.getItem(k);
+  if(!v){
+    v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():"acc-"+Date.now()+"-"+Math.random().toString(36).slice(2,9);
+    sessionStorage.setItem(k,v);
+  }
+  return v;
+}
+async function ipgRegistrarAcceso(email){
+  email=(email||"").trim().toLowerCase();
+  if(!email)return;
+  const onceKey="ipg_access_logged_"+IPG_ACCESS_MODULE+"_"+email;
+  if(sessionStorage.getItem(onceKey))return;
+  try{
+    const r=await fetch(IPG_ACCESS_URL+"/rest/v1/rpc/registrar_acceso_csd",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "apikey":IPG_ACCESS_ANON,
+        "Authorization":"Bearer "+IPG_ACCESS_ANON
+      },
+      body:JSON.stringify({p_email:email,p_modulo:IPG_ACCESS_MODULE,p_session_id:ipgAccessSessionId()})
+    });
+    if(r.ok)sessionStorage.setItem(onceKey,"1");
+  }catch(e){console.warn("Registro de acceso CSD no disponible",e)}
+}
 
 </script>
 </body></html>
