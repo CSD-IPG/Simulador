@@ -2,8 +2,28 @@
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>IPG PORTSIM V1</title>
 <style>
 :root{--n:#10233e;--c:#16a6b6;--t:#0c7f88;--bg:#f4f7fa;--tx:#1d2a3a;--m:#607086;--ln:#dfe6ee;--ok:#0f8a55;--wa:#b7791f;--bad:#b43a3a}*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Arial;background:var(--bg);color:var(--tx)}button,input,select,textarea{font:inherit}.top{position:sticky;top:0;z-index:20;background:white;border-bottom:1px solid var(--ln)}.nav{max-width:1280px;margin:auto;padding:12px 20px;display:flex;justify-content:space-between;align-items:center}.brand{display:flex;gap:11px;align-items:center}.mark{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,var(--n),var(--c));display:grid;place-items:center;color:#fff;font-weight:900}.brand strong{display:block;color:var(--n)}.brand small{color:var(--m)}.nav a{color:var(--t);font-weight:800;text-decoration:none}.shell{max-width:1280px;margin:auto;padding:24px 20px 50px}.hero{background:linear-gradient(135deg,var(--n),#174567);color:#fff;border-radius:19px;padding:26px;display:grid;grid-template-columns:1.5fr .8fr;gap:22px}.hero h1{font-size:38px;margin:7px 0}.hero p{color:#dce8f4;line-height:1.55}.badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#ffffff18;border:1px solid #ffffff30;font-size:12px;font-weight:800}.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px}.st{background:#ffffff12;border:1px solid #ffffff22;border-radius:12px;padding:13px}.st b{display:block;font-size:23px}.layout{display:grid;grid-template-columns:245px 1fr;gap:18px;margin-top:18px}.side,.panel{background:#fff;border:1px solid var(--ln);border-radius:15px}.side{padding:12px;height:max-content;position:sticky;top:82px}.tab{width:100%;border:0;background:transparent;text-align:left;padding:11px;border-radius:9px;font-weight:750;color:#43566e;cursor:pointer}.tab.active,.tab:hover{background:#eaf5f7;color:#0b717a}.panel{padding:22px;min-height:610px}.view{display:none}.view.active{display:block}h2{color:var(--n);margin:0 0 8px}.sub{color:var(--m);line-height:1.55}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.kpi{border:1px solid var(--ln);border-radius:12px;padding:13px;background:#fbfcfe}.kpi b{display:block;font-size:22px;color:var(--n)}.kpi small{color:var(--m)}.form{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.f label{display:block;font-size:12px;color:#53677e;font-weight:800;margin-bottom:5px}.f input,.f select,.f textarea{width:100%;border:1px solid #ced8e2;border-radius:9px;padding:10px}.f textarea{min-height:90px}.btn{border:0;border-radius:9px;padding:10px 14px;font-weight:800;cursor:pointer}.pri{background:var(--n);color:white}.teal{background:var(--t);color:white}.light{background:#edf2f6;color:#31475f}.bad{background:#fdecec;color:#8e2f2f}.warn{background:#fff3d8;color:#805b00}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}.notice{padding:12px 14px;border-radius:10px;background:#eef8fa;border:1px solid #cde9ec;color:#315b61;font-size:13px;line-height:1.5}.notice.w{background:#fff8df;border-color:#efd98a;color:#745d17}.notice.b{background:#fff0f0;border-color:#f0c8c8;color:#7e3535}.tablewrap{overflow:auto;border:1px solid var(--ln);border-radius:11px}.table{width:100%;border-collapse:collapse;min-width:720px}.table th,.table td{padding:10px 9px;border-bottom:1px solid var(--ln);font-size:13px;text-align:left}.table th{background:#f3f6f9;color:#4b6077}.pill{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800}.p-ok{background:#e5f6ed;color:#167349}.p-wa{background:#fff4d8;color:#875f00}.p-bad{background:#fde9e9;color:#993737}.yard{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin:15px 0}.slot{min-height:62px;border:1px solid #ced8e2;border-radius:9px;background:#f7f9fb;padding:7px;font-size:11px;cursor:pointer}.slot strong{display:block;color:var(--n)}.slot.full{background:#eaf3fb}.slot.reefer{background:#e6f6f2}.slot.imo{background:#fff0dc}.slot.sel{outline:3px solid var(--c)}.report{background:#fbfcfe;border:1px solid var(--ln);border-radius:12px;padding:15px}.timeline{border-left:3px solid #d9e3ec;padding-left:15px}.ev{padding:8px 0 14px}.ev b{color:var(--n)}.ev small{display:block;color:var(--m);margin-top:3px}.mono{font-family:ui-monospace,monospace;font-size:12px}footer{max-width:1280px;margin:auto;padding:0 20px 28px;color:#728197;font-size:12px}@media(max-width:960px){.layout{grid-template-columns:1fr}.side{position:static;display:grid;grid-template-columns:repeat(3,1fr)}.hero{grid-template-columns:1fr}.form{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr 1fr}}@media(max-width:620px){.side{grid-template-columns:1fr 1fr}.form,.cards{grid-template-columns:1fr}.yard{grid-template-columns:repeat(3,1fr)}}@media print{.top,.side,.actions,.no-print{display:none!important}.layout{display:block}.panel{border:0}.view{display:none!important}#evidencia{display:block!important}.hero{display:none}}
+
+.ipg-exitbar{
+  position:fixed;top:12px;right:12px;z-index:9999;
+  display:flex;gap:8px;flex-wrap:wrap;max-width:430px;
+  background:rgba(255,255,255,.97);border:1px solid #dce5ed;border-radius:12px;
+  padding:8px;box-shadow:0 6px 18px rgba(0,0,0,.08)
+}
+.ipg-exitbar button{border:0;border-radius:8px;padding:9px 12px;font-weight:700;cursor:pointer}
+.ipg-exitbar .ipg-back{background:#eef3f7;color:#16324f}
+.ipg-exitbar .ipg-finish{background:#0f766e;color:white}
+.ipg-exitbar .ipg-note{display:block;width:100%;font-size:11px;color:#64748b}
+@media(max-width:700px){.ipg-exitbar{position:sticky;top:0;right:auto;margin:0;max-width:none;border-radius:0}}
+
 </style></head><body>
-<div class="top"><div class="nav"><div class="brand"><div class="mark">IPG</div><div><strong>IPG PORTSIM V1</strong><small>Centro de Simulación Digital · Escuela de Gestión, Negocios y Marítima</small></div></div><a href="#">← Volver al portal</a></div></div>
+
+<div class="ipg-exitbar">
+  <button class="ipg-back" id="ipgBackPortal">← Guardar y volver al portal</button>
+  <button class="ipg-finish" id="ipgFinishPortal">Finalizar y volver al portal</button>
+  <span class="ipg-note">Guardar y volver detiene el tiempo y permite reanudar después.</span>
+</div>
+
+<div class="top"><div class="nav"><div class="brand"><div class="mark">IPG</div><div><strong>IPG PORTSIM V1</strong><small>Centro de Simulación Digital · Escuela de Gestión, Negocios y Marítima</small></div></div></div></div>
 <div class="shell"><section class="hero"><div><span class="badge">SIMULADOR ACADÉMICO · TOS / TERMINAL PORTUARIO</span><h1>Operación integrada de terminal de contenedores</h1><p>Gate, patio, restricciones reefer/IMO, planificación de nave, asignación de equipos, retiro y KPI. Inspirado en la lógica funcional de un Terminal Operating System, sin reproducir interfaces propietarias.</p></div><div class="stats"><div class="st"><b id="scH">0</b><span>Puntaje</span></div><div class="st"><b id="tmH">00:00</b><span>Tiempo</span></div><div class="st"><b id="erH">0</b><span>Errores</span></div><div class="st"><b id="avH">0%</b><span>Avance</span></div></div></section>
 <div class="layout"><aside class="side"><button class="tab active" data-v="inicio">1. Inicio</button><button class="tab" data-v="gate">2. Gate</button><button class="tab" data-v="yard">3. Patio</button><button class="tab" data-v="vessel">4. Nave y equipos</button><button class="tab" data-v="retiro">5. Retiro</button><button class="tab" data-v="cont">6. Contingencias</button><button class="tab" data-v="log">7. Bitácora</button><button class="tab" data-v="evidencia">8. Evidencia</button></aside><main class="panel">
 <section class="view active" id="inicio"><h2>Inicio de simulación</h2><p class="sub">Completa tu identificación. El caso representa una recalada con descarga y posterior retiro de contenedores de importación.</p><div class="form"><div class="f"><label>Nombre estudiante</label><input id="student"></div><div class="f"><label>ID / RUT</label><input id="studentId"></div><div class="f"><label>Carrera</label><input id="career" placeholder="Ej. TNS Operaciones Portuarias"></div><div class="f"><label>Sección</label><input id="section"></div><div class="f"><label>Código actividad</label><input id="activity" value="PORT-SIM01"></div><div class="f"><label>Docente</label><input id="teacher"></div></div><div class="notice" style="margin-top:14px"><b>Misión:</b> procesar la operación de la nave <b>MV Pacific Andes</b>, controlar gate, ubicar unidades correctamente, planificar grúas, resolver contingencias y liberar importaciones para retiro.</div><div class="actions"><button class="btn pri" id="start">Iniciar simulación</button><button class="btn light" id="reset">Reiniciar caso</button></div><div class="cards" style="margin-top:20px"><div class="kpi"><b>420</b><small>Movimientos descarga</small></div><div class="kpi"><b>3</b><small>Grúas STS</small></div><div class="kpi"><b>72%</b><small>Ocupación patio inicial</small></div><div class="kpi"><b>19:00</b><small>ETD objetivo</small></div></div></section>
@@ -69,8 +89,17 @@ function ipgTraceWatch(){
    if(!b)return;
    const txt=(b.textContent||"").trim().toLowerCase(),id=b.id||"";
    if(id==="reset"||txt.includes("reiniciar")||txt.includes("restablecer")){if(txt.includes("reiniciar"))localStorage.removeItem(IPG_TRACE_KEY);return}
-   if(id==="start"||txt.includes("guardar e iniciar")||txt==="iniciar simulación"){
-     setTimeout(async()=>{if(ipgTraceStarted()){ipgTraceEnsureSession(ipgTrace.finished||false);ipgTraceLastSig=ipgTraceSignature();await ipgTraceSync("inicio","Iniciado")}},250);
+   if(id==="start"||txt.includes("guardar e iniciar")||txt==="iniciar simulación"||txt.includes("continuar sesión guardada")){
+     setTimeout(async()=>{
+       if(ipgTraceStarted()){
+         ipgTraceEnsureSession(ipgTrace.finished||false);
+         ipgTraceLastSig=ipgTraceSignature();
+         const wasPaused=!!ipgTrace.paused;
+         ipgTrace.paused=false;
+         localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
+         await ipgTraceSync(wasPaused?"reanudacion":"inicio",wasPaused?"En progreso":"Iniciado");
+       }
+     },250);
      return
    }
    if(txt.includes("finalizar")||txt.includes("guardar / imprimir pdf"))return;
@@ -82,5 +111,44 @@ async function traceFinalizeAndPrint(ev){if(ev)ev.preventDefault();if(ipgTraceSt
 ipgTraceWatch();
 if(ipgTrace.lastSync)ipgTraceStatus("última sincronización · "+new Date(ipgTrace.lastSync).toLocaleString("es-CL"));
 /* ===== FIN IPG TRAZABILIDAD CENTRAL ===== */
+
+
+function ipgStopLocalClock(){
+  if(!s||!s.started)return;
+  s.elapsed=elapsed();
+  s.started=false;
+  s.start=0;
+  localStorage.setItem(KEY,JSON.stringify(s));
+  try{render()}catch(e){}
+}
+async function ipgPostFinalSnapshot(){
+  const m=ipgTraceMeta();
+  const totalTime=ipgTraceTime(), finalAdvance=ipgTraceAdvance(), finalScore=ipgTraceScore();
+  ipgTraceEnsureSession(false);
+  const row={session_id:ipgTrace.sessionId,evento:"finalizacion",nombre:m.nombre||null,rut_id:m.studentId||null,carrera:m.carrera||null,seccion:m.seccion||null,docente:m.docente||null,simulador:IPG_TRACE_SIM,actividad:m.actividad||null,estado:"Finalizado",avance:finalAdvance,puntaje:finalScore,intentos:null,tiempo_segundos:totalTime,unidad_1:null,unidad_2:null,unidad_3:null};
+  ipgStopLocalClock();
+  ipgTrace.finished=true;ipgTrace.paused=false;localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
+  try{
+    ipgTraceStatus("cerrando sesión...");
+    const send=fetch(IPG_TRACE_URL+"/rest/v1/participaciones",{method:"POST",headers:{"Content-Type":"application/json","apikey":IPG_TRACE_ANON,"Authorization":"Bearer "+IPG_TRACE_ANON,"Prefer":"return=minimal"},body:JSON.stringify(row)});
+    const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error("timeout")),2500));
+    const r=await Promise.race([send,timeout]); if(r&&!r.ok)throw new Error("HTTP "+r.status);
+    ipgTraceStatus("sesión finalizada.");
+  }catch(e){console.error("Cierre central:",e);ipgTraceStatus("sesión cerrada localmente; sincronización pendiente.",true)}
+}
+async function ipgGoPortal(finalize=false){
+  if(finalize){await ipgPostFinalSnapshot();window.location.href="../";return}
+  try{
+    if(ipgTraceStarted()){await ipgTraceSync("suspension","Suspendido");ipgTrace.paused=true;localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace))}
+  }catch(e){console.error("Suspensión:",e)}
+  ipgStopLocalClock();
+  window.location.href="../";
+}
+document.getElementById("ipgBackPortal")?.addEventListener("click",async()=>{await ipgGoPortal(false)});
+document.getElementById("ipgFinishPortal")?.addEventListener("click",async(e)=>{
+  const btn=e.currentTarget;
+  if(btn.dataset.confirmed!=="1"){btn.dataset.confirmed="1";btn.textContent="Confirmar finalización";setTimeout(()=>{if(btn.dataset.confirmed==="1"){btn.dataset.confirmed="0";btn.textContent="Finalizar y volver al portal"}},5000);return}
+  btn.disabled=true;btn.textContent="Finalizando...";await ipgGoPortal(true)
+});
 
 </script></body></html>
