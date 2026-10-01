@@ -63,14 +63,14 @@ body.auth-ok #authGate{display:none}
     <p>Ingresa con tu cuenta institucional para acceder al módulo y registrar tu avance.</p>
     <div class="auth-grid">
       <div><label>Correo institucional</label><input id="authEmail" type="email" autocomplete="username" placeholder="nombre@alumnos.ipg.cl"></div>
-      <div><label>Contraseña</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="Contraseña"></div>
+      
     </div>
     <div class="auth-actions">
       <button class="primary" id="authLogin">Ingresar al módulo</button>
-      <button class="secondary" id="authSignup">Crear acceso institucional</button>
+      
       <button class="secondary" id="authPortal">Volver al CSD</button>
     </div>
-    <div id="authMsg">Acceso permitido para cuentas institucionales IPG y perfiles administrativos autorizados.</div>
+    <div id="authMsg">Acceso permitido para correos @alumnos.ipg.cl, @docentes.ipg.cl y @ipg.cl.</div>
   </div>
 </div>
 <div class="ipg-toolbar" id="ipgToolbar">
@@ -116,38 +116,19 @@ body.auth-ok #authGate{display:none}
 const DATA={"u1":{"title":"Unidad I · Introducción a la Contabilidad Administrativa y los Métodos de Costeo","ra":"Distingue la contabilidad de costos y sus métodos como parte fundamental de las herramientas de control contable.","guides":[{"title":"Guía 1 · Clasificación, elementos y función de los costos","intro":"Reconoce materia prima directa, mano de obra directa, costos indirectos de fabricación y costos del período.","formula":"Costo primo = MPD + MOD | Costo de conversión = MOD + CIF | Costo producción = MPD + MOD + CIF","ex":[["Clasificación de costos","Fábrica de muebles: madera $4.800.000; carpinteros $3.200.000; barniz general $420.000; depreciación maquinaria $650.000; sueldo vendedor $900.000.",["Madera: MPD.","Carpinteros: MOD.","Barniz general y depreciación de planta: CIF.","Sueldo vendedor: costo/gasto del período.","Retroalimentación: clasificar por relación con fabricación, no solo por tipo de desembolso."]],["Costo primo y conversión","MPD $5.500.000; MOD $3.000.000; CIF $2.100.000.",["Costo primo = $8.500.000.","Costo conversión = $5.100.000.","Costo producción = $10.600.000.","Retroalimentación: primo = costos directos principales; conversión = esfuerzo de transformar materiales."]],["Costo unitario","Se fabrican 2.000 unidades con costo de producción $18.000.000. Margen bruto de referencia: $4.000/u.",["Costo unitario = $9.000.","Precio de referencia pedagógico = $13.000/u.","Margen bruto total = $8.000.000.","Retroalimentación: el costo apoya la decisión, pero no determina por sí solo el precio final."]]]},{"title":"Guía 2 · Costeo por absorción y costeo directo/variable","intro":"Compara ambos métodos y explica cambios de resultado cuando producción y ventas difieren.","formula":"Absorción: MPD + MOD + CIF variables + CIF fijos asignados | Variable: MPD + MOD + CIF variables","ex":[["Costo unitario","Producción 1.000 u.; MPD $3.000/u; MOD $2.000/u; CIF variable $1.000/u; CIF fijo total $2.400.000.",["CIF fijo por unidad = $2.400.","Costo absorción = $8.400/u.","Costo variable = $6.000/u.","Diferencia = $2.400/u."]],["Resultado con inventario final","Se venden 800 u. a $12.000/u; gasto variable de venta $500/u; administración fija $800.000.",["Ventas = $9.600.000.","Absorción: costo ventas $6.720.000; utilidad operacional $1.680.000.","Variable: margen contribución después de venta variable $4.400.000; menos CIF fijo $2.400.000 y administración $800.000 = utilidad $1.200.000.","Diferencia = $480.000, igual al CIF fijo incorporado en 200 unidades finales.","Retroalimentación: la diferencia es temporal y surge por el tratamiento del CIF fijo."]],["Uso gerencial","¿Por qué el costeo variable ayuda en decisiones internas de corto plazo?",["Separa costos variables y fijos.","Facilita margen de contribución y análisis volumen–resultado.","No sustituye automáticamente los criterios financieros o tributarios de valorización."]]]},{"title":"Guía 3 · Marco chileno: costo tributario e inventarios","intro":"Distingue el costo directo tributario de la medición financiera de inventarios.","formula":"LIR art. 30: renta bruta = ingresos brutos − costo directo | NIC 2: menor entre costo y valor neto realizable","ex":[["Bien producido","Materia prima $7.200.000 y mano de obra $4.300.000. Determine costo directo básico para fines pedagógicos bajo art. 30 LIR.",["El art. 30 considera, para bienes producidos o elaborados, materia prima y mano de obra.","Costo directo básico = $11.500.000.","Retroalimentación: tratamiento tributario y medición financiera bajo NIC 2 no son equivalentes."]],["Mercadería adquirida en Chile","Compra $9.000.000 y flete a bodega $350.000.",["Precio de adquisición integra el costo directo.","El art. 30 permite considerar optativamente flete y seguros hasta bodega.","Con esa opción: costo directo = $9.350.000.","Debe revisarse la aplicación concreta y la consistencia tributaria."]],["Método de valorización","100 unidades antiguas a $8.000 y 100 nuevas a $10.000. Se venden 120.",["Costos más antiguos: 100×8.000 + 20×10.000 = $1.000.000.","CPP = $9.000/u; costo de 120 = $1.080.000.","El art. 30 contempla costos directos más antiguos o CPP, con exigencias de consistencia.","Retroalimentación: el método cambia costo reconocido e inventario final."]]]}],"quiz":[["¿Cuál corresponde normalmente a un CIF?",["Materia prima identificable","Sueldo de operario directo","Depreciación de maquinaria de planta","Comisión de vendedor"],2],["En costeo por absorción, los CIF fijos de fabricación:",["Nunca forman parte del producto","Se asignan al costo de producción","Son siempre gasto de venta","Se excluyen de inventario"],1],["Si producción supera ventas, absorción puede mostrar mayor utilidad porque:",["Suben ventas","Parte del CIF fijo queda en inventario","Desaparece MOD","No hay costos variables"],1],["Según art. 30 LIR, para bienes producidos el costo directo considera en general:",["Materia prima y mano de obra","Solo venta","Solo depreciación","Solo margen"],0],["Bajo NIC 2, los inventarios se miden al:",["Mayor entre costo y precio","Menor entre costo y valor neto realizable","Costo variable exclusivo","Precio de venta"],1]]},"u2":{"title":"Unidad II · Sistemas de Costeo","ra":"Evalúa los distintos sistemas de costos asociándolos a la práctica profesional.","guides":[{"title":"Guía 1 · Costos por órdenes específicas","intro":"Acumula MPD, MOD y CIF por trabajo u orden.","formula":"Costo orden = MPD + MOD + CIF aplicado | Tasa CIF = CIF presupuestado / base presupuestada","ex":[["Orden 101","MPD $2.400.000; MOD $1.600.000; CIF aplicado 75% de MOD; 400 unidades.",["CIF = $1.200.000.","Costo orden = $5.200.000.","Costo unitario = $13.000/u."]],["Tasa predeterminada","CIF presupuestado $48.000.000; 12.000 horas MOD; una orden usa 350 horas.",["Tasa CIF = $4.000/hora.","CIF aplicado = $1.400.000.","Retroalimentación: la base debe representar razonablemente el consumo indirecto."]],["Subaplicación","CIF aplicado $10.500.000; CIF real $11.200.000.",["Diferencia = $700.000.","Existe subaplicación de CIF.","Al cierre debe analizarse el tratamiento según políticas contables aplicables."]]]},{"title":"Guía 2 · Costeo por procesos","intro":"Trabaja unidades equivalentes y asignación de costos.","formula":"Costo por unidad equivalente = costo acumulado / unidades equivalentes","ex":[["Unidades equivalentes","8.000 unidades terminadas y 2.000 finales al 50% de conversión; materiales al inicio.",["UE materiales = 10.000.","UE conversión = 8.000 + 1.000 = 9.000.","Materiales y conversión pueden tener distinto grado de avance."]],["Asignación de costos","Materiales $18.000.000; conversión $13.500.000.",["Material por UE = $1.800.","Conversión por UE = $1.500.","Terminadas = 8.000×3.300 = $26.400.000.","Proceso final = 2.000×1.800 + 1.000×1.500 = $5.100.000.","Comprobación = $31.500.000."]],["Elección de sistema","Fábrica produce miles de botellas homogéneas de manera continua.",["El costeo por procesos es normalmente más coherente.","Órdenes específicas conviene cuando cada trabajo/lote puede identificarse separadamente.","El sistema debe reflejar el proceso real."]]]},{"title":"Guía 3 · Costos estándar y variaciones","intro":"Calcula estándares y separa variaciones para apoyar el control.","formula":"MP precio = AQ(AP−SP) | MP cantidad = SP(AQ−SQ) | MOD tarifa = AH(AR−SR) | MOD eficiencia = SR(AH−SH)","ex":[["Materia prima","Estándar 4 kg/u a $2.500/kg; producción 500 u.; real 2.100 kg a $2.600.",["Cantidad estándar = 2.000 kg.","Variación precio = 2.100×100 = $210.000 desfavorable.","Variación cantidad = 2.500×100 = $250.000 desfavorable."]],["Mano de obra","Estándar 1,5 h/u a $8.000; producción 500 u.; real 780 h a $8.200.",["Horas estándar = 750.","Variación tarifa = 780×200 = $156.000 desfavorable.","Variación eficiencia = 8.000×30 = $240.000 desfavorable.","Total MOD = $396.000 desfavorable."]],["Interpretación","Precio de materiales favorable pero cantidad desfavorable.",["Puede existir ahorro de compra y, simultáneamente, mayor consumo.","Calidad, mermas y proceso deben investigarse.","Una variación es alerta de control, no conclusión automática."]]]}],"quiz":[["Órdenes específicas es apropiado cuando:",["Producción homogénea continua","Cada trabajo/lote es identificable","No existen CIF","Solo hay servicios"],1],["CIF presupuestado $30 MM / 10.000 h =",["$300/h","$3.000/h","$30.000/h","$300.000/h"],1],["Unidades equivalentes permiten:",["Eliminar inventario","Expresar producción incompleta como unidades completas equivalentes","Ignorar conversión","Calcular ventas"],1],["Variación precio de materiales mide:",["Precio real vs estándar","Horas real vs estándar","Ventas","Inventario final solamente"],0],["Si CIF real > CIF aplicado existe:",["Sobreaplicación","Subaplicación","Costo cero","Margen"],1]]},"u3":{"title":"Unidad III · Nuevas Tendencias en Costos","ra":"Explica las nuevas tendencias de costos aplicadas al área contable, asociándolas a la práctica profesional.","guides":[{"title":"Guía 1 · Costeo basado en actividades (ABC)","intro":"Asigna costos indirectos mediante actividades y generadores de costo.","formula":"Tasa actividad = costo pool / volumen driver | Asignación = tasa × consumo driver","ex":[["Tasas ABC","Preparaciones $12.000.000/60; inspecciones $12.000.000/120.",["Tasa preparación = $200.000.","Tasa inspección = $100.000."]],["Asignación","A consume 15 preparaciones y 30 inspecciones, 1.000 u.; B consume 45 y 90, 2.000 u.",["A = $6.000.000; CIF ABC = $6.000/u.","B = $18.000.000; CIF ABC = $9.000/u.","Retroalimentación: el consumo de actividades puede revelar complejidad no visible con bases volumétricas."]],["Riesgo de una sola base","Producto de bajo volumen consume muchas configuraciones.",["Puede quedar subcosteado si CIF se reparte solo por unidades.","Productos simples pueden quedar sobrecosteados.","ABC ayuda a detectar subsidios cruzados."]]]},{"title":"Guía 2 · Target Cost y Just in Time","intro":"Utiliza costo objetivo y lógica JIT como herramientas de gestión.","formula":"Costo objetivo = precio de mercado − utilidad objetivo","ex":[["Costo objetivo","Precio $50.000; utilidad objetivo 25% del precio.",["Utilidad objetivo = $12.500.","Costo objetivo = $37.500."]],["Brecha","Costo estimado actual $41.000; objetivo $37.500.",["Brecha = $3.500/u.","Debe analizarse rediseño, compras, proceso y actividades sin valor agregado.","No se deben sacrificar calidad, seguridad o cumplimiento."]],["JIT e inventario","Inventario promedio baja de $30.000.000 a $12.000.000; costo anual de mantener inventario 18%.",["Reducción = $18.000.000.","Ahorro estimado = $3.240.000/año.","JIT requiere confiabilidad, calidad y continuidad operacional."]]]},{"title":"Guía 3 · Precios de transferencia y departamentalización","intro":"Distingue precios internos gerenciales del régimen tributario chileno y distribuye costos de servicios.","formula":"Art. 41 E LIR: operaciones transfronterizas con relacionados deben analizarse bajo principio de plena competencia","ex":[["Precio interno gerencial","División A: costo variable $7.000; precio externo $11.000; sin capacidad ociosa.",["Margen externo sacrificado = $4.000.","Costo de oportunidad de transferir internamente = $4.000/u.","Precio mínimo gerencial simplificado = $11.000.","Este análisis interno no equivale automáticamente al régimen tributario de precios de transferencia."]],["Contexto chileno art. 41 E","Empresa chilena vende a relacionada extranjera a $80; comparables independientes del caso: $100–$110.",["Debe levantarse una alerta de precios de transferencia.","El art. 41 E regula operaciones transfronterizas con relacionados bajo principio de plena competencia.","No se determina aquí un ajuste real: se requieren método, comparabilidad, documentación y reglas SII vigentes."]],["Departamentalización","Mantención $6.000.000: A 60%, B 40%. Informática $4.000.000: A 25%, B 75%.",["A recibe $3.600.000 + $1.000.000 = $4.600.000.","B recibe $2.400.000 + $3.000.000 = $5.400.000.","Total asignado = $10.000.000.","La base debe relacionarse razonablemente con el consumo del servicio."]]]}],"quiz":[["En ABC, un cost driver es:",["Utilidad financiera","Medida que explica consumo de actividad","Impuesto","Precio obligatorio"],1],["Precio $80.000 y utilidad objetivo $20.000: costo objetivo =",["$60.000","$80.000","$100.000","$20.000"],0],["JIT busca principalmente:",["Aumentar inventario sin límite","Reducir inventarios y desperdicios con flujo coordinado","Eliminar proveedores","Sustituir contabilidad"],1],["Art. 41 E LIR se vincula con:",["Operaciones transfronterizas con relacionados","Depreciación lineal","IVA ventas locales","Órdenes de costo"],0],["Base de reparto departamental debería:",["Ser siempre ventas","Relacionarse con consumo del servicio","Ser idéntica siempre","Excluir indirectos"],1]]}};
 const SUPABASE_URL="https://uegxxazgqvjjqnmpodln.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlZ3h4YXpncXZqanFubXBvZGxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTMxMDksImV4cCI6MjEwNjI2OTEwOX0.93hHsgPuCrPWZma29meYK2w5EDBff4tv80aUky4v_UQ";
-const AUTH_KEY="ipg_csd_auth_v1";
-function getAuth(){try{return JSON.parse(localStorage.getItem(AUTH_KEY)||"null")}catch(e){return null}}
-function setAuth(v){if(v)localStorage.setItem(AUTH_KEY,JSON.stringify(v));else localStorage.removeItem(AUTH_KEY)}
-function accessToken(){return getAuth()?.access_token||""}
+
+const AUTH_KEY="ipg_csd_email_access_v1";
 function institutionalDomain(email){
   email=(email||"").trim().toLowerCase();
   return email.endsWith("@alumnos.ipg.cl")||email.endsWith("@docentes.ipg.cl")||email.endsWith("@ipg.cl");
 }
-async function authFetch(path,options={}){
-  options.headers=Object.assign({"apikey":SUPABASE_ANON_KEY,"Content-Type":"application/json"},options.headers||{});
-  return fetch(SUPABASE_URL+path,options);
+function accessToken(){return ""}
+function getInstitutionalEmail(){return (localStorage.getItem(AUTH_KEY)||"").trim().toLowerCase()}
+function grantInstitutionalEmail(email){
+  localStorage.setItem(AUTH_KEY,email);
+  window.IPG_INSTITUTIONAL_EMAIL=email;
+  document.body.classList.add("auth-ok");
 }
-async function profileRole(userId,token){
-  try{
-    const r=await fetch(SUPABASE_URL+"/rest/v1/perfiles_csd?select=rol&user_id=eq."+encodeURIComponent(userId),{
-      headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+token}
-    });
-    if(!r.ok)return "";
-    const a=await r.json(); return a?.[0]?.rol||"";
-  }catch(e){return ""}
-}
-async function validateStoredAuth(){
-  const a=getAuth(); if(!a?.access_token)return false;
-  try{
-    const r=await fetch(SUPABASE_URL+"/auth/v1/user",{headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+a.access_token}});
-    if(!r.ok){setAuth(null);return false}
-    const u=await r.json(),role=await profileRole(u.id,a.access_token);
-    if(!institutionalDomain(u.email)&&role!=="escuela"){setAuth(null);return false}
-    a.user=u;a.role=role;setAuth(a);document.body.classList.add("auth-ok");return true;
-  }catch(e){return false}
-}
-
 const KEY="ipg_costos_ref_v1";
 const init=()=>({started:false,start:0,elapsed:0,student:"",studentId:"",career:"TNS en Contabilidad General",section:"",activity:"COSTOS-REF01",teacher:"",guides:{},tests:{},logs:[],sessionId:"",finished:false,lastSync:""});
 function newSessionId(){
@@ -191,7 +172,7 @@ async function syncCentral(evento,estado){
       headers:{
         "Content-Type":"application/json",
         "apikey":SUPABASE_ANON_KEY,
-        "Authorization":"Bearer "+(accessToken()||SUPABASE_ANON_KEY),
+        "Authorization":"Bearer "+SUPABASE_ANON_KEY,
         "Prefer":"return=minimal"
       },
       body:JSON.stringify(row)
@@ -265,50 +246,22 @@ function showView(id){
 }
 document.querySelectorAll(".navbtn[data-go]").forEach(b=>b.addEventListener("click",()=>showView(b.dataset.go)));
 
-function authMessage(msg,type=""){
-  const x=$("authMsg");x.className=type;x.textContent=msg;
-}
+
+function authMessage(msg,type=""){const x=document.getElementById("authMsg");if(x){x.className=type;x.textContent=msg}}
 $("authPortal").onclick=()=>{window.location.href="../"};
-$("authLogin").onclick=async()=>{
-  const email=$("authEmail").value.trim().toLowerCase(),password=$("authPassword").value;
-  if(!email||!password)return authMessage("Completa correo y contraseña.","err");
-  authMessage("Validando acceso...");
-  try{
-    const r=await authFetch("/auth/v1/token?grant_type=password",{method:"POST",body:JSON.stringify({email,password})});
-    const d=await r.json();
-    if(!r.ok)return authMessage(d?.msg||d?.error_description||"No fue posible iniciar sesión.","err");
-    const role=await profileRole(d.user.id,d.access_token);
-    if(!institutionalDomain(d.user.email)&&role!=="escuela"){
-      setAuth(null);return authMessage("Esta cuenta no corresponde a un dominio institucional autorizado.","err");
-    }
-    setAuth({...d,role});
-    document.body.classList.add("auth-ok");
-    authMessage("Acceso correcto.","ok");
-  }catch(e){authMessage("No fue posible conectar con el servicio de acceso.","err")}
+$("authLogin").onclick=()=>{
+  const email=($("authEmail")?.value||"").trim().toLowerCase();
+  if(!email)return authMessage("Ingresa tu correo institucional.","err");
+  if(!institutionalDomain(email))return authMessage("Debes usar @alumnos.ipg.cl, @docentes.ipg.cl o @ipg.cl.","err");
+  grantInstitutionalEmail(email);
+  authMessage("Acceso correcto.","ok");
 };
-$("authSignup").onclick=async()=>{
-  const email=$("authEmail").value.trim().toLowerCase(),password=$("authPassword").value;
-  if(!institutionalDomain(email))return authMessage("Para crear una cuenta debes usar @alumnos.ipg.cl, @docentes.ipg.cl o @ipg.cl.","err");
-  if(password.length<6)return authMessage("La contraseña debe tener al menos 6 caracteres.","err");
-  authMessage("Creando acceso institucional...");
-  try{
-    const r=await authFetch("/auth/v1/signup",{method:"POST",body:JSON.stringify({email,password})});
-    const d=await r.json();
-    if(!r.ok)return authMessage(d?.msg||d?.error_description||"No fue posible crear el acceso.","err");
-    if(d.access_token){
-      setAuth(d);document.body.classList.add("auth-ok");
-      authMessage("Cuenta creada e ingreso realizado.","ok");
-    }else{
-      authMessage("Cuenta creada. Revisa tu correo institucional para confirmar el acceso y luego inicia sesión.","ok");
-    }
-  }catch(e){authMessage("No fue posible crear el acceso.","err")}
-};
-$("ipgSignout").onclick=async()=>{
-  const token=accessToken();
-  try{if(token)await fetch(SUPABASE_URL+"/auth/v1/logout",{method:"POST",headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+token}})}catch(e){}
-  setAuth(null);document.body.classList.remove("auth-ok","ipg-open");location.reload();
-};
-validateStoredAuth();
+const _savedInstitutionalEmail=getInstitutionalEmail();
+if(institutionalDomain(_savedInstitutionalEmail)){
+  if($("authEmail"))$("authEmail").value=_savedInstitutionalEmail;
+  grantInstitutionalEmail(_savedInstitutionalEmail);
+}
+
 
 </script>
 </body></html>
