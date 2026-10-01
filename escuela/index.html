@@ -76,6 +76,60 @@
 <div class="panel"><h3>Participación por simulador</h3><div id="chart" class="chart"></div></div>
 <div class="panel"><h3>Detalle consolidado</h3><div class="tablewrap"><table><thead><tr><th>Inicio</th><th>Estudiante</th><th>ID/RUT</th><th>Carrera</th><th>Sección</th><th>Simulador</th><th>Estado</th><th>Avance</th><th>Puntaje</th><th>Intentos</th><th>Tiempo</th><th>U1</th><th>U2</th><th>U3</th></tr></thead><tbody id="tbody"></tbody></table></div></div>
 
+
+<div class="repo-section" id="accesosCsd">
+  <div class="panel">
+    <h2 style="margin-top:0">Accesos a Módulos y Simuladores</h2>
+    <p class="sub">Ingresos institucionales al CSD, diferenciados de la interacción académica posterior.</p>
+
+    <div class="repo-grid">
+      <div class="repo-kpi"><b id="accTotal">0</b><small>Accesos totales</small></div>
+      <div class="repo-kpi"><b id="accUsers">0</b><small>Usuarios únicos</small></div>
+      <div class="repo-kpi"><b id="accStudents">0</b><small>Estudiantes</small></div>
+      <div class="repo-kpi"><b id="accTeachers">0</b><small>Docentes</small></div>
+      <div class="repo-kpi"><b id="accNoStart">0</b><small>Accedieron sin iniciar</small></div>
+      <div class="repo-kpi"><b id="accStarted">0</b><small>Iniciaron actividad</small></div>
+      <div class="repo-kpi"><b id="accFinished">0</b><small>Finalizaron</small></div>
+      <div class="repo-kpi"><b id="accStartRate">0%</b><small>Acceso → inicio</small></div>
+    </div>
+
+    <div id="accStatus" class="notice">Esperando carga de accesos.</div>
+
+    <div class="repo-report-tools">
+      <div class="f"><label>Desde</label><input id="accDesde" type="date"></div>
+      <div class="f"><label>Hasta</label><input id="accHasta" type="date"></div>
+      <div class="f"><label>Perfil</label>
+        <select id="accPerfil">
+          <option value="">Todos</option>
+          <option value="estudiante">Estudiantes</option>
+          <option value="docente">Docentes</option>
+          <option value="colaborador">Colaboradores</option>
+        </select>
+      </div>
+      <div class="f"><label>Módulo</label><select id="accModulo"><option value="">Todos</option></select></div>
+      <div class="f"><label>Buscar email</label><input id="accEmail" placeholder="usuario@..."></div>
+    </div>
+
+    <div class="repo-report-actions">
+      <button class="btn teal" id="accCsv">Descargar detalle de accesos</button>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Módulo</th><th>Accesos</th><th>Usuarios</th><th>Iniciaron</th><th>Finalizaron</th><th>Acceso → inicio</th><th>Inicio → fin</th></tr></thead>
+        <tbody id="accModuleBody"><tr><td colspan="7">Sin datos</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="tablewrap" style="margin-top:14px">
+      <table>
+        <thead><tr><th>Fecha</th><th>Email</th><th>Perfil</th><th>Módulo</th><th>¿Inició?</th><th>¿Finalizó?</th></tr></thead>
+        <tbody id="accDetailBody"><tr><td colspan="6">Sin datos</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 <div class="repo-section" id="repositorioUso">
   <div class="panel">
     <h2 style="margin-top:0">Uso del Repositorio Académico</h2>
@@ -168,7 +222,7 @@
 const SUPABASE_URL='https://uegxxazgqvjjqnmpodln.supabase.co';
 const ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlZ3h4YXpncXZqanFubXBvZGxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTMxMDksImV4cCI6MjEwNjI2OTEwOX0.93hHsgPuCrPWZma29meYK2w5EDBff4tv80aUky4v_UQ';
 let TOKEN=sessionStorage.getItem("csd_token")||"";
-let DATA=[],FILTERED=[],REPO_REPORT=[];
+let DATA=[],FILTERED=[],REPO_REPORT=[],ACCESS_DATA=[],ACCESS_PART=[];
 const $=id=>document.getElementById(id);
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 function fmtSec(n){n=Number(n)||0;let h=Math.floor(n/3600),m=Math.floor((n%3600)/60);return h?`${h}h ${m}m`:`${m} min`}
@@ -426,12 +480,102 @@ async function loadRepositorioDashboard(){
   }
 }
 
+
+function accessPair(email,modulo){return String(email||"").toLowerCase()+"||"+String(modulo||"")}
+function accessFiltered(){
+  const d=$("accDesde").value,h=$("accHasta").value,p=$("accPerfil").value,m=$("accModulo").value,q=$("accEmail").value.trim().toLowerCase();
+  return ACCESS_DATA.filter(x=>{
+    const day=String(x.fecha||"").slice(0,10);
+    return (!d||day>=d)&&(!h||day<=h)&&(!p||x.tipo_usuario===p)&&(!m||x.modulo===m)&&(!q||String(x.email||"").toLowerCase().includes(q));
+  });
+}
+function renderAccessDashboard(){
+  const rows=accessFiltered();
+  const started=new Set(),finished=new Set();
+  ACCESS_PART.forEach(x=>{
+    const k=accessPair(x.email_institucional,x.simulador);
+    if(x.evento==="inicio"||x.evento==="reanudacion"||x.evento==="avance"||String(x.evento||"").startsWith("test_"))started.add(k);
+    if(x.evento==="finalizacion"||x.estado==="Finalizado")finished.add(k);
+  });
+  const pairs=new Set(rows.map(x=>accessPair(x.email,x.modulo)));
+  const users=new Set(rows.map(x=>String(x.email||"").toLowerCase()).filter(Boolean));
+  const studentUsers=new Set(rows.filter(x=>x.tipo_usuario==="estudiante").map(x=>x.email));
+  const teacherUsers=new Set(rows.filter(x=>x.tipo_usuario==="docente").map(x=>x.email));
+  const startedPairs=[...pairs].filter(k=>started.has(k));
+  const finishedPairs=[...pairs].filter(k=>finished.has(k));
+  $("accTotal").textContent=rows.length;
+  $("accUsers").textContent=users.size;
+  $("accStudents").textContent=studentUsers.size;
+  $("accTeachers").textContent=teacherUsers.size;
+  $("accStarted").textContent=startedPairs.length;
+  $("accFinished").textContent=finishedPairs.length;
+  $("accNoStart").textContent=Math.max(0,pairs.size-startedPairs.length);
+  $("accStartRate").textContent=pairs.size?Math.round(startedPairs.length/pairs.size*100)+"%":"0%";
+
+  const mods=[...new Set(rows.map(x=>x.modulo).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"es"));
+  const sel=$("accModulo"),cur=sel.value;
+  sel.innerHTML='<option value="">Todos</option>'+mods.map(x=>`<option>${esc(x)}</option>`).join("");
+  if(mods.includes(cur))sel.value=cur;
+
+  const by={};
+  rows.forEach(x=>{
+    const m=x.modulo||"Sin módulo";
+    if(!by[m])by[m]={access:0,users:new Set(),pairs:new Set()};
+    by[m].access++;by[m].users.add(x.email);by[m].pairs.add(accessPair(x.email,m));
+  });
+  $("accModuleBody").innerHTML=Object.entries(by).length?Object.entries(by).sort((a,b)=>b[1].access-a[1].access).map(([m,v])=>{
+    const st=[...v.pairs].filter(k=>started.has(k)).length;
+    const fi=[...v.pairs].filter(k=>finished.has(k)).length;
+    const r1=v.pairs.size?Math.round(st/v.pairs.size*100):0;
+    const r2=st?Math.round(fi/st*100):0;
+    return `<tr><td>${esc(m)}</td><td>${v.access}</td><td>${v.users.size}</td><td>${st}</td><td>${fi}</td><td>${r1}%</td><td>${r2}%</td></tr>`;
+  }).join(""):'<tr><td colspan="7">Sin datos</td></tr>';
+
+  $("accDetailBody").innerHTML=rows.length?rows.slice(0,500).map(x=>{
+    const k=accessPair(x.email,x.modulo);
+    return `<tr><td>${dateCL(x.fecha)}</td><td>${esc(x.email)}</td><td>${esc(x.tipo_usuario)}</td><td>${esc(x.modulo)}</td><td>${started.has(k)?"Sí":"No"}</td><td>${finished.has(k)?"Sí":"No"}</td></tr>`;
+  }).join(""):'<tr><td colspan="6">Sin datos</td></tr>';
+
+  $("accStatus").textContent=`${rows.length} acceso(s) · ${users.size} usuario(s) único(s) · ${pairs.size} combinación(es) usuario/módulo.`;
+}
+async function loadAccessDashboard(){
+  $("accStatus").className="notice";$("accStatus").textContent="Cargando accesos...";
+  try{
+    const headers={"apikey":ANON_KEY,"Authorization":"Bearer "+TOKEN,"Content-Type":"application/json"};
+    const [ra,rp]=await Promise.all([
+      fetch(SUPABASE_URL+"/rest/v1/rpc/reporte_accesos_csd",{method:"POST",headers,body:"{}"}),
+      fetch(SUPABASE_URL+"/rest/v1/rpc/reporte_participacion_email_csd",{method:"POST",headers,body:"{}"})
+    ]);
+    if(!ra.ok)throw new Error("Accesos: "+ra.status+" · "+await ra.text());
+    if(!rp.ok)throw new Error("Participación por email: "+rp.status+" · "+await rp.text());
+    ACCESS_DATA=await ra.json();
+    ACCESS_PART=await rp.json();
+    renderAccessDashboard();
+  }catch(e){
+    console.error(e);$("accStatus").className="notice bad";$("accStatus").textContent=e.message;
+  }
+}
+function downloadAccessCSV(){
+  const rows=accessFiltered();
+  const started=new Set(),finished=new Set();
+  ACCESS_PART.forEach(x=>{const k=accessPair(x.email_institucional,x.simulador);if(x.evento==="inicio"||x.evento==="reanudacion"||x.evento==="avance"||String(x.evento||"").startsWith("test_"))started.add(k);if(x.evento==="finalizacion"||x.estado==="Finalizado")finished.add(k)});
+  const out=[["Fecha","Email","Perfil","Modulo","Inicio actividad","Finalizo"]];
+  rows.forEach(x=>{const k=accessPair(x.email,x.modulo);out.push([x.fecha,x.email,x.tipo_usuario,x.modulo,started.has(k)?"Si":"No",finished.has(k)?"Si":"No"])});
+  const csv="\ufeff"+out.map(r=>r.map(v=>`"${String(v??"").replaceAll('"','""')}"`).join(";")).join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download="CSD_IPG_accesos.csv";a.click();URL.revokeObjectURL(a.href);
+}
+
 async function loadAllData(){
   await loadData();
+  await loadAccessDashboard();
   await loadRepositorioDashboard();
 }
 
 $("loginBtn").onclick=login;$("refreshBtn").onclick=loadAllData;$("csvBtn").onclick=downloadCSV;$("logoutBtn").onclick=logout;
+
+["accDesde","accHasta","accPerfil","accModulo"].forEach(id=>$(id).addEventListener("change",renderAccessDashboard));
+$("accEmail").addEventListener("input",renderAccessDashboard);
+$("accCsv").onclick=downloadAccessCSV;
 $("repoDetalleCsv").onclick=downloadRepositorioDetalle;
 $("repoUsuariosCsv").onclick=downloadRepositorioUsuarios;
 ["repoDesde","repoHasta","repoPerfil"].forEach(id=>$(id).addEventListener("change",renderRepoUsers));
