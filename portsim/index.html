@@ -15,7 +15,41 @@
 .ipg-exitbar .ipg-note{display:block;width:100%;font-size:11px;color:#64748b}
 @media(max-width:700px){.ipg-exitbar{position:sticky;top:0;right:auto;margin:0;max-width:none;border-radius:0}}
 
-</style></head><body>
+
+/* ===== CSD IPG · acceso institucional ===== */
+body:not(.ipg-auth-ok)>*:not(#ipgAuthGate){display:none!important}
+#ipgAuthGate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px;background:linear-gradient(135deg,#f4f8fb,#edf5f3);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body.ipg-auth-ok #ipgAuthGate{display:none!important}
+.ipg-auth-card{width:min(520px,100%);background:#fff;border:1px solid #dce5ed;border-radius:18px;padding:24px;box-shadow:0 18px 50px #10233e18;color:#17324d}
+.ipg-auth-brand{font-size:13px;font-weight:800;letter-spacing:.04em;color:#0f766e;margin-bottom:8px}
+.ipg-auth-card h1{font-size:26px;margin:0 0 8px}
+.ipg-auth-card p{color:#64748b;line-height:1.5}
+.ipg-auth-grid{display:grid;gap:12px;margin-top:16px}
+.ipg-auth-grid label{font-size:13px;font-weight:800}
+.ipg-auth-grid input{width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid #dce5ed;border-radius:9px;font:inherit}
+.ipg-auth-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.ipg-auth-actions button{border:0;border-radius:9px;padding:10px 13px;font-weight:800;cursor:pointer}
+.ipg-auth-primary{background:#0f766e;color:#fff}
+.ipg-auth-secondary{background:#edf2f6;color:#31475f}
+#ipgAuthMsg{margin-top:12px;padding:10px 12px;border-radius:9px;background:#f7fafc;color:#425466;font-size:13px}
+#ipgAuthMsg.err{background:#fff3f3;color:#9b2c2c}
+#ipgAuthMsg.ok{background:#eefaf4;color:#176b45}
+</style></head><body><div id="ipgAuthGate">
+<div class="ipg-auth-card">
+<div class="ipg-auth-brand">IPG · CENTRO DE SIMULACIÓN DIGITAL</div>
+<h1>IPG PORTSIM</h1>
+<p>Ingresa con tu cuenta institucional para acceder al módulo y registrar tu participación.</p>
+<div class="ipg-auth-grid">
+<div><label>Correo institucional</label><input id="ipgAuthEmail" type="email" autocomplete="username" placeholder="nombre@alumnos.ipg.cl"></div>
+<div><label>Contraseña</label><input id="ipgAuthPassword" type="password" autocomplete="current-password" placeholder="Contraseña"></div>
+</div>
+<div class="ipg-auth-actions">
+<button class="ipg-auth-primary" id="ipgAuthLogin">Ingresar</button>
+<button class="ipg-auth-secondary" id="ipgAuthSignup">Crear acceso institucional</button>
+<button class="ipg-auth-secondary" id="ipgAuthPortal">Volver al CSD</button>
+</div>
+<div id="ipgAuthMsg">Acceso permitido para cuentas @alumnos.ipg.cl, @docentes.ipg.cl, @ipg.cl y perfiles Escuela autorizados.</div>
+</div></div>
 
 <div class="ipg-exitbar">
   <button class="ipg-back" id="ipgBackPortal">← Guardar y volver al portal</button>
@@ -69,7 +103,7 @@ async function ipgTraceSync(evento,estado){
  const row={session_id:ipgTrace.sessionId,evento,nombre:m.nombre||null,rut_id:m.studentId,carrera:m.carrera||null,seccion:m.seccion||null,docente:m.docente||null,simulador:IPG_TRACE_SIM,actividad:m.actividad||null,estado,avance:ipgTraceAdvance(),puntaje:ipgTraceScore(),intentos:null,tiempo_segundos:ipgTraceTime(),unidad_1:null,unidad_2:null,unidad_3:null};
  ipgTraceStatus("enviando "+evento+"...");
  try{
-   const r=await fetch(IPG_TRACE_URL+"/rest/v1/participaciones",{method:"POST",headers:{"Content-Type":"application/json","apikey":IPG_TRACE_ANON,"Authorization":"Bearer "+IPG_TRACE_ANON,"Prefer":"return=minimal"},body:JSON.stringify(row)});
+   const r=await fetch(IPG_TRACE_URL+"/rest/v1/participaciones",{method:"POST",headers:{"Content-Type":"application/json","apikey":IPG_TRACE_ANON,"Authorization":"Bearer "+(ipgAccessToken()||IPG_TRACE_ANON),"Prefer":"return=minimal"},body:JSON.stringify(row)});
    if(!r.ok)throw new Error("HTTP "+r.status+" "+await r.text());
    ipgTrace.lastSync=new Date().toISOString();
    if(evento==="finalizacion")ipgTrace.finished=true;
@@ -130,7 +164,7 @@ async function ipgPostFinalSnapshot(){
   ipgTrace.finished=true;ipgTrace.paused=false;localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
   try{
     ipgTraceStatus("cerrando sesión...");
-    const send=fetch(IPG_TRACE_URL+"/rest/v1/participaciones",{method:"POST",headers:{"Content-Type":"application/json","apikey":IPG_TRACE_ANON,"Authorization":"Bearer "+IPG_TRACE_ANON,"Prefer":"return=minimal"},body:JSON.stringify(row)});
+    const send=fetch(IPG_TRACE_URL+"/rest/v1/participaciones",{method:"POST",headers:{"Content-Type":"application/json","apikey":IPG_TRACE_ANON,"Authorization":"Bearer "+(ipgAccessToken()||IPG_TRACE_ANON),"Prefer":"return=minimal"},body:JSON.stringify(row)});
     const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error("timeout")),2500));
     const r=await Promise.race([send,timeout]); if(r&&!r.ok)throw new Error("HTTP "+r.status);
     ipgTraceStatus("sesión finalizada.");
@@ -150,5 +184,37 @@ document.getElementById("ipgFinishPortal")?.addEventListener("click",async(e)=>{
   if(btn.dataset.confirmed!=="1"){btn.dataset.confirmed="1";btn.textContent="Confirmar finalización";setTimeout(()=>{if(btn.dataset.confirmed==="1"){btn.dataset.confirmed="0";btn.textContent="Finalizar y volver al portal"}},5000);return}
   btn.disabled=true;btn.textContent="Finalizando...";await ipgGoPortal(true)
 });
+
+
+const IPG_AUTH_URL="https://uegxxazgqvjjqnmpodln.supabase.co";
+const IPG_AUTH_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlZ3h4YXpncXZqanFubXBvZGxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTMxMDksImV4cCI6MjEwNjI2OTEwOX0.93hHsgPuCrPWZma29meYK2w5EDBff4tv80aUky4v_UQ";
+const IPG_AUTH_KEY="ipg_csd_auth_v1";
+function ipgGetAuth(){try{return JSON.parse(localStorage.getItem(IPG_AUTH_KEY)||"null")}catch(e){return null}}
+function ipgSetAuth(v){if(v)localStorage.setItem(IPG_AUTH_KEY,JSON.stringify(v));else localStorage.removeItem(IPG_AUTH_KEY)}
+function ipgAccessToken(){return ipgGetAuth()?.access_token||""}
+function ipgInstitutional(email){email=(email||"").trim().toLowerCase();return email.endsWith("@alumnos.ipg.cl")||email.endsWith("@docentes.ipg.cl")||email.endsWith("@ipg.cl")}
+async function ipgRole(uid,token){
+ try{const r=await fetch(IPG_AUTH_URL+"/rest/v1/perfiles_csd?select=rol&user_id=eq."+encodeURIComponent(uid),{headers:{"apikey":IPG_AUTH_ANON,"Authorization":"Bearer "+token}});if(!r.ok)return "";const a=await r.json();return a?.[0]?.rol||""}catch(e){return ""}
+}
+function ipgAuthMsg(t,c=""){const x=document.getElementById("ipgAuthMsg");if(x){x.className=c;x.textContent=t}}
+async function ipgValidateStored(){
+ const a=ipgGetAuth();if(!a?.access_token)return false;
+ try{const r=await fetch(IPG_AUTH_URL+"/auth/v1/user",{headers:{"apikey":IPG_AUTH_ANON,"Authorization":"Bearer "+a.access_token}});if(!r.ok){ipgSetAuth(null);return false}const u=await r.json(),role=await ipgRole(u.id,a.access_token);if(!ipgInstitutional(u.email)&&role!=="escuela"){ipgSetAuth(null);return false}a.user=u;a.role=role;ipgSetAuth(a);document.body.classList.add("ipg-auth-ok");return true}catch(e){return false}
+}
+document.getElementById("ipgAuthPortal")?.addEventListener("click",()=>location.href="../");
+document.getElementById("ipgAuthLogin")?.addEventListener("click",async()=>{
+ const email=document.getElementById("ipgAuthEmail").value.trim().toLowerCase(),password=document.getElementById("ipgAuthPassword").value;
+ if(!email||!password)return ipgAuthMsg("Completa correo y contraseña.","err");
+ ipgAuthMsg("Validando acceso...");
+ try{const r=await fetch(IPG_AUTH_URL+"/auth/v1/token?grant_type=password",{method:"POST",headers:{"apikey":IPG_AUTH_ANON,"Content-Type":"application/json"},body:JSON.stringify({email,password})});const d=await r.json();if(!r.ok)return ipgAuthMsg(d?.msg||d?.error_description||"No fue posible iniciar sesión.","err");const role=await ipgRole(d.user.id,d.access_token);if(!ipgInstitutional(d.user.email)&&role!=="escuela"){ipgSetAuth(null);return ipgAuthMsg("Cuenta no autorizada para el CSD.","err")}ipgSetAuth({...d,role});document.body.classList.add("ipg-auth-ok");ipgAuthMsg("Acceso correcto.","ok")}catch(e){ipgAuthMsg("No fue posible conectar con el servicio de acceso.","err")}
+});
+document.getElementById("ipgAuthSignup")?.addEventListener("click",async()=>{
+ const email=document.getElementById("ipgAuthEmail").value.trim().toLowerCase(),password=document.getElementById("ipgAuthPassword").value;
+ if(!ipgInstitutional(email))return ipgAuthMsg("Usa un correo @alumnos.ipg.cl, @docentes.ipg.cl o @ipg.cl.","err");
+ if(password.length<6)return ipgAuthMsg("La contraseña debe tener al menos 6 caracteres.","err");
+ ipgAuthMsg("Creando acceso institucional...");
+ try{const r=await fetch(IPG_AUTH_URL+"/auth/v1/signup",{method:"POST",headers:{"apikey":IPG_AUTH_ANON,"Content-Type":"application/json"},body:JSON.stringify({email,password})});const d=await r.json();if(!r.ok)return ipgAuthMsg(d?.msg||d?.error_description||"No fue posible crear el acceso.","err");if(d.access_token){ipgSetAuth(d);document.body.classList.add("ipg-auth-ok");ipgAuthMsg("Cuenta creada e ingreso realizado.","ok")}else ipgAuthMsg("Cuenta creada. Revisa tu correo institucional para confirmar el acceso.","ok")}catch(e){ipgAuthMsg("No fue posible crear el acceso.","err")}
+});
+ipgValidateStored();
 
 </script></body></html>
