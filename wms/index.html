@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>IPG WMS Simulator V2</title>
+<title>IPG WMS Simulator V3.6</title>
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--text:#17202a;--muted:#667085;--line:#dfe3e8;--accent:#174a78;--accent2:#0d3658;--ok:#207a45;--warn:#a15c00;--bad:#a12a2a;--soft:#eef4f8}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text)}
@@ -48,21 +48,25 @@ main{padding:20px;max-width:1320px;width:100%;margin:auto}.grid{display:grid;gri
 .ipg-guide-box{background:#f8fbfd;border:1px solid #e3ebf1;border-radius:10px;padding:12px}
 .ipg-guide-box b{color:#17324d}
 @media(max-width:760px){.ipg-guide-grid{grid-template-columns:1fr}}
+
+#ipgMainToolbar{display:none}
+body.ipg-session-open #ipgMainToolbar{display:flex}
 </style>
 </head>
 <body>
 
-<div class="ipg-exitbar">
-  <button class="ipg-back" id="ipgEvidenceTop">Ver evidencia</button>
+<div class="ipg-exitbar" id="ipgMainToolbar">
+  <button class="ipg-back" id="ipgPanelTop">Panel</button>
+  <button class="ipg-back" id="ipgEvidenceTop">Evidencia</button>
   <button class="ipg-back" id="ipgBackPortal">Guardar y volver al portal</button>
   <button class="ipg-finish" id="ipgFinishPortal">Finalizar y volver al portal</button>
-  <span class="ipg-note">Guardar y volver detiene el tiempo y permite reanudar después.</span>
+  <span class="ipg-note">Guardar y volver detiene el cronómetro y conserva tu avance.</span>
 </div>
 
 <div id="loginScreen">
   <div id="loginCard">
     <div class="brand">IPG · CENTRO DE SIMULACIÓN DIGITAL</div>
-    <h1>IPG WMS Simulator V2</h1>
+    <h1>IPG WMS Simulator V3.6</h1>
     <p class="muted">Versión académica trazable · identifica al estudiante, registra acciones y genera evidencia final.</p>
     <div class="info"><b>Privacidad:</b> esta versión funciona sin servidor. Los datos se guardan solo en este navegador y pueden exportarse como evidencia.</div>
     <div class="row2" style="margin-top:14px">
@@ -84,7 +88,7 @@ main{padding:20px;max-width:1320px;width:100%;margin:auto}.grid{display:grid;gri
 <div id="simApp" class="hidden">
 <header>
   <div class="headrow">
-    <div><h1>IPG WMS Simulator V2</h1><p>Recepción → Inventario → Picking → Packing → Despacho → Evidencia</p></div>
+    <div><h1>IPG WMS Simulator V3.6</h1><p>Recepción → Inventario → Picking → Packing → Despacho → Evidencia</p></div>
     <div class="headmeta" id="headerMeta"></div>
   </div>
 </header>
@@ -167,11 +171,11 @@ function startTimer(){clearInterval(timerHandle);timerHandle=setInterval(()=>{if
 function sessionMetaFromForm(){return {name:document.getElementById('loginName').value.trim(),studentId:document.getElementById('loginId').value.trim(),career:document.getElementById('loginCareer').value.trim(),section:document.getElementById('loginSection').value.trim(),activity:document.getElementById('loginActivity').value.trim(),teacher:document.getElementById('loginTeacher').value.trim()}}
 function startSession(){const meta=sessionMetaFromForm();if(!meta.name||!meta.studentId||!meta.career||!meta.section||!meta.activity){alert('Completa los campos obligatorios.');return}state={...clone(seed),meta,startedAt:new Date().toISOString(),finishedAt:null,elapsed:0,lastStarted:Date.now(),running:true,version:VERSION};log('Inicio','Sesión académica iniciada');persist(false);enterApp()}
 function resumeSession(){const raw=localStorage.getItem(STORAGE);if(!raw){alert('No existe una sesión guardada en este navegador.');return}try{state=JSON.parse(raw);if(!state.finishedAt){state.running=true;state.lastStarted=Date.now()}enterApp()}catch(e){alert('No se pudo recuperar la sesión guardada.')}}
-function enterApp(){document.getElementById('loginScreen').classList.add('hidden');document.getElementById('simApp').classList.remove('hidden');nav();renderAll();show('dashboard');startTimer();}
+function enterApp(){document.body.classList.add('ipg-session-open');document.getElementById('loginScreen').classList.add('hidden');document.getElementById('simApp').classList.remove('hidden');nav();renderAll();show('dashboard');startTimer();}
 function pauseClock(){if(state&&state.running){state.elapsed=elapsedSeconds();state.running=false;state.lastStarted=null}}
 function persist(render=true){if(!state)return;localStorage.setItem(STORAGE,JSON.stringify(state));if(render)renderAll();}
 function save(){persist(true)}
-function newSession(){if(!confirm('¿Cerrar esta sesión e iniciar una nueva? La evidencia actual puede exportarse antes.'))return;pauseClock();persist(false);document.getElementById('simApp').classList.add('hidden');document.getElementById('loginScreen').classList.remove('hidden');}
+function newSession(){if(!confirm('¿Cerrar esta sesión e iniciar una nueva? La evidencia actual puede exportarse antes.'))return;pauseClock();persist(false);document.body.classList.remove('ipg-session-open');document.getElementById('simApp').classList.add('hidden');document.getElementById('loginScreen').classList.remove('hidden');}
 function resetOps(){if(confirm('¿Restablecer operaciones manteniendo la identificación del estudiante?')){const meta=state.meta,started=state.startedAt;state={...clone(seed),meta,startedAt:started,finishedAt:null,elapsed:elapsedSeconds(),lastStarted:Date.now(),running:true,version:VERSION};log('Reinicio','Operaciones restablecidas por el usuario');save()}}
 function nav(){document.getElementById('nav').innerHTML=menu.map(([id,n])=>`<button data-view="${id}">${n}</button>`).join('')+`<hr style="border:0;border-top:1px solid #edf0f3;margin:10px 0">
 <button class="secondary" onclick="resetOps()">Reiniciar ejercicio</button>
@@ -202,16 +206,13 @@ function renderCases(){document.getElementById('cases').innerHTML=`<h2>Casos y c
 function saveNotes(){state.notes=document.getElementById('caseNotes').value.trim();log('Evidencia','Respuesta de contingencia actualizada');save();alert('Respuesta guardada en la evidencia final.')}
 function triggerCase(type){let html='';state.caseCompleted=(state.caseCompleted||0)+1;if(type==='stock'){let p=prod('SKU-003');html=`<div class="alert"><b>Solicitud adicional:</b> 20 unidades de ${p.name}. Stock actual: ${p.stock}. ¿Hay disponibilidad? Si no, identifica la OC asociada.</div>`}if(type==='reception'){html=`<div class="alert"><b>Evento:</b> OC-1002 llega con 17 unidades. Registra 17 y selecciona “Con diferencia”.</div>`}if(type==='priority'){let o=state.orders.find(x=>x.id==='PED-2003');if(o)o.priority='Alta';html=`<div class="alert"><b>Evento aplicado:</b> PED-2003 ahora es prioridad Alta. Revisa Picking.</div>`}if(type==='audit'){let p=prod('SKU-002');html=`<div class="alert"><b>Conteo físico:</b> SKU-002 registra ${Math.max(0,p.stock-2)} unidades, mientras el sistema informa ${p.stock}. Determina la diferencia.</div>`}log('Contingencia',`Caso activado: ${type}`);save();document.getElementById('caseResult').innerHTML=html}
 function scoreClass(){return state.score>=70?'complete':state.score>=40?'incomplete':''}
-function renderReport(){updateHeader();const recv=state.purchaseOrders.filter(x=>x.status==='Recibida').length,shipped=state.orders.filter(x=>x.status==='Despachado').length,comp=completion();document.getElementById('report').innerHTML=`<div class="section-title report-actions no-print"><div><h2>Evidencia de aprendizaje</h2><div class="muted">Reporte generado desde la bitácora del simulador.</div></div><div class="actions">
-<button class="btn outline" onclick="show('dashboard')">← Volver al panel</button>
-<button class="btn secondary" onclick="window.print()">Guardar PDF</button>
-<button class="btn secondary" onclick="downloadCSV()">Descargar CSV</button>
-<button class="btn outline" onclick="downloadJSON()">Respaldo JSON</button>
-</div></div><div class="report-sheet" style="margin-top:14px"><div class="report-head"><div><div class="brand">IPG · CENTRO DE SIMULACIÓN DIGITAL</div><div class="report-title">Reporte WMS · ${esc(state.meta.activity)}</div><div class="muted">Versión ${VERSION}</div></div><div class="report-meta"><b>${esc(state.meta.name)}</b><br>ID: ${esc(state.meta.studentId)}<br>${esc(state.meta.career)} · ${esc(state.meta.section)}<br>Docente: ${esc(state.meta.teacher||'—')}</div></div><div class="report-grid"><div class="report-kpi ${scoreClass()}"><span class="muted">Puntaje</span><b>${state.score}</b></div><div class="report-kpi"><span class="muted">Errores</span><b>${state.errors}</b></div><div class="report-kpi"><span class="muted">Avance</span><b>${comp}%</b></div><div class="report-kpi"><span class="muted">Tiempo</span><b>${formatDuration(elapsedSeconds())}</b></div></div><div class="grid"><div class="span-6"><h3>Resumen operacional</h3><table><tr><th>Indicador</th><th>Resultado</th></tr><tr><td>OC recepcionadas</td><td>${recv}/${state.purchaseOrders.length}</td></tr><tr><td>Pedidos despachados</td><td>${shipped}/${state.orders.length}</td></tr><tr><td>Contingencias activadas</td><td>${state.caseCompleted||0}</td></tr><tr><td>Inicio</td><td>${new Date(state.startedAt).toLocaleString('es-CL')}</td></tr><tr><td>Finalización</td><td>${state.finishedAt?new Date(state.finishedAt).toLocaleString('es-CL'):'En curso'}</td></tr></table></div><div class="span-6"><h3>Respuesta a contingencia</h3><div class="card" style="box-shadow:none;min-height:130px">${state.notes?esc(state.notes):'<span class="muted">Sin respuesta registrada.</span>'}</div></div><div class="span-12"><h3>Bitácora de acciones</h3><div class="table-wrap"><table><thead><tr><th>Fecha/hora</th><th>Tiempo</th><th>Tipo</th><th>Acción</th><th>Puntos</th></tr></thead><tbody>${state.logs.slice().reverse().map(l=>`<tr><td>${esc(l.display)}</td><td>${formatDuration(l.elapsed)}</td><td>${esc(l.type)}</td><td>${esc(l.msg)}</td><td>${l.points||0}</td></tr>`).join('')}</tbody></table></div></div></div><div class="footer-note">Documento generado automáticamente por IPG WMS Simulator V2. Los datos provienen de la sesión almacenada en el navegador del estudiante.</div></div>`}
+function renderReport(){updateHeader();const recv=state.purchaseOrders.filter(x=>x.status==='Recibida').length,shipped=state.orders.filter(x=>x.status==='Despachado').length,comp=completion();document.getElementById('report').innerHTML=`<div class="section-title report-actions no-print">
+<div><h2>Evidencia de aprendizaje</h2><div class="muted">Reporte generado desde la bitácora del simulador. Usa la botonera superior para volver al Panel o cerrar tu sesión.</div></div>
+</div><div class="report-sheet" style="margin-top:14px"><div class="report-head"><div><div class="brand">IPG · CENTRO DE SIMULACIÓN DIGITAL</div><div class="report-title">Reporte WMS · ${esc(state.meta.activity)}</div><div class="muted">Versión ${VERSION}</div></div><div class="report-meta"><b>${esc(state.meta.name)}</b><br>ID: ${esc(state.meta.studentId)}<br>${esc(state.meta.career)} · ${esc(state.meta.section)}<br>Docente: ${esc(state.meta.teacher||'—')}</div></div><div class="report-grid"><div class="report-kpi ${scoreClass()}"><span class="muted">Puntaje</span><b>${state.score}</b></div><div class="report-kpi"><span class="muted">Errores</span><b>${state.errors}</b></div><div class="report-kpi"><span class="muted">Avance</span><b>${comp}%</b></div><div class="report-kpi"><span class="muted">Tiempo</span><b>${formatDuration(elapsedSeconds())}</b></div></div><div class="grid"><div class="span-6"><h3>Resumen operacional</h3><table><tr><th>Indicador</th><th>Resultado</th></tr><tr><td>OC recepcionadas</td><td>${recv}/${state.purchaseOrders.length}</td></tr><tr><td>Pedidos despachados</td><td>${shipped}/${state.orders.length}</td></tr><tr><td>Contingencias activadas</td><td>${state.caseCompleted||0}</td></tr><tr><td>Inicio</td><td>${new Date(state.startedAt).toLocaleString('es-CL')}</td></tr><tr><td>Finalización</td><td>${state.finishedAt?new Date(state.finishedAt).toLocaleString('es-CL'):'En curso'}</td></tr></table></div><div class="span-6"><h3>Respuesta a contingencia</h3><div class="card" style="box-shadow:none;min-height:130px">${state.notes?esc(state.notes):'<span class="muted">Sin respuesta registrada.</span>'}</div></div><div class="span-12"><h3>Bitácora de acciones</h3><div class="table-wrap"><table><thead><tr><th>Fecha/hora</th><th>Tiempo</th><th>Tipo</th><th>Acción</th><th>Puntos</th></tr></thead><tbody>${state.logs.slice().reverse().map(l=>`<tr><td>${esc(l.display)}</td><td>${formatDuration(l.elapsed)}</td><td>${esc(l.type)}</td><td>${esc(l.msg)}</td><td>${l.points||0}</td></tr>`).join('')}</tbody></table></div></div></div><div class="footer-note">Documento generado automáticamente por IPG WMS Simulator V3.6. Los datos provienen de la sesión almacenada en el navegador del estudiante.</div></div>`}
 function finishSession(){if(!state.finishedAt){pauseClock();state.finishedAt=new Date().toISOString();log('Cierre','Actividad finalizada por el estudiante');persist(false)}renderReport();updateHeader()}
 function finishAndPrint(){window.print()}
 function csvCell(v){return '"'+String(v??'').replace(/"/g,'""')+'"'}
-function downloadCSV(){const rows=[['IPG WMS Simulator V2'],['Estudiante',state.meta.name],['ID',state.meta.studentId],['Carrera',state.meta.career],['Sección',state.meta.section],['Actividad',state.meta.activity],['Docente',state.meta.teacher],['Puntaje',state.score],['Errores',state.errors],['Avance',completion()+'%'],['Tiempo',formatDuration(elapsedSeconds())],[],['Fecha/Hora','Tiempo','Tipo','Acción','Puntos','Error']];state.logs.slice().reverse().forEach(l=>rows.push([l.display,formatDuration(l.elapsed),l.type,l.msg,l.points||0,l.error?'Sí':'No']));const csv='\ufeff'+rows.map(r=>r.map(csvCell).join(';')).join('\n');downloadBlob(csv,`WMS_${safeName(state.meta.studentId)}_${safeName(state.meta.activity)}.csv`,'text/csv;charset=utf-8')}
+function downloadCSV(){const rows=[['IPG WMS Simulator V3.6'],['Estudiante',state.meta.name],['ID',state.meta.studentId],['Carrera',state.meta.career],['Sección',state.meta.section],['Actividad',state.meta.activity],['Docente',state.meta.teacher],['Puntaje',state.score],['Errores',state.errors],['Avance',completion()+'%'],['Tiempo',formatDuration(elapsedSeconds())],[],['Fecha/Hora','Tiempo','Tipo','Acción','Puntos','Error']];state.logs.slice().reverse().forEach(l=>rows.push([l.display,formatDuration(l.elapsed),l.type,l.msg,l.points||0,l.error?'Sí':'No']));const csv='\ufeff'+rows.map(r=>r.map(csvCell).join(';')).join('\n');downloadBlob(csv,`WMS_${safeName(state.meta.studentId)}_${safeName(state.meta.activity)}.csv`,'text/csv;charset=utf-8')}
 function downloadJSON(){downloadBlob(JSON.stringify(state,null,2),`WMS_${safeName(state.meta.studentId)}_${safeName(state.meta.activity)}.json`,'application/json')}
 function safeName(s){return String(s||'').replace(/[^a-z0-9_-]/gi,'_')}
 function downloadBlob(content,name,type){const blob=new Blob([content],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},100)}
@@ -323,6 +324,8 @@ document.getElementById("ipgFinishPortal")?.addEventListener("click",async(e)=>{
 
 
 document.getElementById("ipgEvidenceTop")?.addEventListener("click",()=>{show("report")});
+
+document.getElementById("ipgPanelTop")?.addEventListener("click",()=>{show("dashboard")});
 </script>
 <div id="ipgTraceState" style="max-width:1200px;margin:10px auto 18px;padding:10px 14px;border:1px solid #dce5ed;border-radius:10px;background:#f7fafc;font:13px/1.4 system-ui;color:#425466"><b>Registro institucional:</b> <span id="ipgTraceText">listo para iniciar.</span></div></body>
 </html>
