@@ -33,23 +33,6 @@ main{padding:20px;max-width:1320px;width:100%;margin:auto}.grid{display:grid;gri
 @media(max-width:700px){.ipg-exitbar{position:sticky;top:0;right:auto;margin:0;max-width:none;border-radius:0}}
 
 
-.ipg-session-panel{
-  margin:0 0 18px 0;
-  padding:14px;
-  border:1px solid #dce5ed;
-  border-radius:14px;
-  background:#f8fbfd;
-}
-.ipg-session-panel h3{margin:0 0 6px;color:#17324d}
-.ipg-session-panel p{margin:0 0 10px;color:#64748b;font-size:13px}
-.ipg-session-actions{display:flex;gap:8px;flex-wrap:wrap}
-.ipg-session-actions button{
-  border:0;border-radius:8px;padding:10px 13px;font-weight:700;cursor:pointer
-}
-.ipg-session-actions .go-evidence{background:#eef3f7;color:#16324f}
-.ipg-session-actions .save-exit{background:#e8f3f6;color:#0f5f69}
-.ipg-session-actions .finish-exit{background:#0f766e;color:white}
-
 .ipg-student-guide{
   margin:0 0 18px 0;
   padding:16px;
@@ -70,7 +53,8 @@ main{padding:20px;max-width:1320px;width:100%;margin:auto}.grid{display:grid;gri
 <body>
 
 <div class="ipg-exitbar">
-  <button class="ipg-back" id="ipgBackPortal">← Guardar y volver al portal</button>
+  <button class="ipg-back" id="ipgEvidenceTop">Ver evidencia</button>
+  <button class="ipg-back" id="ipgBackPortal">Guardar y volver al portal</button>
   <button class="ipg-finish" id="ipgFinishPortal">Finalizar y volver al portal</button>
   <span class="ipg-note">Guardar y volver detiene el tiempo y permite reanudar después.</span>
 </div>
@@ -135,17 +119,7 @@ main{padding:20px;max-width:1320px;width:100%;margin:auto}.grid{display:grid;gri
   </div>
 </div>
 
-<div class="ipg-session-panel" id="ipgSessionPanel">
-  <h3>Control de sesión</h3>
-  <p>Puedes suspender o finalizar tu actividad en cualquier momento. Guardar y volver detiene el cronómetro y conserva tu avance.</p>
-  <div class="ipg-session-actions">
-    <button class="go-evidence" onclick="show('report')">Ver evidencia</button>
-    <button class="save-exit" onclick="document.getElementById('ipgBackPortal').click()">Guardar y volver al portal</button>
-    <button class="finish-exit" onclick="document.getElementById('ipgFinishPortal').click()">Finalizar y volver al portal</button>
-  </div>
-</div>
-
-  <section id="dashboard" class="view"></section>
+<section id="dashboard" class="view"></section>
   <section id="reception" class="view hidden"></section>
   <section id="inventory" class="view hidden"></section>
   <section id="picking" class="view hidden"></section>
@@ -202,7 +176,7 @@ function resetOps(){if(confirm('¿Restablecer operaciones manteniendo la identif
 function nav(){document.getElementById('nav').innerHTML=menu.map(([id,n])=>`<button data-view="${id}">${n}</button>`).join('')+`<hr style="border:0;border-top:1px solid #edf0f3;margin:10px 0">
 <button class="secondary" onclick="resetOps()">Reiniciar ejercicio</button>
 <button class="danger" onclick="newSession()">Nueva sesión</button>
-<button class="secondary" onclick="document.getElementById('ipgBackPortal').click()">Guardar y volver al portal</button>`;document.querySelectorAll('#nav button[data-view]').forEach(b=>b.onclick=()=>show(b.dataset.view));}
+`;document.querySelectorAll('#nav button[data-view]').forEach(b=>b.onclick=()=>show(b.dataset.view));}
 function show(id){document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===id));if(id==='report')renderReport()}
 function prod(sku){return state.products.find(p=>p.sku===sku)}
 function log(type,msg,points=0,error=false){state.logs.unshift({time:new Date().toISOString(),display:new Date().toLocaleString('es-CL'),elapsed:elapsedSeconds(),type,msg,points,error});state.logs=state.logs.slice(0,200)}
@@ -233,8 +207,6 @@ function renderReport(){updateHeader();const recv=state.purchaseOrders.filter(x=
 <button class="btn secondary" onclick="window.print()">Guardar PDF</button>
 <button class="btn secondary" onclick="downloadCSV()">Descargar CSV</button>
 <button class="btn outline" onclick="downloadJSON()">Respaldo JSON</button>
-<button class="btn outline" onclick="document.getElementById('ipgBackPortal').click()">Guardar y volver al portal</button>
-<button class="btn primary" onclick="document.getElementById('ipgFinishPortal').click()">Finalizar y volver al portal</button>
 </div></div><div class="report-sheet" style="margin-top:14px"><div class="report-head"><div><div class="brand">IPG · CENTRO DE SIMULACIÓN DIGITAL</div><div class="report-title">Reporte WMS · ${esc(state.meta.activity)}</div><div class="muted">Versión ${VERSION}</div></div><div class="report-meta"><b>${esc(state.meta.name)}</b><br>ID: ${esc(state.meta.studentId)}<br>${esc(state.meta.career)} · ${esc(state.meta.section)}<br>Docente: ${esc(state.meta.teacher||'—')}</div></div><div class="report-grid"><div class="report-kpi ${scoreClass()}"><span class="muted">Puntaje</span><b>${state.score}</b></div><div class="report-kpi"><span class="muted">Errores</span><b>${state.errors}</b></div><div class="report-kpi"><span class="muted">Avance</span><b>${comp}%</b></div><div class="report-kpi"><span class="muted">Tiempo</span><b>${formatDuration(elapsedSeconds())}</b></div></div><div class="grid"><div class="span-6"><h3>Resumen operacional</h3><table><tr><th>Indicador</th><th>Resultado</th></tr><tr><td>OC recepcionadas</td><td>${recv}/${state.purchaseOrders.length}</td></tr><tr><td>Pedidos despachados</td><td>${shipped}/${state.orders.length}</td></tr><tr><td>Contingencias activadas</td><td>${state.caseCompleted||0}</td></tr><tr><td>Inicio</td><td>${new Date(state.startedAt).toLocaleString('es-CL')}</td></tr><tr><td>Finalización</td><td>${state.finishedAt?new Date(state.finishedAt).toLocaleString('es-CL'):'En curso'}</td></tr></table></div><div class="span-6"><h3>Respuesta a contingencia</h3><div class="card" style="box-shadow:none;min-height:130px">${state.notes?esc(state.notes):'<span class="muted">Sin respuesta registrada.</span>'}</div></div><div class="span-12"><h3>Bitácora de acciones</h3><div class="table-wrap"><table><thead><tr><th>Fecha/hora</th><th>Tiempo</th><th>Tipo</th><th>Acción</th><th>Puntos</th></tr></thead><tbody>${state.logs.slice().reverse().map(l=>`<tr><td>${esc(l.display)}</td><td>${formatDuration(l.elapsed)}</td><td>${esc(l.type)}</td><td>${esc(l.msg)}</td><td>${l.points||0}</td></tr>`).join('')}</tbody></table></div></div></div><div class="footer-note">Documento generado automáticamente por IPG WMS Simulator V2. Los datos provienen de la sesión almacenada en el navegador del estudiante.</div></div>`}
 function finishSession(){if(!state.finishedAt){pauseClock();state.finishedAt=new Date().toISOString();log('Cierre','Actividad finalizada por el estudiante');persist(false)}renderReport();updateHeader()}
 function finishAndPrint(){window.print()}
@@ -349,6 +321,8 @@ document.getElementById("ipgFinishPortal")?.addEventListener("click",async(e)=>{
   btn.disabled=true;btn.textContent="Finalizando...";await ipgGoPortal(true)
 });
 
+
+document.getElementById("ipgEvidenceTop")?.addEventListener("click",()=>{show("report")});
 </script>
 <div id="ipgTraceState" style="max-width:1200px;margin:10px auto 18px;padding:10px 14px;border:1px solid #dce5ed;border-radius:10px;background:#f7fafc;font:13px/1.4 system-ui;color:#425466"><b>Registro institucional:</b> <span id="ipgTraceText">listo para iniciar.</span></div></body>
 </html>
