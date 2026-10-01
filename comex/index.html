@@ -20,9 +20,29 @@ label{display:block;font-size:12px;font-weight:800;color:#53657a;margin-bottom:5
 .modalBg{position:fixed;inset:0;background:rgba(8,20,34,.66);display:none;z-index:100;align-items:center;justify-content:center;padding:20px}.modalBg.show{display:flex}.modal{width:min(680px,100%);background:#fff;border-radius:18px;padding:24px;max-height:92vh;overflow:auto}.modal h2{color:var(--navy);margin-top:0}.startGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.footerNote{text-align:center;color:#8897a7;font-size:12px;padding:24px 0}
 @media(max-width:1050px){.shell{grid-template-columns:1fr}.side{position:static;display:flex;overflow:auto;gap:4px}.navbtn{white-space:nowrap;width:auto}.sidehr,.back{display:none}.grid{grid-template-columns:1fr 1fr}.heroStats,.kpiGrid{grid-template-columns:repeat(2,1fr)}}@media(max-width:700px){.topin{height:auto;padding:12px 14px;align-items:flex-start}.session{display:none}.shell{padding:12px}.grid,.row,.row3,.docgrid,.startGrid{grid-template-columns:1fr}.wide{grid-column:auto}.hero{padding:24px}.hero h1{font-size:32px}.heroStats,.kpiGrid{grid-template-columns:1fr 1fr}}
 @media print{.top,.side,.actions,.btn,.notice.noPrint{display:none!important}.shell{display:block;padding:0}.page{display:none!important}#evidencia{display:block!important}.card,.hero{box-shadow:none;border:1px solid #ccc}.hero{background:#fff;color:#111}.hero p{color:#444}.footerNote{display:none}}
+
+.ipg-exitbar{
+  position:fixed;top:12px;right:12px;z-index:9999;
+  display:flex;gap:8px;flex-wrap:wrap;max-width:430px;
+  background:rgba(255,255,255,.97);border:1px solid #dce5ed;border-radius:12px;
+  padding:8px;box-shadow:0 6px 18px rgba(0,0,0,.08)
+}
+.ipg-exitbar button{border:0;border-radius:8px;padding:9px 12px;font-weight:700;cursor:pointer}
+.ipg-exitbar .ipg-back{background:#eef3f7;color:#16324f}
+.ipg-exitbar .ipg-finish{background:#0f766e;color:white}
+.ipg-exitbar .ipg-note{display:block;width:100%;font-size:11px;color:#64748b}
+@media(max-width:700px){.ipg-exitbar{position:sticky;top:0;right:auto;margin:0;max-width:none;border-radius:0}}
+
 </style>
 </head>
 <body>
+
+<div class="ipg-exitbar">
+  <button class="ipg-back" id="ipgBackPortal">← Guardar y volver al portal</button>
+  <button class="ipg-finish" id="ipgFinishPortal">Finalizar y volver al portal</button>
+  <span class="ipg-note">Guardar y volver detiene el tiempo y permite reanudar después.</span>
+</div>
+
 <div class="app">
 <header class="top"><div class="topin"><div class="brand"><div class="mark">IPG</div><div><b>IPG COMEX Simulator</b><small>Centro de Simulación Digital · Escuela de Gestión, Negocios y Marítima</small></div></div><div class="session"><span id="studentTop">Sesión no iniciada</span><span>⏱ <b id="timer">00:00:00</b></span><span class="score">Puntaje <span id="scoreTop">0</span>/100</span></div></div></header>
 <div class="shell">
@@ -35,7 +55,7 @@ label{display:block;font-size:12px;font-weight:800;color:#53657a;margin-bottom:5
 <button class="navbtn" data-page="aduana"><span class="n">6</span>Aduana</button>
 <button class="navbtn" data-page="contingencias"><span class="n">7</span>Contingencias</button>
 <button class="navbtn" data-page="evidencia"><span class="n">8</span>Evidencia</button>
-<div class="sidehr"></div><a class="back" href="../">← Volver al portal</a>
+<div class="sidehr"></div>
 </aside>
 <main class="main">
 <section id="inicio" class="page active">
@@ -91,7 +111,7 @@ document.querySelectorAll('.navbtn').forEach(b=>b.addEventListener('click',()=>s
 function openStart(){document.getElementById('startModal').classList.add('show');fillStudent()}
 function closeStart(){document.getElementById('startModal').classList.remove('show')}
 function fillStudent(){stName.value=state.student.name||'';stId.value=state.student.id||'';stCareer.value=state.student.career||'';stSection.value=state.student.section||'';stActivity.value=state.student.activity||'SIM-COMEX01';stTeacher.value=state.student.teacher||''}
-function startSession(){if(!stName.value.trim()||!stId.value.trim()){alert('Completa nombre e ID/RUT para iniciar.');return}state.student={name:stName.value.trim(),id:stId.value.trim(),career:stCareer.value.trim(),section:stSection.value.trim(),activity:stActivity.value.trim(),teacher:stTeacher.value.trim()};if(!state.started){state.started=Date.now();log('Sesión académica iniciada.')}save();startTimer();closeStart()}
+function startSession(){if(!stName.value.trim()||!stId.value.trim()){alert('Completa nombre e ID/RUT para iniciar.');return}state.student={name:stName.value.trim(),id:stId.value.trim(),career:stCareer.value.trim(),section:stSection.value.trim(),activity:stActivity.value.trim(),teacher:stTeacher.value.trim()};if(!state.started){const resuming=Number(state.elapsed||0)>0;state.started=Date.now()-(Number(state.elapsed||0)*1000);log(resuming?'Sesión reanudada.':'Sesión académica iniciada.')}save();startTimer();closeStart()}
 function startTimer(){if(tick)clearInterval(tick);tick=setInterval(()=>{if(state.started){state.elapsed=Math.floor((Date.now()-state.started)/1000);document.getElementById('timer').textContent=formatTime(state.elapsed);document.getElementById('evTime').textContent=formatTime(state.elapsed)}},1000)}
 function formatTime(s){s=Number(s||0);const h=String(Math.floor(s/3600)).padStart(2,'0'),m=String(Math.floor((s%3600)/60)).padStart(2,'0'),sec=String(s%60).padStart(2,'0');return `${h}:${m}:${sec}`}
 function scoreOnce(key,pts,text){if(!state.answers[key]){state.answers[key]=true;state.score=Math.min(100,state.score+pts);if(text)log(text+' +'+pts+' pts','ok');save()}}
@@ -161,8 +181,17 @@ function ipgTraceWatch(){
    if(!b)return;
    const txt=(b.textContent||"").trim().toLowerCase(),id=b.id||"";
    if(id==="reset"||txt.includes("reiniciar")||txt.includes("restablecer")){if(txt.includes("reiniciar"))localStorage.removeItem(IPG_TRACE_KEY);return}
-   if(id==="start"||txt.includes("guardar e iniciar")||txt==="iniciar simulación"){
-     setTimeout(async()=>{if(ipgTraceStarted()){ipgTraceEnsureSession(ipgTrace.finished||false);ipgTraceLastSig=ipgTraceSignature();await ipgTraceSync("inicio","Iniciado")}},250);
+   if(id==="start"||txt.includes("guardar e iniciar")||txt==="iniciar simulación"||txt.includes("continuar sesión guardada")){
+     setTimeout(async()=>{
+       if(ipgTraceStarted()){
+         ipgTraceEnsureSession(ipgTrace.finished||false);
+         ipgTraceLastSig=ipgTraceSignature();
+         const wasPaused=!!ipgTrace.paused;
+         ipgTrace.paused=false;
+         localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
+         await ipgTraceSync(wasPaused?"reanudacion":"inicio",wasPaused?"En progreso":"Iniciado");
+       }
+     },250);
      return
    }
    if(txt.includes("finalizar")||txt.includes("guardar / imprimir pdf"))return;
@@ -174,6 +203,49 @@ async function traceFinalizeAndPrint(ev){if(ev)ev.preventDefault();if(ipgTraceSt
 ipgTraceWatch();
 if(ipgTrace.lastSync)ipgTraceStatus("última sincronización · "+new Date(ipgTrace.lastSync).toLocaleString("es-CL"));
 /* ===== FIN IPG TRAZABILIDAD CENTRAL ===== */
+
+
+function ipgComexCurrentTime(){
+  if(state&&state.started)return Math.max(Number(state.elapsed)||0,Math.floor((Date.now()-state.started)/1000));
+  return Number(state?.elapsed)||0;
+}
+function ipgStopLocalClock(){
+  if(!state)return;
+  state.elapsed=ipgComexCurrentTime();
+  state.started=null;
+  if(tick){clearInterval(tick);tick=null}
+  localStorage.setItem(STORAGE,JSON.stringify(state));
+  try{updateAll()}catch(e){}
+}
+async function ipgPostFinalSnapshot(){
+  const m=ipgTraceMeta();
+  const totalTime=ipgComexCurrentTime(), finalAdvance=ipgTraceAdvance(), finalScore=ipgTraceScore();
+  ipgTraceEnsureSession(false);
+  const row={session_id:ipgTrace.sessionId,evento:"finalizacion",nombre:m.nombre||null,rut_id:m.studentId||null,carrera:m.carrera||null,seccion:m.seccion||null,docente:m.docente||null,simulador:IPG_TRACE_SIM,actividad:m.actividad||null,estado:"Finalizado",avance:finalAdvance,puntaje:finalScore,intentos:null,tiempo_segundos:totalTime,unidad_1:null,unidad_2:null,unidad_3:null};
+  ipgStopLocalClock();
+  ipgTrace.finished=true;ipgTrace.paused=false;localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
+  try{
+    ipgTraceStatus("cerrando sesión...");
+    const send=fetch(IPG_TRACE_URL+"/rest/v1/participaciones",{method:"POST",headers:{"Content-Type":"application/json","apikey":IPG_TRACE_ANON,"Authorization":"Bearer "+IPG_TRACE_ANON,"Prefer":"return=minimal"},body:JSON.stringify(row)});
+    const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error("timeout")),2500));
+    const r=await Promise.race([send,timeout]);if(r&&!r.ok)throw new Error("HTTP "+r.status);
+    ipgTraceStatus("sesión finalizada.");
+  }catch(e){console.error("Cierre central:",e);ipgTraceStatus("sesión cerrada localmente; sincronización pendiente.",true)}
+}
+async function ipgGoPortal(finalize=false){
+  if(finalize){await ipgPostFinalSnapshot();window.location.href="../";return}
+  try{
+    if(ipgTraceStarted()){await ipgTraceSync("suspension","Suspendido");ipgTrace.paused=true;localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace))}
+  }catch(e){console.error("Suspensión:",e)}
+  ipgStopLocalClock();
+  window.location.href="../";
+}
+document.getElementById("ipgBackPortal")?.addEventListener("click",async()=>{await ipgGoPortal(false)});
+document.getElementById("ipgFinishPortal")?.addEventListener("click",async(e)=>{
+  const btn=e.currentTarget;
+  if(btn.dataset.confirmed!=="1"){btn.dataset.confirmed="1";btn.textContent="Confirmar finalización";setTimeout(()=>{if(btn.dataset.confirmed==="1"){btn.dataset.confirmed="0";btn.textContent="Finalizar y volver al portal"}},5000);return}
+  btn.disabled=true;btn.textContent="Finalizando...";await ipgGoPortal(true)
+});
 
 </script>
 <div id="ipgTraceState" style="max-width:1200px;margin:10px auto 18px;padding:10px 14px;border:1px solid #dce5ed;border-radius:10px;background:#f7fafc;font:13px/1.4 system-ui;color:#425466"><b>Registro institucional:</b> <span id="ipgTraceText">listo para iniciar.</span></div></body>
