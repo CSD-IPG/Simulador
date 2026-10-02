@@ -48,16 +48,24 @@ footer{max-width:1380px;margin:auto;padding:0 20px 30px;color:#728197;font-size:
 
 <section class="admin">
 <h2>Acceso institucional</h2>
-<p class="muted">Ingresa con tu correo institucional IPG. Si es tu primer acceso, crea tu cuenta y confirma el correo recibido.</p>
+<p class="muted">Ingresa únicamente tu correo institucional IPG. No se requiere contraseña.</p>
 
 <div id="loginBox">
 <div class="login">
 <input id="email" type="email" placeholder="correo@alumnos.ipg.cl / @docentes.ipg.cl / @ipg.cl">
-<input id="password" type="password" placeholder="Contraseña">
-<button class="btn pri" id="loginBtn">Ingresar</button>
+<button class="btn pri" id="loginBtn">Ingresar al repositorio</button>
 </div>
-<div class="actions"><button class="btn light" id="signupBtn">Crear acceso institucional</button></div>
 <div id="loginMsg" class="notice hidden"></div>
+
+<details style="margin-top:18px">
+<summary style="cursor:pointer;font-weight:700">Administración Escuela</summary>
+<div class="login" style="margin-top:12px">
+<input id="adminEmail" type="email" placeholder="correo administrador @ipg.cl">
+<input id="adminPassword" type="password" placeholder="Contraseña de administración">
+<button class="btn teal" id="adminLoginBtn">Ingresar a administración</button>
+</div>
+<div id="adminLoginMsg" class="notice hidden"></div>
+</details>
 </div>
 
 <div id="adminBox" class="hidden">
@@ -138,7 +146,7 @@ footer{max-width:1380px;margin:auto;padding:0 20px 30px;color:#728197;font-size:
 <script>
 const SUPABASE_URL="https://uegxxazgqvjjqnmpodln.supabase.co";
 const ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlZ3h4YXpncXZqanFubXBvZGxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTMxMDksImV4cCI6MjEwNjI2OTEwOX0.93hHsgPuCrPWZma29meYK2w5EDBff4tv80aUky4v_UQ";
-let accessToken=null, currentUser=null, currentRole='anon', allResources=[];
+let accessToken=null, currentUser=null, currentRole='anon', currentEmail='', allResources=[];
 function roleFromEmail(email){
   const e=String(email||'').trim().toLowerCase();
   if(e.endsWith('@alumnos.ipg.cl')) return 'estudiante';
@@ -172,7 +180,7 @@ function applyRoleUI(){
   }else if(currentRole==='escuela'){
     $('viewBanner').innerHTML='<b>Vista Escuela:</b> acceso completo y administración del repositorio.';
   }
-  const canUpload=['docente','colaborador','escuela'].includes(currentRole);
+  const canUpload=(currentRole==='escuela'&&!!accessToken);
   $('uploadForm').classList.toggle('hidden',!canUpload);
   $('uploadActions').classList.toggle('hidden',!canUpload);
   if(currentRole!=='escuela') $('schoolStats').classList.add('hidden');
@@ -271,10 +279,23 @@ async function loadUsageStats(){
 }
 
 async function loadResources(){
- let url=SUPABASE_URL+'/rest/v1/recursos_academicos_con_descargas?select=*&order=creado_en.desc'; if(currentRole!=='escuela') url+='&estado=eq.activo';
- let r=await fetch(url,{headers:apiHeaders(!!accessToken)});
- if(!r.ok){$('resources').innerHTML='<div class="empty">Aún no se puede consultar el repositorio. Verifica que el SQL de configuración haya sido ejecutado.</div>';return}
- allResources=await r.json(); fillFilters(); render();
+  let rows=[];
+  if(currentRole==='escuela'&&accessToken){
+    let url=SUPABASE_URL+'/rest/v1/recursos_academicos_con_descargas?select=*&order=creado_en.desc';
+    let r=await fetch(url,{headers:apiHeaders(true)});
+    if(!r.ok){$('resources').innerHTML='<div class="empty">No fue posible consultar el repositorio.</div>';return}
+    rows=await r.json();
+  }else{
+    let r=await fetch(SUPABASE_URL+'/rest/v1/rpc/listar_recursos_repositorio_email',{
+      method:'POST',
+      headers:{apikey:ANON_KEY,Authorization:'Bearer '+ANON_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_email:currentEmail})
+    });
+    if(!r.ok){$('resources').innerHTML='<div class="empty">No fue posible consultar el repositorio. Revisa la configuración SQL.</div>';return}
+    rows=await r.json();
+  }
+  allResources=Array.isArray(rows)?rows:[];
+  fillFilters();render();
 }
 
 function fillFilters(){
@@ -322,7 +343,7 @@ function render(){
 window.openResource=async id=>{
  let x=allResources.find(r=>String(r.id)===String(id)); if(!x)return;
  const safePath=String(x.storage_path||'').split('/').map(encodeURIComponent).join('/');
- const endpoint=SUPABASE_URL+'/storage/v1/object/authenticated/recursos-academicos/'+safePath;
+ const endpoint=SUPABASE_URL+'/storage/v1/object/public/recursos-academicos/'+safePath;
  try{
    const rr=await fetch(SUPABASE_URL+'/rest/v1/rpc/registrar_descarga',{
      method:'POST',
@@ -338,7 +359,7 @@ window.openResource=async id=>{
      console.warn('No se pudo registrar contador de descarga:',await rr.text());
    }
 
-   const r=await fetch(endpoint,{method:'GET',headers:apiHeaders(!!accessToken)});
+   const r=await fetch(endpoint,{method:'GET'});
    if(!r.ok){
      const detail=await r.text();
      console.error('Error de descarga:',r.status,detail);
@@ -361,56 +382,55 @@ window.openResource=async id=>{
 
 ['q','careerFilter','subjectFilter','typeFilter','modalityFilter'].forEach(id=>$(id).addEventListener(id==='q'?'input':'change',render));
 
-$('signupBtn').onclick=async()=>{
- let email=$('email').value.trim().toLowerCase(),password=$('password').value;
- if(!roleFromEmail(email))return show('loginMsg','Solo se permiten correos @alumnos.ipg.cl, @docentes.ipg.cl o @ipg.cl.',true);
- if(password.length<8)return show('loginMsg','La contraseña debe tener al menos 8 caracteres.',true);
- let r=await fetch(SUPABASE_URL+'/auth/v1/signup',{
-   method:'POST',
-   headers:{apikey:ANON_KEY,'Content-Type':'application/json'},
-   body:JSON.stringify({email,password})
- });
- if(!r.ok)return show('loginMsg','No fue posible crear el acceso: '+await r.text(),true);
- show('loginMsg','Cuenta creada. Revisa tu correo institucional y confirma la cuenta antes de ingresar.');
-};
+
+async function registrarAccesoRepositorio(email){
+  try{
+    const r=await fetch(SUPABASE_URL+'/rest/v1/rpc/registrar_acceso_csd',{
+      method:'POST',
+      headers:{apikey:ANON_KEY,Authorization:'Bearer '+ANON_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_email:email,p_modulo:'Repositorio Académico',p_session_id:'repo-'+Date.now()})
+    });
+    return r.ok;
+  }catch(e){return false}
+}
 
 $('loginBtn').onclick=async()=>{
- let email=$('email').value.trim().toLowerCase(),password=$('password').value;
- if(!roleFromEmail(email))return show('loginMsg','Este correo no pertenece a un dominio institucional autorizado.',true);
- if(!email||!password)return show('loginMsg','Completa correo y contraseña.',true);
+  const email=$('email').value.trim().toLowerCase();
+  const role=roleFromEmail(email);
+  if(!role)return show('loginMsg','Solo se permiten correos @alumnos.ipg.cl, @docentes.ipg.cl o @ipg.cl.',true);
+  currentEmail=email;currentRole=role;accessToken=null;currentUser={email};
+  localStorage.setItem('ipg_repo_email_v2',email);
+  await registrarAccesoRepositorio(email);
+  $('userLabel').textContent=email+' · '+roleLabel(currentRole);
+  $('loginBox').classList.add('hidden');
+  $('adminBox').classList.remove('hidden');
+  applyRoleUI();
+  await loadResources();
+};
 
- let r=await fetch(SUPABASE_URL+'/auth/v1/token?grant_type=password',{
-   method:'POST',
-   headers:{apikey:ANON_KEY,'Content-Type':'application/json'},
-   body:JSON.stringify({email,password})
- });
- if(!r.ok)return show('loginMsg','No fue posible iniciar sesión. Verifica correo, contraseña y confirmación del email.',true);
-
- let j=await r.json();
- accessToken=j.access_token; currentUser=j.user;
-
- let pr=await fetch(SUPABASE_URL+'/rest/v1/perfiles_csd?select=rol,nombre,activo&user_id=eq.'+currentUser.id,{headers:apiHeaders(true)});
- let rows=pr.ok?await pr.json():[];
- if(!rows.length||!rows[0].activo){
-   accessToken=null;currentUser=null;
-   return show('loginMsg','Tu cuenta no tiene un perfil institucional activo. Si acabas de confirmar el correo, espera unos segundos y vuelve a intentar.',true);
- }
- currentRole=rows[0].rol;
- if(!['estudiante','docente','colaborador','escuela'].includes(currentRole)){
-   accessToken=null;currentUser=null;currentRole='anon';
-   return show('loginMsg','Tu perfil no tiene acceso al Repositorio Académico.',true);
- }
-
- $('userLabel').textContent=(rows[0].nombre||currentUser.email)+' · '+roleLabel(currentRole);
- $('loginBox').classList.add('hidden');
- $('adminBox').classList.remove('hidden');
- applyRoleUI();
- await loadResources();
- if(currentRole==='escuela')await loadUsageStats();
+$('adminLoginBtn').onclick=async()=>{
+  const email=$('adminEmail').value.trim().toLowerCase(),password=$('adminPassword').value;
+  if(!email.endsWith('@ipg.cl')||!password)return show('adminLoginMsg','Completa correo administrador y contraseña.',true);
+  let r=await fetch(SUPABASE_URL+'/auth/v1/token?grant_type=password',{
+    method:'POST',
+    headers:{apikey:ANON_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password})
+  });
+  if(!r.ok)return show('adminLoginMsg','No fue posible iniciar la administración.',true);
+  let j=await r.json();accessToken=j.access_token;currentUser=j.user;currentEmail=email;
+  let pr=await fetch(SUPABASE_URL+'/rest/v1/perfiles_csd?select=rol,nombre,activo&user_id=eq.'+currentUser.id,{headers:apiHeaders(true)});
+  let rows=pr.ok?await pr.json():[];
+  if(!rows.length||!rows[0].activo||rows[0].rol!=='escuela'){
+    accessToken=null;currentUser=null;return show('adminLoginMsg','Este usuario no tiene rol Escuela.',true);
+  }
+  currentRole='escuela';
+  $('userLabel').textContent=(rows[0].nombre||email)+' · Escuela';
+  $('loginBox').classList.add('hidden');$('adminBox').classList.remove('hidden');
+  applyRoleUI();await loadResources();await loadUsageStats();
 };
 
 $('logoutBtn').onclick=()=>{
- accessToken=null;currentUser=null;currentRole='anon';
+ accessToken=null;currentUser=null;currentRole='anon';currentEmail='';localStorage.removeItem('ipg_repo_email_v2');
  $('sessionState').textContent='Sin acceso';
  $('viewBanner').innerHTML='<b>Acceso institucional obligatorio.</b> Inicia sesión con tu correo IPG.';
  $('schoolStats').classList.add('hidden');
@@ -503,6 +523,10 @@ $('deleteEdit').onclick=async()=>{
 };
 
 hideRepositoryUI();
+
+const _repoEmailSaved=localStorage.getItem('ipg_repo_email_v2')||'';
+if(_repoEmailSaved&&$('email'))$('email').value=_repoEmailSaved;
+
 </script>
 </body>
 </html>
