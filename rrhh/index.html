@@ -57,23 +57,18 @@ body.ipg-auth-ok #ipgAuthGate{display:none!important}
 <body><div id="ipgAuthGate">
 <div class="ipg-auth-card">
 <div class="ipg-auth-brand">IPG · CENTRO DE SIMULACIÓN DIGITAL</div>
-<h1>Acceso institucional</h1>
-<p>Ingresa tu correo institucional para acceder al módulo.</p>
+<h1>IPG PEOPLE / RRHH</h1>
+<p>Ingresa con tu cuenta institucional para acceder al módulo y registrar tu participación.</p>
 <div class="ipg-auth-grid">
-<div><label>Correo institucional</label><input id="ipgAuthEmail" type="email" autocomplete="email" placeholder="nombre@alumnos.ipg.cl"></div>
+<div><label>Correo institucional</label><input id="ipgAuthEmail" type="email" autocomplete="username" placeholder="nombre@alumnos.ipg.cl"></div>
+<div><label>Contraseña</label><input id="ipgAuthPassword" type="password" autocomplete="current-password" placeholder="Contraseña"></div>
 </div>
 <div class="ipg-auth-actions">
 <button class="ipg-auth-primary" id="ipgAuthLogin">Ingresar</button>
+<button class="ipg-auth-secondary" id="ipgAuthSignup">Crear acceso institucional</button>
 <button class="ipg-auth-secondary" id="ipgAuthPortal">Volver al CSD</button>
 </div>
-<div id="ipgAuthMsg">Acceso permitido para correos @alumnos.ipg.cl, @docentes.ipg.cl y @ipg.cl.</div>
-</div></div>
-<div class="ipg-auth-actions">
-<button class="ipg-auth-primary" id="ipgAuthLogin">Ingresar</button>
-
-<button class="ipg-auth-secondary" id="ipgAuthPortal">Volver al CSD</button>
-</div>
-<div id="ipgAuthMsg">Acceso permitido para correos @alumnos.ipg.cl, @docentes.ipg.cl y @ipg.cl.</div>
+<div id="ipgAuthMsg">Acceso permitido para cuentas @alumnos.ipg.cl, @docentes.ipg.cl, @ipg.cl y perfiles Escuela autorizados.</div>
 </div></div>
 
 <div class="ipg-exitbar">
@@ -221,11 +216,10 @@ async function ipgTraceSync(evento,estado){
  const m=ipgTraceMeta();
  if(!m.studentId)return false;
  ipgTraceEnsureSession(false);
- const row={session_id:ipgTrace.sessionId,evento,nombre:m.nombre||null,rut_id:m.studentId,
-    email_institucional:(window.IPG_INSTITUTIONAL_EMAIL||null),carrera:m.carrera||null,seccion:m.seccion||null,docente:m.docente||null,simulador:IPG_TRACE_SIM,actividad:m.actividad||null,estado,avance:ipgTraceAdvance(),puntaje:ipgTraceScore(),intentos:null,tiempo_segundos:ipgTraceTime(),unidad_1:null,unidad_2:null,unidad_3:null};
+ const row={session_id:ipgTrace.sessionId,evento,nombre:m.nombre||null,rut_id:m.studentId,carrera:m.carrera||null,seccion:m.seccion||null,docente:m.docente||null,simulador:IPG_TRACE_SIM,actividad:m.actividad||null,estado,avance:ipgTraceAdvance(),puntaje:ipgTraceScore(),intentos:null,tiempo_segundos:ipgTraceTime(),unidad_1:null,unidad_2:null,unidad_3:null};
  ipgTraceStatus("enviando "+evento+"...");
  try{
-   const r=await fetch(IPG_TRACE_URL+"/rest/v1/participaciones",{method:"POST",headers:{"Content-Type":"application/json","apikey":IPG_TRACE_ANON,"Authorization":"Bearer "+IPG_TRACE_ANON,"Prefer":"return=minimal"},body:JSON.stringify(row)});
+   const r=await fetch(IPG_TRACE_URL+"/rest/v1/participaciones",{method:"POST",headers:{"Content-Type":"application/json","apikey":IPG_TRACE_ANON,"Authorization":"Bearer "+(ipgAccessToken()||IPG_TRACE_ANON),"Prefer":"return=minimal"},body:JSON.stringify(row)});
    if(!r.ok)throw new Error("HTTP "+r.status+" "+await r.text());
    ipgTrace.lastSync=new Date().toISOString();
    if(evento==="finalizacion")ipgTrace.finished=true;
@@ -286,7 +280,7 @@ async function ipgPostFinalSnapshot(){
   ipgTrace.finished=true;ipgTrace.paused=false;localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
   try{
     ipgTraceStatus("cerrando sesión...");
-    const send=fetch(IPG_TRACE_URL+"/rest/v1/participaciones",{method:"POST",headers:{"Content-Type":"application/json","apikey":IPG_TRACE_ANON,"Authorization":"Bearer "+IPG_TRACE_ANON,"Prefer":"return=minimal"},body:JSON.stringify(row)});
+    const send=fetch(IPG_TRACE_URL+"/rest/v1/participaciones",{method:"POST",headers:{"Content-Type":"application/json","apikey":IPG_TRACE_ANON,"Authorization":"Bearer "+(ipgAccessToken()||IPG_TRACE_ANON),"Prefer":"return=minimal"},body:JSON.stringify(row)});
     const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error("timeout")),2500));
     const r=await Promise.race([send,timeout]); if(r&&!r.ok)throw new Error("HTTP "+r.status);
     ipgTraceStatus("sesión finalizada.");
@@ -308,69 +302,63 @@ document.getElementById("ipgFinishPortal")?.addEventListener("click",async(e)=>{
 });
 
 
-
-const IPG_AUTH_KEY="ipg_csd_email_access_v1";
-function ipgInstitutional(email){
-  email=(email||"").trim().toLowerCase();
-  return email.endsWith("@alumnos.ipg.cl")||email.endsWith("@docentes.ipg.cl")||email.endsWith("@ipg.cl");
+const IPG_AUTH_URL="https://uegxxazgqvjjqnmpodln.supabase.co";
+const IPG_AUTH_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlZ3h4YXpncXZqanFubXBvZGxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTMxMDksImV4cCI6MjEwNjI2OTEwOX0.93hHsgPuCrPWZma29meYK2w5EDBff4tv80aUky4v_UQ";
+const IPG_AUTH_KEY="ipg_csd_auth_v1";
+function ipgGetAuth(){try{return JSON.parse(localStorage.getItem(IPG_AUTH_KEY)||"null")}catch(e){return null}}
+function ipgSetAuth(v){if(v)localStorage.setItem(IPG_AUTH_KEY,JSON.stringify(v));else localStorage.removeItem(IPG_AUTH_KEY)}
+function ipgAccessToken(){return ipgGetAuth()?.access_token||""}
+function ipgInstitutional(email){email=(email||"").trim().toLowerCase();return email.endsWith("@alumnos.ipg.cl")||email.endsWith("@docentes.ipg.cl")||email.endsWith("@ipg.cl")}
+async function ipgRole(uid,token){
+ try{const r=await fetch(IPG_AUTH_URL+"/rest/v1/perfiles_csd?select=rol&user_id=eq."+encodeURIComponent(uid),{headers:{"apikey":IPG_AUTH_ANON,"Authorization":"Bearer "+token}});if(!r.ok)return "";const a=await r.json();return a?.[0]?.rol||""}catch(e){return ""}
 }
-function ipgAuthMsg(t,c=""){
-  const x=document.getElementById("ipgAuthMsg");
-  if(x){x.className=c;x.textContent=t}
-}
-function ipgStoredEmail(){return (localStorage.getItem(IPG_AUTH_KEY)||"").trim().toLowerCase()}
-function ipgGrantEmailAccess(email){
-  ipgRegistrarAcceso(email);
-  localStorage.setItem(IPG_AUTH_KEY,email);
-  document.body.classList.add("ipg-auth-ok");
-  window.IPG_INSTITUTIONAL_EMAIL=email;
+function ipgAuthMsg(t,c=""){const x=document.getElementById("ipgAuthMsg");if(x){x.className=c;x.textContent=t}}
+async function ipgValidateStored(){
+ const a=ipgGetAuth();if(!a?.access_token)return false;
+ try{const r=await fetch(IPG_AUTH_URL+"/auth/v1/user",{headers:{"apikey":IPG_AUTH_ANON,"Authorization":"Bearer "+a.access_token}});if(!r.ok){ipgSetAuth(null);return false}const u=await r.json(),role=await ipgRole(u.id,a.access_token);if(!ipgInstitutional(u.email)&&role!=="escuela"){ipgSetAuth(null);return false}a.user=u;a.role=role;ipgSetAuth(a);document.body.classList.add("ipg-auth-ok");registrarAccesoModuloCSD(u.email).catch(()=>{});return true}catch(e){return false}
 }
 document.getElementById("ipgAuthPortal")?.addEventListener("click",()=>location.href="../");
-document.getElementById("ipgAuthLogin")?.addEventListener("click",()=>{
-  const email=(document.getElementById("ipgAuthEmail")?.value||"").trim().toLowerCase();
-  if(!email)return ipgAuthMsg("Ingresa tu correo institucional.","err");
-  if(!ipgInstitutional(email))return ipgAuthMsg("Debes usar un correo @alumnos.ipg.cl, @docentes.ipg.cl o @ipg.cl.","err");
-  ipgGrantEmailAccess(email);
-  ipgAuthMsg("Acceso correcto.","ok");
-});
-const _ipgSavedEmail=ipgStoredEmail();
-if(ipgInstitutional(_ipgSavedEmail)){
-  const _e=document.getElementById("ipgAuthEmail"); if(_e)_e.value=_ipgSavedEmail;
-  ipgGrantEmailAccess(_ipgSavedEmail);
-}
 
-
-
-const IPG_ACCESS_URL="https://uegxxazgqvjjqnmpodln.supabase.co";
-const IPG_ACCESS_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlZ3h4YXpncXZqanFubXBvZGxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTMxMDksImV4cCI6MjEwNjI2OTEwOX0.93hHsgPuCrPWZma29meYK2w5EDBff4tv80aUky4v_UQ";
-const IPG_ACCESS_MODULE="IPG PEOPLE";
-function ipgAccessSessionId(){
-  const k="ipg_access_sid_"+IPG_ACCESS_MODULE;
-  let v=sessionStorage.getItem(k);
-  if(!v){
-    v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():"acc-"+Date.now()+"-"+Math.random().toString(36).slice(2,9);
-    sessionStorage.setItem(k,v);
-  }
-  return v;
-}
-async function ipgRegistrarAcceso(email){
+/* ===== CSD · REGISTRO CENTRAL DE ACCESO AL MÓDULO ===== */
+const CSD_ACCESS_MODULE = "IPG PEOPLE";
+const CSD_ACCESS_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlZ3h4YXpncXZqanFubXBvZGxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTMxMDksImV4cCI6MjEwNjI2OTEwOX0.93hHsgPuCrPWZma29meYK2w5EDBff4tv80aUky4v_UQ";
+async function registrarAccesoModuloCSD(email){
   email=(email||"").trim().toLowerCase();
-  if(!email)return;
-  const onceKey="ipg_access_logged_"+IPG_ACCESS_MODULE+"_"+email;
-  if(sessionStorage.getItem(onceKey))return;
+  if(!email)return false;
+  const key="csd_access_registered_"+CSD_ACCESS_MODULE.replace(/[^a-z0-9]+/gi,"_").toLowerCase();
+  let sid=sessionStorage.getItem(key+"_sid");
+  if(!sid){
+    sid=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():"acc-"+Date.now()+"-"+Math.random().toString(36).slice(2,9);
+    sessionStorage.setItem(key+"_sid",sid);
+  }
+  if(sessionStorage.getItem(key+"_ok")==="1")return true;
   try{
-    const r=await fetch(IPG_ACCESS_URL+"/rest/v1/rpc/registrar_acceso_csd",{
+    const r=await fetch("https://uegxxazgqvjjqnmpodln.supabase.co/rest/v1/rpc/registrar_acceso_csd",{
       method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "apikey":IPG_ACCESS_ANON,
-        "Authorization":"Bearer "+IPG_ACCESS_ANON
-      },
-      body:JSON.stringify({p_email:email,p_modulo:IPG_ACCESS_MODULE,p_session_id:ipgAccessSessionId()})
+      headers:{"Content-Type":"application/json","apikey":CSD_ACCESS_ANON,"Authorization":"Bearer "+CSD_ACCESS_ANON},
+      body:JSON.stringify({p_email:email,p_modulo:CSD_ACCESS_MODULE,p_session_id:sid})
     });
-    if(r.ok)sessionStorage.setItem(onceKey,"1");
-  }catch(e){console.warn("Registro de acceso CSD no disponible",e)}
+    if(!r.ok){console.error("Registro de acceso CSD:",r.status,await r.text());return false;}
+    sessionStorage.setItem(key+"_ok","1");
+    window.IPG_INSTITUTIONAL_EMAIL=email;
+    return true;
+  }catch(e){console.error("Registro de acceso CSD:",e);return false;}
 }
+
+document.getElementById("ipgAuthLogin")?.addEventListener("click",async()=>{
+ const email=document.getElementById("ipgAuthEmail").value.trim().toLowerCase(),password=document.getElementById("ipgAuthPassword").value;
+ if(!email||!password)return ipgAuthMsg("Completa correo y contraseña.","err");
+ ipgAuthMsg("Validando acceso...");
+ try{const r=await fetch(IPG_AUTH_URL+"/auth/v1/token?grant_type=password",{method:"POST",headers:{"apikey":IPG_AUTH_ANON,"Content-Type":"application/json"},body:JSON.stringify({email,password})});const d=await r.json();if(!r.ok)return ipgAuthMsg(d?.msg||d?.error_description||"No fue posible iniciar sesión.","err");const role=await ipgRole(d.user.id,d.access_token);if(!ipgInstitutional(d.user.email)&&role!=="escuela"){ipgSetAuth(null);return ipgAuthMsg("Cuenta no autorizada para el CSD.","err")}ipgSetAuth({...d,role});document.body.classList.add("ipg-auth-ok");await registrarAccesoModuloCSD(d.user?.email||email);ipgAuthMsg("Acceso correcto.","ok")}catch(e){ipgAuthMsg("No fue posible conectar con el servicio de acceso.","err")}
+});
+document.getElementById("ipgAuthSignup")?.addEventListener("click",async()=>{
+ const email=document.getElementById("ipgAuthEmail").value.trim().toLowerCase(),password=document.getElementById("ipgAuthPassword").value;
+ if(!ipgInstitutional(email))return ipgAuthMsg("Usa un correo @alumnos.ipg.cl, @docentes.ipg.cl o @ipg.cl.","err");
+ if(password.length<6)return ipgAuthMsg("La contraseña debe tener al menos 6 caracteres.","err");
+ ipgAuthMsg("Creando acceso institucional...");
+ try{const r=await fetch(IPG_AUTH_URL+"/auth/v1/signup",{method:"POST",headers:{"apikey":IPG_AUTH_ANON,"Content-Type":"application/json"},body:JSON.stringify({email,password})});const d=await r.json();if(!r.ok)return ipgAuthMsg(d?.msg||d?.error_description||"No fue posible crear el acceso.","err");if(d.access_token){ipgSetAuth(d);document.body.classList.add("ipg-auth-ok");await registrarAccesoModuloCSD(d.user?.email||email);ipgAuthMsg("Cuenta creada e ingreso realizado.","ok")}else ipgAuthMsg("Cuenta creada. Revisa tu correo institucional para confirmar el acceso.","ok")}catch(e){ipgAuthMsg("No fue posible crear el acceso.","err")}
+});
+ipgValidateStored();
 
 </script>
 </body></html>
