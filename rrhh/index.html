@@ -58,17 +58,15 @@ body.ipg-auth-ok #ipgAuthGate{display:none!important}
 <div class="ipg-auth-card">
 <div class="ipg-auth-brand">IPG · CENTRO DE SIMULACIÓN DIGITAL</div>
 <h1>IPG PEOPLE / RRHH</h1>
-<p>Ingresa con tu cuenta institucional para acceder al módulo y registrar tu participación.</p>
+<p>Ingresa con tu correo institucional para acceder al módulo y registrar tu participación.</p>
 <div class="ipg-auth-grid">
-<div><label>Correo institucional</label><input id="ipgAuthEmail" type="email" autocomplete="username" placeholder="nombre@alumnos.ipg.cl"></div>
-<div><label>Contraseña</label><input id="ipgAuthPassword" type="password" autocomplete="current-password" placeholder="Contraseña"></div>
+<div><label>Correo institucional</label><input id="ipgAuthEmail" type="email" autocomplete="email" placeholder="nombre@alumnos.ipg.cl"></div>
 </div>
 <div class="ipg-auth-actions">
-<button class="ipg-auth-primary" id="ipgAuthLogin">Ingresar</button>
-<button class="ipg-auth-secondary" id="ipgAuthSignup">Crear acceso institucional</button>
-<button class="ipg-auth-secondary" id="ipgAuthPortal">Volver al CSD</button>
+<button class="ipg-auth-primary" id="ipgAuthLogin" type="button">Ingresar</button>
+<button class="ipg-auth-secondary" id="ipgAuthPortal" type="button">Volver al CSD</button>
 </div>
-<div id="ipgAuthMsg">Acceso permitido para cuentas @alumnos.ipg.cl, @docentes.ipg.cl, @ipg.cl y perfiles Escuela autorizados.</div>
+<div id="ipgAuthMsg">Acceso con correo institucional @alumnos.ipg.cl, @docentes.ipg.cl o @ipg.cl. No se requiere contraseña.</div>
 </div></div>
 
 <div class="ipg-exitbar">
@@ -159,206 +157,64 @@ body.ipg-auth-ok #ipgAuthGate{display:none!important}
 <footer>IPG PEOPLE V1 · Simulación académica de HRIS/HCM y People Analytics.</footer><div id="ipgTraceState" style="max-width:1200px;margin:10px auto 18px;padding:10px 14px;border:1px solid #dce5ed;border-radius:10px;background:#f7fafc;font:13px/1.4 system-ui;color:#425466"><b>Registro institucional:</b> <span id="ipgTraceText">listo para iniciar.</span></div>
 
 <script>
-const KEY="ipg_people_v1";const init=()=>({started:false,start:0,elapsed:0,score:0,errors:0,student:"",studentId:"",career:"",section:"",activity:"RRHH-SIM01",teacher:"",people:{},att:{},pay:false,perf:{},analytics:false,inc:{},logs:[]});
-let s=(()=>{try{return JSON.parse(localStorage.getItem(KEY))||init()}catch(e){return init()}})();
-const P=[["C001","Ana Rojas","Finanzas","Indefinido","44 h","Completo",1],["C002","Luis Vega","Ventas","Plazo fijo","44 h","Falta fecha término",0],["C003","Camila Soto","Bodega","Indefinido","44 h","Completo",1],["C004","Diego Mora","Bodega","Indefinido","30 h","Jornada registrada 44 h",0]];
-const A=[["C003","Bodega","Licencia médica","5 días","Sí",1],["C005","Ventas","Ausencia injustificada","1 día","No",0],["C006","Bodega","Permiso autorizado","4 h","Sí",1],["C007","Finanzas","Marcación faltante","1 ingreso","No",0]];
-const PF=[["Ana Rojas","Finanzas",92,88,"Alto","Mantener/reconocer"],["Luis Vega","Ventas",68,72,"Medio","Plan de mejora"],["Camila Soto","Bodega",81,58,"Brecha conductual","Coaching/acompañamiento"],["Diego Mora","Bodega",55,79,"Brecha de meta","Capacitación técnica"]];
-const $=x=>document.getElementById(x),save=()=>{localStorage.setItem(KEY,JSON.stringify(s));render()},fmt=x=>{x=Math.max(0,x||0);let m=Math.floor(x/60),q=x%60;return String(m).padStart(2,"0")+":"+String(q).padStart(2,"0")},elapsed=()=>s.started?s.elapsed+Math.floor((Date.now()-s.start)/1000):s.elapsed;
-function add(t,m,p=0){s.logs.unshift({ts:new Date().toLocaleString("es-CL"),t,m,p});s.score=Math.max(0,s.score+p)}function err(m){s.errors++;add("ERROR",m,-3)}
-function adv(){let n=Object.keys(s.people).length+Object.keys(s.att).length+(s.pay?1:0)+Object.keys(s.perf).length+(s.analytics?1:0)+(Object.keys(s.inc).length?1:0);return Math.min(100,Math.round(n/15*100))}
-document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(b.dataset.v).classList.add("active");render()});
-$("start").onclick=()=>{for(let id of ["student","studentId","career","section"])if(!$(id).value.trim())return alert("Completa identificación académica.");Object.assign(s,{student:$("student").value,studentId:$("studentId").value,career:$("career").value,section:$("section").value,activity:$("activity").value||"RRHH-SIM01",teacher:$("teacher").value,started:true,start:Date.now()});add("INICIO","Simulación iniciada",5);save();alert("Simulación iniciada.")};
-$("reset").onclick=()=>{if(confirm("¿Reiniciar el caso?")){localStorage.removeItem(KEY);location.reload()}};
-
-function people(){let h="";P.forEach((p,i)=>{let d=s.people[p[0]];h+=`<tr><td>${p[0]}</td><td><b>${p[1]}</b></td><td>${p[2]}</td><td>${p[3]}</td><td>${p[4]}</td><td>${p[5]}</td><td>${d?`<span class="pill ${d.ok?'p-ok':'p-bad'}">${d.a}</span>`:`<button class="btn light" onclick="pd(${i},1)">Activar</button> <button class="btn bad" onclick="pd(${i},0)">Corregir</button>`}</td></tr>`});$("peopleBody").innerHTML=h}
-window.pd=(i,a)=>{if(!s.started)return alert("Primero inicia.");let p=P[i],ok=Number(a)===p[6];s.people[p[0]]={a:a?"Activado":"Corregir",ok};ok?add("FICHA",p[0]+": decisión correcta",7):err("Ficha "+p[0]+": decisión incorrecta");save()};
-
-function att(){let h="";A.forEach((a,i)=>{let d=s.att[a[0]];h+=`<tr><td>${a[0]}</td><td>${a[1]}</td><td>${a[2]}</td><td>${a[3]}</td><td>${a[4]}</td><td>${d?`<span class="pill ${d.ok?'p-ok':'p-bad'}">${d.a}</span>`:`<button class="btn light" onclick="ad(${i},1)">Validar</button> <button class="btn bad" onclick="ad(${i},0)">Regularizar</button>`}</td></tr>`});$("attBody").innerHTML=h}
-window.ad=(i,a)=>{if(!s.started)return alert("Primero inicia.");let x=A[i],ok=Number(a)===x[5];s.att[x[0]]={a:a?"Validado":"Regularizar",ok};ok?add("ASISTENCIA",x[0]+": tratamiento correcto",7):err("Asistencia "+x[0]+": tratamiento incorrecto");save()};
-
-$("calcPay").onclick=()=>{if(!s.started)return alert("Primero inicia.");let b=$("base").valueAsNumber||0,bo=$("bonus").valueAsNumber||0,ot=$("ot").valueAsNumber||0;let hv=b/180,otv=hv*1.5*ot,total=b+bo+otv;$("hourValue").textContent="$"+Math.round(hv).toLocaleString("es-CL");$("otValue").textContent="$"+Math.round(otv).toLocaleString("es-CL");$("taxable").textContent="$"+Math.round(total).toLocaleString("es-CL");$("payResult").innerHTML=`<b>Resultado pedagógico:</b> sueldo base + bono imponible + horas extra = <b>$${Math.round(total).toLocaleString("es-CL")}</b>.`;if(!s.pay){s.pay=true;add("REMUNERACIÓN","Caso de remuneración calculado",10);save()}};
-
-function perf(){let h="";PF.forEach((p,i)=>{let d=s.perf[p[0]];h+=`<tr><td><b>${p[0]}</b></td><td>${p[1]}</td><td>${p[2]}%</td><td>${p[3]}/100</td><td>${p[4]}</td><td>${d?`<span class="pill ${d.ok?'p-ok':'p-bad'}">${d.a}</span>`:`<select id="pf${i}"><option>Mantener/reconocer</option><option>Plan de mejora</option><option>Coaching/acompañamiento</option><option>Capacitación técnica</option></select> <button class="btn light" onclick="pf(${i})">Registrar</button>`}</td></tr>`});$("perfBody").innerHTML=h}
-window.pf=i=>{if(!s.started)return alert("Primero inicia.");let p=PF[i],a=$("pf"+i).value,ok=a===p[5];s.perf[p[0]]={a,ok};ok?add("DESEMPEÑO",p[0]+": acción coherente",7):err("Desempeño "+p[0]+": acción poco coherente con el caso");save()};
-
-$("evalAnalytics").onclick=()=>{if(!s.started)return alert("Primero inicia.");let ar=$("priority").value,why=$("priorityWhy").value.trim();if(why.length<35)return alert("Fundamenta tu decisión.");let ok=ar==="Bodega";if(!s.analytics){s.analytics=true;ok?add("ANALYTICS","Área prioritaria correctamente identificada: Bodega",12):err("People Analytics: área prioritaria incorrecta");save()}else alert("Análisis ya registrado.")};
-
-window.incident=id=>{if(!s.started)return alert("Primero inicia.");let t=$("ans"+id).value.trim();if(t.length<40)return alert("Desarrolla una respuesta de al menos 40 caracteres.");if(s.inc[id])return alert("Ya registrada.");s.inc[id]=t;add("CONTINGENCIA","Contingencia "+id+" respondida",10);save();alert("Respuesta registrada.")};
-
-function logs(){$("logBox").innerHTML=s.logs.length?s.logs.map(x=>`<div class="ev"><b>${x.t}</b> · ${x.m}${x.p?` <span class="pill ${x.p>0?'p-ok':'p-bad'}">${x.p>0?'+':''}${x.p}</span>`:""}<small>${x.ts}</small></div>`).join(""):"<div class='ev'><b>Sin movimientos registrados</b></div>"}
-function summary(){$("stuSum").innerHTML=s.student?`Estudiante: ${s.student}<br>ID/RUT: ${s.studentId}<br>Carrera: ${s.career}<br>Sección: ${s.section}<br>Actividad: ${s.activity}<br>Docente: ${s.teacher||"—"}`:"Aún no inicia.";$("opSum").innerHTML=`<p><b>Fichas revisadas:</b> ${Object.keys(s.people).length}/4</p><p><b>Incidencias asistencia:</b> ${Object.keys(s.att).length}/4</p><p><b>Remuneración:</b> ${s.pay?"Calculada":"Pendiente"}</p><p><b>Desempeño:</b> ${Object.keys(s.perf).length}/4</p><p><b>People Analytics:</b> ${s.analytics?"Registrado":"Pendiente"}</p><p><b>Contingencias:</b> ${Object.keys(s.inc).length}/3</p><p><b>Resultado:</b> ${s.score} puntos · ${s.errors} errores · ${adv()}% avance.</p>`}
-function dl(n,c,t){let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=n;a.click()}
-$("csv").onclick=()=>{let r=[["Campo","Valor"],["Estudiante",s.student],["ID",s.studentId],["Carrera",s.career],["Sección",s.section],["Actividad",s.activity],["Puntaje",s.score],["Errores",s.errors],["Avance",adv()+"%"],["Tiempo",fmt(elapsed())],[],["Fecha","Tipo","Detalle","Puntos"]];s.logs.slice().reverse().forEach(x=>r.push([x.ts,x.t,x.m,x.p]));dl("PEOPLE_"+(s.studentId||"estudiante")+".csv","\ufeff"+r.map(a=>a.map(v=>`"${String(v??"").replaceAll('"','""')}"`).join(";")).join("\n"),"text/csv;charset=utf-8")};
-$("json").onclick=()=>dl("PEOPLE_"+(s.studentId||"estudiante")+".json",JSON.stringify({...s,elapsed:elapsed()},null,2),"application/json");
-function render(){people();att();perf();logs();summary();$("scH").textContent=$("scF").textContent=s.score;$("erH").textContent=$("erF").textContent=s.errors;$("avH").textContent=$("avF").textContent=adv()+"%"}
-setInterval(()=>{$("tmH").textContent=$("tmF").textContent=fmt(elapsed())},1000);["student","studentId","career","section","activity","teacher"].forEach(id=>$(id).value=s[id]||"");if(s.started){s.elapsed=elapsed();s.start=Date.now()}render();
-
-/* ===== IPG TRAZABILIDAD CENTRAL ===== */
-const IPG_TRACE_URL="https://uegxxazgqvjjqnmpodln.supabase.co";
-const IPG_TRACE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlZ3h4YXpncXZqanFubXBvZGxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTMxMDksImV4cCI6MjEwNjI2OTEwOX0.93hHsgPuCrPWZma29meYK2w5EDBff4tv80aUky4v_UQ";
-const IPG_TRACE_KEY="ipg_trace_people_v2";
-const IPG_TRACE_SIM="IPG PEOPLE";
-let ipgTrace=(()=>{try{return JSON.parse(localStorage.getItem(IPG_TRACE_KEY))||{}}catch(e){return {}}})();
-let ipgTraceLastSig="";
-function ipgTraceUUID(){if(window.crypto&&crypto.randomUUID)return crypto.randomUUID();return "ipg-"+Date.now()+"-"+Math.random().toString(36).slice(2,10)}
-function ipgTraceStatus(msg,bad=false){const e=document.getElementById("ipgTraceText");if(!e)return;e.textContent=msg;e.parentElement.style.borderColor=bad?"#f3c2c2":"#dce5ed";e.parentElement.style.background=bad?"#fff7f7":"#f7fafc"}
-
-function ipgTraceStarted(){return !!(s&&s.started)}
-function ipgTraceMeta(){return {nombre:s?.student||"",studentId:s?.studentId||"",carrera:s?.career||"",seccion:s?.section||"",docente:s?.teacher||"",actividad:s?.activity||""}}
-function ipgTraceAdvance(){try{return Number(adv())||0}catch(e){return 0}}
-function ipgTraceScore(){return Number.isFinite(Number(s?.score))?Number(s.score):null}
-function ipgTraceTime(){try{return Math.max(0,Math.floor(elapsed()))}catch(e){return 0}}
-
-function ipgTraceEnsureSession(force=false){const m=ipgTraceMeta();if(force||!ipgTrace.sessionId||ipgTrace.studentId!==m.studentId||ipgTrace.finished){ipgTrace={sessionId:ipgTraceUUID(),studentId:m.studentId||"",finished:false,createdAt:new Date().toISOString()};localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace))}return ipgTrace.sessionId}
-async function ipgTraceSync(evento,estado){
- if(!ipgTraceStarted())return false;
- const m=ipgTraceMeta();
- if(!m.studentId)return false;
- ipgTraceEnsureSession(false);
- const row={session_id:ipgTrace.sessionId,evento,nombre:m.nombre||null,rut_id:m.studentId,carrera:m.carrera||null,seccion:m.seccion||null,docente:m.docente||null,simulador:IPG_TRACE_SIM,actividad:m.actividad||null,estado,avance:ipgTraceAdvance(),puntaje:ipgTraceScore(),intentos:null,tiempo_segundos:ipgTraceTime(),unidad_1:null,unidad_2:null,unidad_3:null};
- ipgTraceStatus("enviando "+evento+"...");
- try{
-   const r=await fetch(IPG_TRACE_URL+"/rest/v1/participaciones",{method:"POST",headers:{"Content-Type":"application/json","apikey":IPG_TRACE_ANON,"Authorization":"Bearer "+(ipgAccessToken()||IPG_TRACE_ANON),"Prefer":"return=minimal"},body:JSON.stringify(row)});
-   if(!r.ok)throw new Error("HTTP "+r.status+" "+await r.text());
-   ipgTrace.lastSync=new Date().toISOString();
-   if(evento==="finalizacion")ipgTrace.finished=true;
-   localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
-   ipgTraceStatus("sincronizado · "+new Date().toLocaleTimeString("es-CL"));
-   return true
- }catch(e){
-   console.error("Trazabilidad IPG:",e);
-   ipgTraceStatus("sin conexión central; el progreso local continúa guardado.",true);
-   return false
- }
-}
-function ipgTraceSignature(){return [ipgTraceAdvance(),ipgTraceScore()].join("|")}
-function ipgTraceWatch(){
- document.addEventListener("click",ev=>{
-   const b=ev.target.closest("button");
-   if(!b)return;
-   const txt=(b.textContent||"").trim().toLowerCase(),id=b.id||"";
-   if(id==="reset"||txt.includes("reiniciar")||txt.includes("restablecer")){if(txt.includes("reiniciar"))localStorage.removeItem(IPG_TRACE_KEY);return}
-   if(id==="start"||txt.includes("guardar e iniciar")||txt==="iniciar simulación"||txt.includes("continuar sesión guardada")){
-     setTimeout(async()=>{
-       if(ipgTraceStarted()){
-         ipgTraceEnsureSession(ipgTrace.finished||false);
-         ipgTraceLastSig=ipgTraceSignature();
-         const wasPaused=!!ipgTrace.paused;
-         ipgTrace.paused=false;
-         localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
-         await ipgTraceSync(wasPaused?"reanudacion":"inicio",wasPaused?"En progreso":"Iniciado");
-       }
-     },250);
-     return
-   }
-   if(txt.includes("finalizar")||txt.includes("guardar / imprimir pdf"))return;
-   setTimeout(async()=>{if(!ipgTraceStarted())return;const sig=ipgTraceSignature();if(sig!==ipgTraceLastSig){ipgTraceLastSig=sig;await ipgTraceSync("avance","En progreso")}},300)
- })
-}
-async function traceFinalizeAndPrint(ev){if(ev)ev.preventDefault();if(ipgTraceStarted())await ipgTraceSync("finalizacion","Finalizado");window.print()}
-
-ipgTraceWatch();
-if(ipgTrace.lastSync)ipgTraceStatus("última sincronización · "+new Date(ipgTrace.lastSync).toLocaleString("es-CL"));
-/* ===== FIN IPG TRAZABILIDAD CENTRAL ===== */
-
-
-function ipgStopLocalClock(){
-  if(!s||!s.started)return;
-  s.elapsed=elapsed();
-  s.started=false;
-  s.start=0;
-  localStorage.setItem(KEY,JSON.stringify(s));
-  try{render()}catch(e){}
-}
-async function ipgPostFinalSnapshot(){
-  const m=ipgTraceMeta();
-  const totalTime=ipgTraceTime(), finalAdvance=ipgTraceAdvance(), finalScore=ipgTraceScore();
-  ipgTraceEnsureSession(false);
-  const row={session_id:ipgTrace.sessionId,evento:"finalizacion",nombre:m.nombre||null,rut_id:m.studentId||null,carrera:m.carrera||null,seccion:m.seccion||null,docente:m.docente||null,simulador:IPG_TRACE_SIM,actividad:m.actividad||null,estado:"Finalizado",avance:finalAdvance,puntaje:finalScore,intentos:null,tiempo_segundos:totalTime,unidad_1:null,unidad_2:null,unidad_3:null};
-  ipgStopLocalClock();
-  ipgTrace.finished=true;ipgTrace.paused=false;localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
-  try{
-    ipgTraceStatus("cerrando sesión...");
-    const send=fetch(IPG_TRACE_URL+"/rest/v1/participaciones",{method:"POST",headers:{"Content-Type":"application/json","apikey":IPG_TRACE_ANON,"Authorization":"Bearer "+(ipgAccessToken()||IPG_TRACE_ANON),"Prefer":"return=minimal"},body:JSON.stringify(row)});
-    const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error("timeout")),2500));
-    const r=await Promise.race([send,timeout]); if(r&&!r.ok)throw new Error("HTTP "+r.status);
-    ipgTraceStatus("sesión finalizada.");
-  }catch(e){console.error("Cierre central:",e);ipgTraceStatus("sesión cerrada localmente; sincronización pendiente.",true)}
-}
-async function ipgGoPortal(finalize=false){
-  if(finalize){await ipgPostFinalSnapshot();window.location.href="../";return}
-  try{
-    if(ipgTraceStarted()){await ipgTraceSync("suspension","Suspendido");ipgTrace.paused=true;localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace))}
-  }catch(e){console.error("Suspensión:",e)}
-  ipgStopLocalClock();
-  window.location.href="../";
-}
-document.getElementById("ipgBackPortal")?.addEventListener("click",async()=>{await ipgGoPortal(false)});
-document.getElementById("ipgFinishPortal")?.addEventListener("click",async(e)=>{
-  const btn=e.currentTarget;
-  if(btn.dataset.confirmed!=="1"){btn.dataset.confirmed="1";btn.textContent="Confirmar finalización";setTimeout(()=>{if(btn.dataset.confirmed==="1"){btn.dataset.confirmed="0";btn.textContent="Finalizar y volver al portal"}},5000);return}
-  btn.disabled=true;btn.textContent="Finalizando...";await ipgGoPortal(true)
-});
-
-
 const IPG_AUTH_URL="https://uegxxazgqvjjqnmpodln.supabase.co";
 const IPG_AUTH_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlZ3h4YXpncXZqanFubXBvZGxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTMxMDksImV4cCI6MjEwNjI2OTEwOX0.93hHsgPuCrPWZma29meYK2w5EDBff4tv80aUky4v_UQ";
-const IPG_AUTH_KEY="ipg_csd_auth_v1";
-function ipgGetAuth(){try{return JSON.parse(localStorage.getItem(IPG_AUTH_KEY)||"null")}catch(e){return null}}
-function ipgSetAuth(v){if(v)localStorage.setItem(IPG_AUTH_KEY,JSON.stringify(v));else localStorage.removeItem(IPG_AUTH_KEY)}
-function ipgAccessToken(){return ipgGetAuth()?.access_token||""}
-function ipgInstitutional(email){email=(email||"").trim().toLowerCase();return email.endsWith("@alumnos.ipg.cl")||email.endsWith("@docentes.ipg.cl")||email.endsWith("@ipg.cl")}
-async function ipgRole(uid,token){
- try{const r=await fetch(IPG_AUTH_URL+"/rest/v1/perfiles_csd?select=rol&user_id=eq."+encodeURIComponent(uid),{headers:{"apikey":IPG_AUTH_ANON,"Authorization":"Bearer "+token}});if(!r.ok)return "";const a=await r.json();return a?.[0]?.rol||""}catch(e){return ""}
+const IPG_EMAIL_KEY="ipg_csd_email_access_v1";
+const IPG_ACCESS_MODULE="PEOPLE";
+
+function ipgInstitutional(email){
+  email=(email||"").trim().toLowerCase();
+  return email.endsWith("@alumnos.ipg.cl")||email.endsWith("@docentes.ipg.cl")||email.endsWith("@ipg.cl");
 }
 function ipgAuthMsg(t,c=""){const x=document.getElementById("ipgAuthMsg");if(x){x.className=c;x.textContent=t}}
-async function ipgValidateStored(){
- const a=ipgGetAuth();if(!a?.access_token)return false;
- try{const r=await fetch(IPG_AUTH_URL+"/auth/v1/user",{headers:{"apikey":IPG_AUTH_ANON,"Authorization":"Bearer "+a.access_token}});if(!r.ok){ipgSetAuth(null);return false}const u=await r.json(),role=await ipgRole(u.id,a.access_token);if(!ipgInstitutional(u.email)&&role!=="escuela"){ipgSetAuth(null);return false}a.user=u;a.role=role;ipgSetAuth(a);document.body.classList.add("ipg-auth-ok");registrarAccesoModuloCSD(u.email).catch(()=>{});return true}catch(e){return false}
-}
-document.getElementById("ipgAuthPortal")?.addEventListener("click",()=>location.href="../");
-
-/* ===== CSD · REGISTRO CENTRAL DE ACCESO AL MÓDULO ===== */
-const CSD_ACCESS_MODULE = "IPG PEOPLE";
-const CSD_ACCESS_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlZ3h4YXpncXZqanFubXBvZGxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTMxMDksImV4cCI6MjEwNjI2OTEwOX0.93hHsgPuCrPWZma29meYK2w5EDBff4tv80aUky4v_UQ";
-async function registrarAccesoModuloCSD(email){
+function ipgStoredEmail(){return (localStorage.getItem(IPG_EMAIL_KEY)||"").trim().toLowerCase();}
+function ipgGrantEmailAccess(email){
   email=(email||"").trim().toLowerCase();
-  if(!email)return false;
-  const key="csd_access_registered_"+CSD_ACCESS_MODULE.replace(/[^a-z0-9]+/gi,"_").toLowerCase();
-  let sid=sessionStorage.getItem(key+"_sid");
+  localStorage.setItem(IPG_EMAIL_KEY,email);
+  window.IPG_INSTITUTIONAL_EMAIL=email;
+  document.body.classList.add("ipg-auth-ok");
+}
+function ipgAccessSessionId(){
+  const k="csd_access_sid_"+IPG_ACCESS_MODULE.replace(/[^a-z0-9]+/gi,"_").toLowerCase();
+  let sid=sessionStorage.getItem(k);
   if(!sid){
     sid=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():"acc-"+Date.now()+"-"+Math.random().toString(36).slice(2,9);
-    sessionStorage.setItem(key+"_sid",sid);
+    sessionStorage.setItem(k,sid);
   }
-  if(sessionStorage.getItem(key+"_ok")==="1")return true;
+  return sid;
+}
+async function registrarAccesoModuloCSD(email){
+  const okKey="csd_access_ok_"+IPG_ACCESS_MODULE.replace(/[^a-z0-9]+/gi,"_").toLowerCase();
+  if(sessionStorage.getItem(okKey)==="1")return true;
   try{
-    const r=await fetch("https://uegxxazgqvjjqnmpodln.supabase.co/rest/v1/rpc/registrar_acceso_csd",{
+    const r=await fetch(IPG_AUTH_URL+"/rest/v1/rpc/registrar_acceso_csd",{
       method:"POST",
-      headers:{"Content-Type":"application/json","apikey":CSD_ACCESS_ANON,"Authorization":"Bearer "+CSD_ACCESS_ANON},
-      body:JSON.stringify({p_email:email,p_modulo:CSD_ACCESS_MODULE,p_session_id:sid})
+      headers:{"Content-Type":"application/json","apikey":IPG_AUTH_ANON,"Authorization":"Bearer "+IPG_AUTH_ANON},
+      body:JSON.stringify({p_email:email,p_modulo:IPG_ACCESS_MODULE,p_session_id:ipgAccessSessionId()})
     });
     if(!r.ok){console.error("Registro de acceso CSD:",r.status,await r.text());return false;}
-    sessionStorage.setItem(key+"_ok","1");
-    window.IPG_INSTITUTIONAL_EMAIL=email;
+    sessionStorage.setItem(okKey,"1");
     return true;
   }catch(e){console.error("Registro de acceso CSD:",e);return false;}
 }
-
-document.getElementById("ipgAuthLogin")?.addEventListener("click",async()=>{
- const email=document.getElementById("ipgAuthEmail").value.trim().toLowerCase(),password=document.getElementById("ipgAuthPassword").value;
- if(!email||!password)return ipgAuthMsg("Completa correo y contraseña.","err");
- ipgAuthMsg("Validando acceso...");
- try{const r=await fetch(IPG_AUTH_URL+"/auth/v1/token?grant_type=password",{method:"POST",headers:{"apikey":IPG_AUTH_ANON,"Content-Type":"application/json"},body:JSON.stringify({email,password})});const d=await r.json();if(!r.ok)return ipgAuthMsg(d?.msg||d?.error_description||"No fue posible iniciar sesión.","err");const role=await ipgRole(d.user.id,d.access_token);if(!ipgInstitutional(d.user.email)&&role!=="escuela"){ipgSetAuth(null);return ipgAuthMsg("Cuenta no autorizada para el CSD.","err")}ipgSetAuth({...d,role});document.body.classList.add("ipg-auth-ok");await registrarAccesoModuloCSD(d.user?.email||email);ipgAuthMsg("Acceso correcto.","ok")}catch(e){ipgAuthMsg("No fue posible conectar con el servicio de acceso.","err")}
-});
-document.getElementById("ipgAuthSignup")?.addEventListener("click",async()=>{
- const email=document.getElementById("ipgAuthEmail").value.trim().toLowerCase(),password=document.getElementById("ipgAuthPassword").value;
- if(!ipgInstitutional(email))return ipgAuthMsg("Usa un correo @alumnos.ipg.cl, @docentes.ipg.cl o @ipg.cl.","err");
- if(password.length<6)return ipgAuthMsg("La contraseña debe tener al menos 6 caracteres.","err");
- ipgAuthMsg("Creando acceso institucional...");
- try{const r=await fetch(IPG_AUTH_URL+"/auth/v1/signup",{method:"POST",headers:{"apikey":IPG_AUTH_ANON,"Content-Type":"application/json"},body:JSON.stringify({email,password})});const d=await r.json();if(!r.ok)return ipgAuthMsg(d?.msg||d?.error_description||"No fue posible crear el acceso.","err");if(d.access_token){ipgSetAuth(d);document.body.classList.add("ipg-auth-ok");await registrarAccesoModuloCSD(d.user?.email||email);ipgAuthMsg("Cuenta creada e ingreso realizado.","ok")}else ipgAuthMsg("Cuenta creada. Revisa tu correo institucional para confirmar el acceso.","ok")}catch(e){ipgAuthMsg("No fue posible crear el acceso.","err")}
-});
-ipgValidateStored();
-
+async function ipgEmailLogin(){
+  const email=(document.getElementById("ipgAuthEmail")?.value||"").trim().toLowerCase();
+  if(!ipgInstitutional(email))return ipgAuthMsg("Usa un correo @alumnos.ipg.cl, @docentes.ipg.cl o @ipg.cl.","err");
+  ipgAuthMsg("Registrando acceso...");
+  const tracked=await registrarAccesoModuloCSD(email);
+  ipgGrantEmailAccess(email);
+  ipgAuthMsg(tracked?"Acceso registrado correctamente.":"Acceso concedido. No fue posible registrar la trazabilidad; informa a Escuela.","ok");
+}
+document.getElementById("ipgAuthPortal")?.addEventListener("click",()=>location.href="../");
+document.getElementById("ipgAuthLogin")?.addEventListener("click",ipgEmailLogin);
+document.getElementById("ipgAuthEmail")?.addEventListener("keydown",e=>{if(e.key==="Enter")ipgEmailLogin();});
+(function(){
+  const email=ipgStoredEmail();
+  if(ipgInstitutional(email)){
+    const input=document.getElementById("ipgAuthEmail"); if(input)input.value=email;
+    ipgGrantEmailAccess(email);
+    registrarAccesoModuloCSD(email);
+  }
+})();
 </script>
 </body></html>
