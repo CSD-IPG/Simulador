@@ -265,7 +265,7 @@ async function registrarAccesoNivelacion(email){
   const sid=s.sessionId||newSessionId();
   s.sessionId=sid;
   localStorage.setItem(KEY,JSON.stringify(s));
-
+  if(sessionStorage.getItem("csd_access_nivelacion_ok")==="1") return true;
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),5000);
 
@@ -288,6 +288,7 @@ async function registrarAccesoNivelacion(email){
       console.error("Registro de acceso Nivelación:",r.status,await r.text());
       return false;
     }
+    sessionStorage.setItem("csd_access_nivelacion_ok","1");
     return true;
   }catch(e){
     console.error("Registro de acceso Nivelación:",e);
