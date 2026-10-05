@@ -78,13 +78,13 @@ body.ipg-auth-ok #ipgAuthGate{display:none!important}
 <h1>IPG WMS Simulator</h1>
 <p>Ingresa con tu correo institucional para acceder al módulo y registrar tu participación.</p>
 <div class="ipg-auth-grid">
-<div><label>Correo institucional</label><input id="ipgAuthEmail" type="email" autocomplete="email" placeholder="nombre@alumnos.ipg.cl"></div>
+<div><label>Correo institucional</label><input id="ipgAuthEmail" type="email" autocomplete="username" placeholder="nombre@alumnos.ipg.cl"></div>
 </div>
 <div class="ipg-auth-actions">
-<button class="ipg-auth-primary" id="ipgAuthLogin" type="button">Ingresar</button>
-<button class="ipg-auth-secondary" id="ipgAuthPortal" type="button">Volver al CSD</button>
+<button class="ipg-auth-primary" id="ipgAuthLogin">Ingresar</button>
+<button class="ipg-auth-secondary" id="ipgAuthPortal">Volver al CSD</button>
 </div>
-<div id="ipgAuthMsg">Acceso con correo institucional @alumnos.ipg.cl, @docentes.ipg.cl o @ipg.cl. No se requiere contraseña.</div>
+<div id="ipgAuthMsg">Acceso permitido para @alumnos.ipg.cl, @docentes.ipg.cl y @ipg.cl. No se requiere contraseña.</div>
 </div></div>
 
 <div class="ipg-exitbar" id="ipgMainToolbar">
@@ -168,62 +168,260 @@ body.ipg-auth-ok #ipgAuthGate{display:none!important}
 </div>
 </div>
 <script>
+const VERSION='2.0';
+const STORAGE='ipgWmsV2Session';
+const seed={
+  locations:["A-01-01","A-01-02","A-02-01","B-01-01","B-01-02","B-02-01","C-01-01","C-01-02","R-01-01"],
+  products:[
+    {sku:"SKU-001",name:"Teclado inalámbrico",stock:46,location:"A-01-01",reorder:20},
+    {sku:"SKU-002",name:"Mouse óptico",stock:68,location:"A-01-02",reorder:30},
+    {sku:"SKU-003",name:"Monitor 24\"",stock:12,location:"B-01-01",reorder:15},
+    {sku:"SKU-004",name:"Notebook 14\"",stock:8,location:"B-01-02",reorder:10},
+    {sku:"SKU-005",name:"Dock USB-C",stock:27,location:"C-01-01",reorder:12}
+  ],
+  purchaseOrders:[
+    {po:"OC-1001",supplier:"Tecnología Andina",sku:"SKU-003",qty:30,status:"Pendiente"},
+    {po:"OC-1002",supplier:"Comercial Pacífico",sku:"SKU-004",qty:20,status:"Pendiente"},
+    {po:"OC-1003",supplier:"Importadora Sur",sku:"SKU-005",qty:25,status:"Pendiente"}
+  ],
+  orders:[
+    {id:"PED-2001",customer:"Retail Norte",sku:"SKU-001",qty:10,status:"Pendiente",priority:"Normal"},
+    {id:"PED-2002",customer:"Servicios Omega",sku:"SKU-003",qty:8,status:"Pendiente",priority:"Alta"},
+    {id:"PED-2003",customer:"Comercial Sur",sku:"SKU-002",qty:18,status:"Pendiente",priority:"Normal"},
+    {id:"PED-2004",customer:"Empresa Delta",sku:"SKU-004",qty:4,status:"Pendiente",priority:"Alta"}
+  ],
+  logs:[],score:0,errors:0,events:[],notes:'',caseCompleted:0
+};
+let state=null;
+let timerHandle=null;
+const menu=[['dashboard','Panel'],['reception','Recepción'],['inventory','Inventario'],['picking','Picking'],['packing','Packing'],['dispatch','Despacho'],['cases','Casos'],['report','Evidencia'],['guide','Guía']];
+const clone=o=>JSON.parse(JSON.stringify(o));
+function esc(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function formatDuration(sec){sec=Math.max(0,Math.floor(sec||0));const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;return [h,m,s].map(x=>String(x).padStart(2,'0')).join(':')}
+function elapsedSeconds(){if(!state)return 0;let base=state.elapsed||0;if(state.running&&state.lastStarted)base+=Math.floor((Date.now()-state.lastStarted)/1000);return base}
+function startTimer(){clearInterval(timerHandle);timerHandle=setInterval(()=>{if(state&&state.running){const e=document.getElementById('liveTimer');if(e)e.textContent=formatDuration(elapsedSeconds());}},1000)}
+function sessionMetaFromForm(){return {name:document.getElementById('loginName').value.trim(),studentId:document.getElementById('loginId').value.trim(),career:document.getElementById('loginCareer').value.trim(),section:document.getElementById('loginSection').value.trim(),activity:document.getElementById('loginActivity').value.trim(),teacher:document.getElementById('loginTeacher').value.trim()}}
+function startSession(){const meta=sessionMetaFromForm();if(!meta.name||!meta.studentId||!meta.career||!meta.section||!meta.activity){alert('Completa los campos obligatorios.');return}state={...clone(seed),meta,startedAt:new Date().toISOString(),finishedAt:null,elapsed:0,lastStarted:Date.now(),running:true,version:VERSION};log('Inicio','Sesión académica iniciada');persist(false);enterApp()}
+function resumeSession(){const raw=localStorage.getItem(STORAGE);if(!raw){alert('No existe una sesión guardada en este navegador.');return}try{state=JSON.parse(raw);if(!state.finishedAt){state.running=true;state.lastStarted=Date.now()}enterApp()}catch(e){alert('No se pudo recuperar la sesión guardada.')}}
+function enterApp(){document.body.classList.add('ipg-session-open');document.getElementById('loginScreen').classList.add('hidden');document.getElementById('simApp').classList.remove('hidden');nav();renderAll();show('dashboard');startTimer();}
+function pauseClock(){if(state&&state.running){state.elapsed=elapsedSeconds();state.running=false;state.lastStarted=null}}
+function persist(render=true){if(!state)return;localStorage.setItem(STORAGE,JSON.stringify(state));if(render)renderAll();}
+function save(){persist(true)}
+function newSession(){if(!confirm('¿Cerrar esta sesión e iniciar una nueva? La evidencia actual puede exportarse antes.'))return;pauseClock();persist(false);document.body.classList.remove('ipg-session-open');document.getElementById('simApp').classList.add('hidden');document.getElementById('loginScreen').classList.remove('hidden');}
+function resetOps(){if(confirm('¿Restablecer operaciones manteniendo la identificación del estudiante?')){const meta=state.meta,started=state.startedAt;state={...clone(seed),meta,startedAt:started,finishedAt:null,elapsed:elapsedSeconds(),lastStarted:Date.now(),running:true,version:VERSION};log('Reinicio','Operaciones restablecidas por el usuario');save()}}
+function nav(){document.getElementById('nav').innerHTML=menu.map(([id,n])=>`<button data-view="${id}">${n}</button>`).join('')+`<hr style="border:0;border-top:1px solid #edf0f3;margin:10px 0">
+<button class="secondary" onclick="resetOps()">Reiniciar ejercicio</button>
+<button class="danger" onclick="newSession()">Nueva sesión</button>
+`;document.querySelectorAll('#nav button[data-view]').forEach(b=>b.onclick=()=>show(b.dataset.view));}
+function show(id){document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===id));if(id==='report')renderReport()}
+function prod(sku){return state.products.find(p=>p.sku===sku)}
+function log(type,msg,points=0,error=false){state.logs.unshift({time:new Date().toISOString(),display:new Date().toLocaleString('es-CL'),elapsed:elapsedSeconds(),type,msg,points,error});state.logs=state.logs.slice(0,200)}
+function statusBadge(s){let c=s==='Despachado'||s==='Recibida'||s==='Empacado'?'ok':s==='Error'?'bad':'';return `<span class="badge ${c}">${esc(s)}</span>`}
+function updateHeader(){document.getElementById('headerMeta').innerHTML=`<b>${esc(state.meta.name)}</b><br>${esc(state.meta.section)} · ${esc(state.meta.activity)} · <span id="liveTimer">${formatDuration(elapsedSeconds())}</span>`}
+function completion(){const recv=state.purchaseOrders.filter(x=>x.status==='Recibida').length;const ship=state.orders.filter(x=>x.status==='Despachado').length;const total=state.purchaseOrders.length+state.orders.length;return Math.round((recv+ship)/total*100)}
+function renderDashboard(){updateHeader();const pendingPO=state.purchaseOrders.filter(x=>x.status==='Pendiente').length;const low=state.products.filter(p=>p.stock<=p.reorder).length;const pendOrders=state.orders.filter(o=>o.status!=='Despachado').length;const shipped=state.orders.filter(o=>o.status==='Despachado').length;const comp=completion();document.getElementById('dashboard').innerHTML=`
+ <div class="section-title"><div><h2>Panel de control</h2><div class="muted">Estado operativo y avance académico</div></div><div class="legend"><span class="pill">Puntaje: ${state.score}</span><span class="pill">Errores: ${state.errors}</span><span class="pill">Tiempo: ${formatDuration(elapsedSeconds())}</span></div></div>
+ <div class="card" style="margin:14px 0"><div class="section-title"><b>Avance global</b><span>${comp}%</span></div><div class="progress" style="margin-top:8px"><div class="bar" style="width:${comp}%"></div></div></div>
+ <div class="grid">${[[pendingPO,'OC pendientes'],[low,'SKU bajo stock'],[pendOrders,'Pedidos abiertos'],[shipped,'Pedidos despachados']].map(x=>`<div class="card span-3"><div class="kpi">${x[0]}</div><div class="muted">${x[1]}</div></div>`).join('')}
+ <div class="card span-8"><h3>Inventario</h3><div class="table-wrap"><table><thead><tr><th>SKU</th><th>Producto</th><th>Ubicación</th><th>Stock</th><th>Reposición</th><th>Estado</th></tr></thead><tbody>${state.products.map(p=>`<tr><td>${p.sku}</td><td>${p.name}</td><td>${p.location}</td><td>${p.stock}</td><td>${p.reorder}</td><td>${p.stock<=p.reorder?'<span class="bad">Bajo stock</span>':'<span class="ok">Normal</span>'}</td></tr>`).join('')}</tbody></table></div></div>
+ <div class="card span-4"><h3>Actividad reciente</h3>${state.logs.length?state.logs.slice(0,8).map(l=>`<div class="timeline-item"><b>${esc(l.type)}</b> ${l.points?`<span class="badge">${l.points>0?'+':''}${l.points} pts</span>`:''}<div class="muted">${esc(l.msg)}</div><div class="timeline-time">${esc(l.display)} · ${formatDuration(l.elapsed)}</div></div>`).join(''):'<div class="muted">Aún no hay movimientos.</div>'}</div></div>`}
+function renderReception(){document.getElementById('reception').innerHTML=`<h2>Recepción</h2><div class="muted">Confirma cantidades recibidas y asigna ubicación.</div><div class="grid" style="margin-top:14px">${state.purchaseOrders.map(po=>{let p=prod(po.sku);return `<div class="card span-6"><div class="section-title"><h3>${po.po}</h3>${statusBadge(po.status)}</div><div class="muted">Proveedor: ${po.supplier}</div><p><b>${po.sku}</b> · ${p.name}</p><div class="row"><div><label>Cantidad esperada</label><input value="${po.qty}" disabled></div><div><label>Cantidad recibida</label><input id="qty-${po.po}" type="number" min="0" value="${po.qty}"></div><div><label>Ubicación</label><select id="loc-${po.po}">${state.locations.map(l=>`<option ${l===p.location?'selected':''}>${l}</option>`).join('')}</select></div><div><label>Condición</label><select id="cond-${po.po}"><option>Conforme</option><option>Con diferencia</option><option>Dañado</option></select></div></div><div class="actions"><button class="btn primary" ${po.status!=='Pendiente'?'disabled':''} onclick="receive('${po.po}')">Recepcionar</button></div></div>`}).join('')}</div>`}
+function receive(poId){let po=state.purchaseOrders.find(x=>x.po===poId);if(!po||po.status!=='Pendiente')return;let q=+document.getElementById('qty-'+poId).value;let loc=document.getElementById('loc-'+poId).value;let cond=document.getElementById('cond-'+poId).value;let p=prod(po.sku);if(q<0||!Number.isFinite(q)){alert('Cantidad inválida');return}p.stock+=q;p.location=loc;po.status='Recibida';let pts=0;if(q===po.qty&&cond==='Conforme'){pts=10;state.score+=pts}else{pts=4;state.score+=pts;state.errors+=1}log('Recepción',`${poId}: ${q} unidades de ${po.sku} en ${loc} (${cond})`,pts,q!==po.qty||cond!=='Conforme');save()}
+function renderInventory(){document.getElementById('inventory').innerHTML=`<h2>Inventario</h2><div class="muted">Consulta stock, umbral de reposición y ubicación.</div><div class="card" style="margin-top:14px"><div class="table-wrap"><table><thead><tr><th>SKU</th><th>Producto</th><th>Stock</th><th>Reposición</th><th>Ubicación</th><th>Disponibilidad</th></tr></thead><tbody>${state.products.map(p=>`<tr><td>${p.sku}</td><td>${p.name}</td><td>${p.stock}</td><td>${p.reorder}</td><td>${p.location}</td><td>${p.stock<=p.reorder?'<span class="bad">Crítico</span>':'<span class="ok">Disponible</span>'}</td></tr>`).join('')}</tbody></table></div></div>`}
+function renderPicking(){let rows=state.orders.filter(o=>o.status==='Pendiente');document.getElementById('picking').innerHTML=`<h2>Picking</h2><div class="muted">Prepara pedidos respetando stock y ubicación.</div><div class="grid" style="margin-top:14px">${rows.length?rows.map(o=>{let p=prod(o.sku);return `<div class="card span-6"><div class="section-title"><h3>${o.id}</h3><span class="badge ${o.priority==='Alta'?'warn':''}">${o.priority}</span></div><div class="muted">Cliente: ${o.customer}</div><p><b>${o.sku}</b> · ${p.name}</p><div class="row"><div><label>Cantidad</label><input value="${o.qty}" disabled></div><div><label>Stock</label><input value="${p.stock}" disabled></div><div><label>Ubicación sistema</label><input value="${p.location}" disabled></div><div><label>Confirmar ubicación</label><input id="pickloc-${o.id}" placeholder="Ej. ${p.location}"></div></div><button class="btn primary" onclick="pick('${o.id}')">Confirmar picking</button></div>`}).join(''):'<div class="card span-12">No hay pedidos pendientes de picking.</div>'}</div>`}
+function pick(id){let o=state.orders.find(x=>x.id===id);let p=prod(o.sku);let loc=document.getElementById('pickloc-'+id).value.trim();if(loc!==p.location){state.errors++;state.score=Math.max(0,state.score-3);log('Error picking',`${id}: ubicación incorrecta (${loc||'vacía'})`,-3,true);save();alert('Ubicación incorrecta. Revisa el inventario.');return}if(p.stock<o.qty){state.errors++;log('Error picking',`${id}: stock insuficiente`,0,true);save();alert('Stock insuficiente.');return}p.stock-=o.qty;o.status='Pickeado';state.score+=12;log('Picking',`${id}: ${o.qty} unidades de ${o.sku}`,12,false);save()}
+function renderPacking(){let rows=state.orders.filter(o=>o.status==='Pickeado');document.getElementById('packing').innerHTML=`<h2>Packing</h2><div class="muted">Verifica el pedido y registra tipo de embalaje.</div><div class="grid" style="margin-top:14px">${rows.length?rows.map(o=>`<div class="card span-6"><h3>${o.id}</h3><div class="muted">${o.customer}</div><p>${o.sku} · ${o.qty} unidades</p><label>Tipo de embalaje</label><select id="pack-${o.id}"><option>Caja estándar</option><option>Caja reforzada</option><option>Paletizado</option></select><div class="actions"><button class="btn primary" onclick="pack('${o.id}')">Confirmar packing</button></div></div>`).join(''):'<div class="card span-12">No hay pedidos para packing.</div>'}</div>`}
+function pack(id){let o=state.orders.find(x=>x.id===id);o.status='Empacado';state.score+=6;let choice=document.getElementById('pack-'+id).value;log('Packing',`${id}: ${choice}`,6,false);save()}
+function renderDispatch(){let rows=state.orders.filter(o=>o.status==='Empacado');document.getElementById('dispatch').innerHTML=`<h2>Despacho</h2><div class="muted">Asigna transporte y confirma salida.</div><div class="grid" style="margin-top:14px">${rows.length?rows.map(o=>`<div class="card span-6"><h3>${o.id}</h3><div class="muted">Cliente: ${o.customer}</div><p>${o.sku} · ${o.qty} unidades</p><div class="row"><div><label>Transportista</label><select id="carrier-${o.id}"><option>Transportes Andes</option><option>Logística Central</option><option>Ruta Sur</option></select></div><div><label>Patente</label><input id="plate-${o.id}" placeholder="AB-CD-12"></div><div><label>Documento</label><select id="doc-${o.id}"><option>Guía de despacho</option><option>Factura</option></select></div><div><label>Prioridad</label><input value="${o.priority}" disabled></div></div><button class="btn primary" onclick="dispatchOrder('${o.id}')">Despachar</button></div>`).join(''):'<div class="card span-12">No hay pedidos listos para despacho.</div>'}</div>`}
+function dispatchOrder(id){let plate=document.getElementById('plate-'+id).value.trim();if(!plate){alert('Ingresa una patente');return}let o=state.orders.find(x=>x.id===id);o.status='Despachado';state.score+=10;log('Despacho',`${id} salió con patente ${plate}`,10,false);save()}
+function renderCases(){document.getElementById('cases').innerHTML=`<h2>Casos y contingencias</h2><div class="muted">Activa escenarios para practicar toma de decisiones. Cada caso activado queda en la bitácora.</div><div class="grid" style="margin-top:14px"><div class="card span-6"><h3>Caso 1 · Quiebre de stock</h3><p>Un cliente solicita 20 monitores adicionales. Evalúa disponibilidad y decide qué hacer.</p><button class="btn secondary" onclick="triggerCase('stock')">Activar caso</button></div><div class="card span-6"><h3>Caso 2 · Diferencia de recepción</h3><p>La OC-1002 llega con 3 unidades menos.</p><button class="btn secondary" onclick="triggerCase('reception')">Activar caso</button></div><div class="card span-6"><h3>Caso 3 · Pedido prioritario</h3><p>Un pedido urgente debe adelantarse.</p><button class="btn secondary" onclick="triggerCase('priority')">Activar caso</button></div><div class="card span-6"><h3>Caso 4 · Auditoría</h3><p>Contrasta stock físico y lógico de un SKU.</p><button class="btn secondary" onclick="triggerCase('audit')">Activar caso</button></div></div><div id="caseResult" style="margin-top:14px"></div><div class="card" style="margin-top:14px"><h3>Respuesta / decisión del estudiante</h3><textarea id="caseNotes" placeholder="Describe la decisión tomada, fundamento e impacto esperado.">${esc(state.notes||'')}</textarea><div class="actions"><button class="btn primary" onclick="saveNotes()">Guardar respuesta</button></div></div>`}
+function saveNotes(){state.notes=document.getElementById('caseNotes').value.trim();log('Evidencia','Respuesta de contingencia actualizada');save();alert('Respuesta guardada en la evidencia final.')}
+function triggerCase(type){let html='';state.caseCompleted=(state.caseCompleted||0)+1;if(type==='stock'){let p=prod('SKU-003');html=`<div class="alert"><b>Solicitud adicional:</b> 20 unidades de ${p.name}. Stock actual: ${p.stock}. ¿Hay disponibilidad? Si no, identifica la OC asociada.</div>`}if(type==='reception'){html=`<div class="alert"><b>Evento:</b> OC-1002 llega con 17 unidades. Registra 17 y selecciona “Con diferencia”.</div>`}if(type==='priority'){let o=state.orders.find(x=>x.id==='PED-2003');if(o)o.priority='Alta';html=`<div class="alert"><b>Evento aplicado:</b> PED-2003 ahora es prioridad Alta. Revisa Picking.</div>`}if(type==='audit'){let p=prod('SKU-002');html=`<div class="alert"><b>Conteo físico:</b> SKU-002 registra ${Math.max(0,p.stock-2)} unidades, mientras el sistema informa ${p.stock}. Determina la diferencia.</div>`}log('Contingencia',`Caso activado: ${type}`);save();document.getElementById('caseResult').innerHTML=html}
+function scoreClass(){return state.score>=70?'complete':state.score>=40?'incomplete':''}
+function renderReport(){updateHeader();const recv=state.purchaseOrders.filter(x=>x.status==='Recibida').length,shipped=state.orders.filter(x=>x.status==='Despachado').length,comp=completion();document.getElementById('report').innerHTML=`<div class="section-title report-actions no-print">
+<div><h2>Evidencia de aprendizaje</h2><div class="muted">Reporte generado desde la bitácora del simulador. Usa la botonera superior para volver al Panel o cerrar tu sesión.</div></div>
+</div><div class="report-sheet" style="margin-top:14px"><div class="report-head"><div><div class="brand">IPG · CENTRO DE SIMULACIÓN DIGITAL</div><div class="report-title">Reporte WMS · ${esc(state.meta.activity)}</div><div class="muted">Versión ${VERSION}</div></div><div class="report-meta"><b>${esc(state.meta.name)}</b><br>ID: ${esc(state.meta.studentId)}<br>${esc(state.meta.career)} · ${esc(state.meta.section)}<br>Docente: ${esc(state.meta.teacher||'—')}</div></div><div class="report-grid"><div class="report-kpi ${scoreClass()}"><span class="muted">Puntaje</span><b>${state.score}</b></div><div class="report-kpi"><span class="muted">Errores</span><b>${state.errors}</b></div><div class="report-kpi"><span class="muted">Avance</span><b>${comp}%</b></div><div class="report-kpi"><span class="muted">Tiempo</span><b>${formatDuration(elapsedSeconds())}</b></div></div><div class="grid"><div class="span-6"><h3>Resumen operacional</h3><table><tr><th>Indicador</th><th>Resultado</th></tr><tr><td>OC recepcionadas</td><td>${recv}/${state.purchaseOrders.length}</td></tr><tr><td>Pedidos despachados</td><td>${shipped}/${state.orders.length}</td></tr><tr><td>Contingencias activadas</td><td>${state.caseCompleted||0}</td></tr><tr><td>Inicio</td><td>${new Date(state.startedAt).toLocaleString('es-CL')}</td></tr><tr><td>Finalización</td><td>${state.finishedAt?new Date(state.finishedAt).toLocaleString('es-CL'):'En curso'}</td></tr></table></div><div class="span-6"><h3>Respuesta a contingencia</h3><div class="card" style="box-shadow:none;min-height:130px">${state.notes?esc(state.notes):'<span class="muted">Sin respuesta registrada.</span>'}</div></div><div class="span-12"><h3>Bitácora de acciones</h3><div class="table-wrap"><table><thead><tr><th>Fecha/hora</th><th>Tiempo</th><th>Tipo</th><th>Acción</th><th>Puntos</th></tr></thead><tbody>${state.logs.slice().reverse().map(l=>`<tr><td>${esc(l.display)}</td><td>${formatDuration(l.elapsed)}</td><td>${esc(l.type)}</td><td>${esc(l.msg)}</td><td>${l.points||0}</td></tr>`).join('')}</tbody></table></div></div></div><div class="footer-note">Documento generado automáticamente por IPG WMS Simulator V3.6. Los datos provienen de la sesión almacenada en el navegador del estudiante.</div></div>`}
+function finishSession(){if(!state.finishedAt){pauseClock();state.finishedAt=new Date().toISOString();log('Cierre','Actividad finalizada por el estudiante');persist(false)}renderReport();updateHeader()}
+function finishAndPrint(){window.print()}
+function csvCell(v){return '"'+String(v??'').replace(/"/g,'""')+'"'}
+function downloadCSV(){const rows=[['IPG WMS Simulator V3.6'],['Estudiante',state.meta.name],['ID',state.meta.studentId],['Carrera',state.meta.career],['Sección',state.meta.section],['Actividad',state.meta.activity],['Docente',state.meta.teacher],['Puntaje',state.score],['Errores',state.errors],['Avance',completion()+'%'],['Tiempo',formatDuration(elapsedSeconds())],[],['Fecha/Hora','Tiempo','Tipo','Acción','Puntos','Error']];state.logs.slice().reverse().forEach(l=>rows.push([l.display,formatDuration(l.elapsed),l.type,l.msg,l.points||0,l.error?'Sí':'No']));const csv='\ufeff'+rows.map(r=>r.map(csvCell).join(';')).join('\n');downloadBlob(csv,`WMS_${safeName(state.meta.studentId)}_${safeName(state.meta.activity)}.csv`,'text/csv;charset=utf-8')}
+function downloadJSON(){downloadBlob(JSON.stringify(state,null,2),`WMS_${safeName(state.meta.studentId)}_${safeName(state.meta.activity)}.json`,'application/json')}
+function safeName(s){return String(s||'').replace(/[^a-z0-9_-]/gi,'_')}
+function downloadBlob(content,name,type){const blob=new Blob([content],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},100)}
+function renderGuide(){document.getElementById('guide').innerHTML=`<h2>Guía rápida V2</h2><div class="grid" style="margin-top:14px"><div class="card span-8"><h3>Flujo sugerido</h3><ol><li>Completa identificación y código de actividad.</li><li>Revisa el Panel.</li><li>Recepciona al menos una OC.</li><li>Comprueba inventario.</li><li>Ejecuta Picking → Packing → Despacho.</li><li>Activa una contingencia y registra tu decisión.</li><li>Abre <b>Evidencia</b> y revisa tu bitácora.</li><li>Finaliza y guarda el reporte como PDF; opcionalmente descarga CSV.</li></ol><h3>Qué registra el sistema</h3><ul><li>Identificación del estudiante y sección.</li><li>Código de actividad.</li><li>Hora de inicio y tiempo efectivo de sesión.</li><li>Operaciones ejecutadas.</li><li>Puntaje y errores.</li><li>Contingencias activadas.</li><li>Respuesta del estudiante.</li></ul><h3>Uso del PDF</h3><p>Al pulsar <b>Guardar PDF</b>, se abre la impresión del navegador. Selecciona “Guardar como PDF” si necesitas conservar una copia de tu evidencia.</p></div><div class="card span-4"><button class="btn danger" onclick="resetOps()">Restablecer ejercicio</button></div></div><div class="footer-note">Este entorno modela procesos WMS genéricos con propósito formativo.</div>`}
+function renderAll(){renderDashboard();renderReception();renderInventory();renderPicking();renderPacking();renderDispatch();renderCases();renderReport();renderGuide();persist(false)}
+window.addEventListener('beforeunload',()=>{if(state){pauseClock();persist(false)}});
+const saved=localStorage.getItem(STORAGE);if(saved){try{const s=JSON.parse(saved);if(s?.meta?.name){document.getElementById('loginName').value=s.meta.name;document.getElementById('loginId').value=s.meta.studentId||'';document.getElementById('loginCareer').value=s.meta.career||'';document.getElementById('loginSection').value=s.meta.section||'';document.getElementById('loginActivity').value=s.meta.activity||'';document.getElementById('loginTeacher').value=s.meta.teacher||'';}}catch(e){}}
+
+/* ===== IPG TRAZABILIDAD CENTRAL ===== */
+const IPG_TRACE_URL="https://uegxxazgqvjjqnmpodln.supabase.co";
+const IPG_TRACE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlZ3h4YXpncXZqanFubXBvZGxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTMxMDksImV4cCI6MjEwNjI2OTEwOX0.93hHsgPuCrPWZma29meYK2w5EDBff4tv80aUky4v_UQ";
+const IPG_TRACE_KEY="ipg_trace_wms_v3";
+const IPG_TRACE_SIM="IPG WMS";
+let ipgTrace=(()=>{try{return JSON.parse(localStorage.getItem(IPG_TRACE_KEY))||{}}catch(e){return {}}})();
+let ipgTraceLastSig="";
+function ipgTraceUUID(){if(window.crypto&&crypto.randomUUID)return crypto.randomUUID();return "ipg-"+Date.now()+"-"+Math.random().toString(36).slice(2,10)}
+function ipgTraceStatus(msg,bad=false){const e=document.getElementById("ipgTraceText");if(!e)return;e.textContent=msg;e.parentElement.style.borderColor=bad?"#f3c2c2":"#dce5ed";e.parentElement.style.background=bad?"#fff7f7":"#f7fafc"}
+
+function ipgTraceStarted(){return !!(state&&state.meta&&state.startedAt)}
+function ipgTraceMeta(){return {nombre:state?.meta?.name||"",studentId:state?.meta?.studentId||"",carrera:state?.meta?.career||"",seccion:state?.meta?.section||"",docente:state?.meta?.teacher||"",actividad:state?.meta?.activity||""}}
+function ipgTraceAdvance(){try{return Number(completion())||0}catch(e){return 0}}
+function ipgTraceScore(){return Number.isFinite(Number(state?.score))?Number(state.score):null}
+function ipgTraceTime(){try{return Math.max(0,Math.floor(elapsedSeconds()))}catch(e){return 0}}
+
+function ipgTraceEnsureSession(force=false){const m=ipgTraceMeta();if(force||!ipgTrace.sessionId||ipgTrace.studentId!==m.studentId||ipgTrace.finished){ipgTrace={sessionId:ipgTraceUUID(),studentId:m.studentId||"",finished:false,createdAt:new Date().toISOString()};localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace))}return ipgTrace.sessionId}
+async function ipgTraceSync(evento,estado){
+ if(!ipgTraceStarted())return false;
+ const m=ipgTraceMeta();
+ if(!m.studentId)return false;
+ ipgTraceEnsureSession(false);
+ const row={session_id:ipgTrace.sessionId,evento,nombre:m.nombre||null,rut_id:m.studentId,carrera:m.carrera||null,seccion:m.seccion||null,docente:m.docente||null,simulador:IPG_TRACE_SIM,actividad:m.actividad||null,estado,avance:ipgTraceAdvance(),puntaje:ipgTraceScore(),intentos:null,tiempo_segundos:ipgTraceTime(),unidad_1:null,unidad_2:null,unidad_3:null};
+ ipgTraceStatus("enviando "+evento+"...");
+ try{
+   const r=await fetch(IPG_TRACE_URL+"/rest/v1/participaciones",{method:"POST",headers:{"Content-Type":"application/json","apikey":IPG_TRACE_ANON,"Authorization":"Bearer "+(ipgAccessToken()||IPG_TRACE_ANON),"Prefer":"return=minimal"},body:JSON.stringify(row)});
+   if(!r.ok)throw new Error("HTTP "+r.status+" "+await r.text());
+   ipgTrace.lastSync=new Date().toISOString();
+   if(evento==="finalizacion")ipgTrace.finished=true;
+   localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
+   ipgTraceStatus("sincronizado · "+new Date().toLocaleTimeString("es-CL"));
+   return true
+ }catch(e){
+   console.error("Trazabilidad IPG:",e);
+   ipgTraceStatus("sin conexión central; el progreso local continúa guardado.",true);
+   return false
+ }
+}
+function ipgTraceSignature(){return [ipgTraceAdvance(),ipgTraceScore()].join("|")}
+function ipgTraceWatch(){
+ document.addEventListener("click",ev=>{
+   const b=ev.target.closest("button");
+   if(!b)return;
+   const txt=(b.textContent||"").trim().toLowerCase(),id=b.id||"";
+   if(id==="reset"||txt.includes("reiniciar")||txt.includes("restablecer")){if(txt.includes("reiniciar"))localStorage.removeItem(IPG_TRACE_KEY);return}
+   if(id==="start"||txt.includes("guardar e iniciar")||txt==="iniciar simulación"||txt.includes("continuar sesión guardada")){
+     setTimeout(async()=>{
+       if(ipgTraceStarted()){
+         ipgTraceEnsureSession(ipgTrace.finished||false);
+         ipgTraceLastSig=ipgTraceSignature();
+         const wasPaused=!!ipgTrace.paused;
+         ipgTrace.paused=false;
+         localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
+         await ipgTraceSync(wasPaused?"reanudacion":"inicio",wasPaused?"En progreso":"Iniciado");
+       }
+     },250);
+     return
+   }
+   if(txt.includes("finalizar")||txt.includes("guardar / imprimir pdf"))return;
+   setTimeout(async()=>{if(!ipgTraceStarted())return;const sig=ipgTraceSignature();if(sig!==ipgTraceLastSig){ipgTraceLastSig=sig;await ipgTraceSync("avance","En progreso")}},300)
+ })
+}
+async function traceFinalizeAndPrint(ev){if(ev)ev.preventDefault();if(ipgTraceStarted())await ipgTraceSync("finalizacion","Finalizado");window.print()}
+
+finishAndPrint=function(){window.print()};
+
+ipgTraceWatch();
+if(ipgTrace.lastSync)ipgTraceStatus("última sincronización · "+new Date(ipgTrace.lastSync).toLocaleString("es-CL"));
+/* ===== FIN IPG TRAZABILIDAD CENTRAL ===== */
+
+
+async function ipgPostFinalSnapshot(){
+  const m=ipgTraceMeta();
+  const totalTime=ipgTraceTime(), finalAdvance=ipgTraceAdvance(), finalScore=ipgTraceScore();
+  ipgTraceEnsureSession(false);
+  const row={session_id:ipgTrace.sessionId,evento:"finalizacion",nombre:m.nombre||null,rut_id:m.studentId||null,carrera:m.carrera||null,seccion:m.seccion||null,docente:m.docente||null,simulador:IPG_TRACE_SIM,actividad:m.actividad||null,estado:"Finalizado",avance:finalAdvance,puntaje:finalScore,intentos:null,tiempo_segundos:totalTime,unidad_1:null,unidad_2:null,unidad_3:null};
+  pauseClock();if(state){state.finishedAt=new Date().toISOString();persist(false)}
+  ipgTrace.finished=true;ipgTrace.paused=false;localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
+  try{
+    ipgTraceStatus("cerrando sesión...");
+    const send=fetch(IPG_TRACE_URL+"/rest/v1/participaciones",{method:"POST",headers:{"Content-Type":"application/json","apikey":IPG_TRACE_ANON,"Authorization":"Bearer "+(ipgAccessToken()||IPG_TRACE_ANON),"Prefer":"return=minimal"},body:JSON.stringify(row)});
+    const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error("timeout")),2500));
+    const r=await Promise.race([send,timeout]);if(r&&!r.ok)throw new Error("HTTP "+r.status);
+    ipgTraceStatus("sesión finalizada.");
+  }catch(e){console.error("Cierre central:",e);ipgTraceStatus("sesión cerrada localmente; sincronización pendiente.",true)}
+}
+async function ipgGoPortal(finalize=false){
+  if(finalize){await ipgPostFinalSnapshot();window.location.href="../";return}
+  try{
+    if(ipgTraceStarted()){await ipgTraceSync("suspension","Suspendido");ipgTrace.paused=true;localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace))}
+  }catch(e){console.error("Suspensión:",e)}
+  pauseClock();if(state)persist(false);
+  window.location.href="../";
+}
+document.getElementById("ipgBackPortal")?.addEventListener("click",async()=>{await ipgGoPortal(false)});
+document.getElementById("ipgFinishPortal")?.addEventListener("click",async(e)=>{
+  const btn=e.currentTarget;
+  if(btn.dataset.confirmed!=="1"){btn.dataset.confirmed="1";btn.textContent="Confirmar finalización";setTimeout(()=>{if(btn.dataset.confirmed==="1"){btn.dataset.confirmed="0";btn.textContent="Finalizar y volver al portal"}},5000);return}
+  btn.disabled=true;btn.textContent="Finalizando...";await ipgGoPortal(true)
+});
+
+
+document.getElementById("ipgEvidenceTop")?.addEventListener("click",()=>{show("report")});
+
+document.getElementById("ipgPanelTop")?.addEventListener("click",()=>{show("dashboard")});
+
 const IPG_AUTH_URL="https://uegxxazgqvjjqnmpodln.supabase.co";
 const IPG_AUTH_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlZ3h4YXpncXZqanFubXBvZGxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTMxMDksImV4cCI6MjEwNjI2OTEwOX0.93hHsgPuCrPWZma29meYK2w5EDBff4tv80aUky4v_UQ";
-const IPG_EMAIL_KEY="ipg_csd_email_access_v1";
+const IPG_AUTH_KEY="ipg_csd_email_access_v1";
 const IPG_ACCESS_MODULE="WMS";
 
+function ipgGetAuth(){
+  const email=(localStorage.getItem(IPG_AUTH_KEY)||"").trim().toLowerCase();
+  return email?{user:{email},email}:null;
+}
+function ipgSetAuth(v){
+  const email=(v?.user?.email||v?.email||"").trim().toLowerCase();
+  if(email)localStorage.setItem(IPG_AUTH_KEY,email); else localStorage.removeItem(IPG_AUTH_KEY);
+}
+function ipgAccessToken(){ return ""; }
 function ipgInstitutional(email){
   email=(email||"").trim().toLowerCase();
   return email.endsWith("@alumnos.ipg.cl")||email.endsWith("@docentes.ipg.cl")||email.endsWith("@ipg.cl");
 }
 function ipgAuthMsg(t,c=""){const x=document.getElementById("ipgAuthMsg");if(x){x.className=c;x.textContent=t}}
-function ipgStoredEmail(){return (localStorage.getItem(IPG_EMAIL_KEY)||"").trim().toLowerCase();}
-function ipgGrantEmailAccess(email){
-  email=(email||"").trim().toLowerCase();
-  localStorage.setItem(IPG_EMAIL_KEY,email);
-  window.IPG_INSTITUTIONAL_EMAIL=email;
-  document.body.classList.add("ipg-auth-ok");
-}
-function ipgAccessSessionId(){
-  const k="csd_access_sid_"+IPG_ACCESS_MODULE.replace(/[^a-z0-9]+/gi,"_").toLowerCase();
+function ipgAccessSid(){
+  const k="csd_sid_"+IPG_ACCESS_MODULE.replace(/[^a-z0-9]+/gi,"_").toLowerCase();
   let sid=sessionStorage.getItem(k);
   if(!sid){
-    sid=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():"acc-"+Date.now()+"-"+Math.random().toString(36).slice(2,9);
+    sid=(crypto?.randomUUID)?crypto.randomUUID():"acc-"+Date.now()+"-"+Math.random().toString(36).slice(2);
     sessionStorage.setItem(k,sid);
   }
   return sid;
 }
 async function registrarAccesoModuloCSD(email){
-  const okKey="csd_access_ok_"+IPG_ACCESS_MODULE.replace(/[^a-z0-9]+/gi,"_").toLowerCase();
-  if(sessionStorage.getItem(okKey)==="1")return true;
+  const k="csd_ok_"+IPG_ACCESS_MODULE.replace(/[^a-z0-9]+/gi,"_").toLowerCase();
+  if(sessionStorage.getItem(k)==="1") return true;
   try{
     const r=await fetch(IPG_AUTH_URL+"/rest/v1/rpc/registrar_acceso_csd",{
       method:"POST",
       headers:{"Content-Type":"application/json","apikey":IPG_AUTH_ANON,"Authorization":"Bearer "+IPG_AUTH_ANON},
-      body:JSON.stringify({p_email:email,p_modulo:IPG_ACCESS_MODULE,p_session_id:ipgAccessSessionId()})
+      body:JSON.stringify({p_email:email,p_modulo:IPG_ACCESS_MODULE,p_session_id:ipgAccessSid()})
     });
-    if(!r.ok){console.error("Registro de acceso CSD:",r.status,await r.text());return false;}
-    sessionStorage.setItem(okKey,"1");
-    return true;
-  }catch(e){console.error("Registro de acceso CSD:",e);return false;}
+    if(!r.ok){console.error("registrar_acceso_csd",r.status,await r.text());return false;}
+    sessionStorage.setItem(k,"1"); return true;
+  }catch(e){console.error(e);return false;}
 }
-async function ipgEmailLogin(){
+function ipgGrant(email){
+  email=(email||"").trim().toLowerCase();
+  localStorage.setItem(IPG_AUTH_KEY,email);
+  window.IPG_INSTITUTIONAL_EMAIL=email;
+  document.body.classList.add("ipg-auth-ok");
+}
+async function ipgLoginEmail(){
   const email=(document.getElementById("ipgAuthEmail")?.value||"").trim().toLowerCase();
-  if(!ipgInstitutional(email))return ipgAuthMsg("Usa un correo @alumnos.ipg.cl, @docentes.ipg.cl o @ipg.cl.","err");
+  if(!ipgInstitutional(email)) return ipgAuthMsg("Usa un correo @alumnos.ipg.cl, @docentes.ipg.cl o @ipg.cl.","err");
   ipgAuthMsg("Registrando acceso...");
   const tracked=await registrarAccesoModuloCSD(email);
-  ipgGrantEmailAccess(email);
-  ipgAuthMsg(tracked?"Acceso registrado correctamente.":"Acceso concedido. No fue posible registrar la trazabilidad; informa a Escuela.","ok");
+  ipgGrant(email);
+  ipgAuthMsg(tracked?"Acceso correcto.":"Acceso concedido; no fue posible registrar la trazabilidad.","ok");
 }
 document.getElementById("ipgAuthPortal")?.addEventListener("click",()=>location.href="../");
-document.getElementById("ipgAuthLogin")?.addEventListener("click",ipgEmailLogin);
-document.getElementById("ipgAuthEmail")?.addEventListener("keydown",e=>{if(e.key==="Enter")ipgEmailLogin();});
+document.getElementById("ipgAuthLogin")?.addEventListener("click",ipgLoginEmail);
+document.getElementById("ipgAuthEmail")?.addEventListener("keydown",e=>{if(e.key==="Enter")ipgLoginEmail();});
 (function(){
-  const email=ipgStoredEmail();
+  const email=(localStorage.getItem(IPG_AUTH_KEY)||"").trim().toLowerCase();
   if(ipgInstitutional(email)){
-    const input=document.getElementById("ipgAuthEmail"); if(input)input.value=email;
-    ipgGrantEmailAccess(email);
+    const input=document.getElementById("ipgAuthEmail"); if(input) input.value=email;
+    ipgGrant(email);
     registrarAccesoModuloCSD(email);
   }
 })();
