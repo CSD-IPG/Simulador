@@ -42,6 +42,15 @@ body.ipg-auth-ok #ipgAuthGate{display:none!important}
 #ipgAuthMsg.err{background:#fff3f3;color:#9b2c2c}
 #ipgAuthMsg.ok{background:#eefaf4;color:#176b45}
 </style>
+
+<style id="ipg-matfin-toolbar-style">
+.ipg-exitbar{position:sticky;top:0;z-index:900;display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 18px;background:#fff;border-bottom:1px solid #dfe7ee;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.ipg-exitbar button{border:0;border-radius:9px;padding:9px 12px;font-weight:700;cursor:pointer}
+.ipg-exitbar .ipg-back{background:#edf2f6;color:#24405b}
+.ipg-exitbar .ipg-finish{background:#24405b;color:#fff}
+.ipg-exitbar .ipg-note{font-size:11px;color:#64748b;flex:1;min-width:220px}
+@media(max-width:760px){.ipg-exitbar{position:relative}.ipg-exitbar button{width:100%}.ipg-exitbar .ipg-note{width:100%}}
+</style>
 </head>
 <body><div id="ipgAuthGate">
 <div class="ipg-auth-card">
@@ -57,7 +66,15 @@ body.ipg-auth-ok #ipgAuthGate{display:none!important}
 </div>
 <div id="ipgAuthMsg">Acceso permitido para @alumnos.ipg.cl, @docentes.ipg.cl y @ipg.cl. No se requiere contraseña.</div>
 </div></div>
-<div class="top"><div class="nav"><div class="brand"><div class="mark">IPG</div><div><strong>IPG Matemática Financiera V2</strong><small>Guías interactivas · ejercicios resueltos · tests de habilitación</small></div></div><a href="#">← Volver al portal</a></div></div>
+
+<div class="ipg-exitbar" id="ipgMainToolbar">
+  <button class="ipg-back" id="ipgPanelTop" type="button">Panel</button>
+  <button class="ipg-back" id="ipgEvidenceTop" type="button">Evidencia</button>
+  <button class="ipg-back" id="ipgSavePortal" type="button">Guardar avance y volver al portal</button>
+  <button class="ipg-finish" id="ipgFinishPortal" type="button">Finalizar y volver al portal</button>
+  <span class="ipg-note">Guardar conserva el progreso y detiene el tiempo. Finalizar registra el cierre de la sesión.</span>
+</div>
+<div class="top"><div class="nav"><div class="brand"><div class="mark">IPG</div><div><strong>IPG Matemática Financiera V2</strong><small>Guías interactivas · ejercicios resueltos · tests de habilitación</small></div></div><a href="../" id="ipgTopPortal">← Volver al portal</a></div></div>
 <div class="shell">
 <section class="hero"><div><span class="badge">IAEPRO2004ONL · MATEMÁTICA FINANCIERA</span><h1>Aprender, practicar, revisar y habilitar</h1><p>Tres unidades alineadas al programa de asignatura, con guías progresivas, desarrollo paso a paso y un test de salida por unidad. El estudiante puede repetir cada test hasta alcanzar el nivel de habilitación.</p></div><div class="stats"><div class="st"><b id="guidesH">0/9</b><span>Guías revisadas</span></div><div class="st"><b id="passedH">0/3</b><span>Unidades habilitadas</span></div><div class="st"><b id="tmH">00:00</b><span>Tiempo de estudio</span></div><div class="st"><b id="overallH">0%</b><span>Avance global</span></div></div></section>
 <div class="layout">
@@ -258,6 +275,61 @@ $("csv").onclick=()=>{let rows=[["Campo","Valor"],["Estudiante",s.student],["ID"
 $("json").onclick=()=>dl("MATFIN_"+(s.studentId||"estudiante")+".json",JSON.stringify({...s,elapsed:elapsed()},null,2),"application/json");
 setInterval(()=>{$("tmH").textContent=$("tF").textContent=fmt(elapsed())},1000);
 ["student","studentId","career","section","activity","teacher"].forEach(id=>$(id).value=s[id]||"");if(!s.sessionId)s.sessionId=newSessionId();if(s.started){s.elapsed=elapsed();s.start=Date.now()}renderAll();
+
+
+function ipgShowView(viewId){
+  const tab=document.querySelector('.tab[data-v="'+viewId+'"]');
+  if(tab){ tab.click(); window.scrollTo({top:0,behavior:"smooth"}); }
+}
+function ipgPauseAndSave(){
+  if(s.started){
+    s.elapsed=elapsed();
+    s.started=false;
+    s.start=0;
+    log("SUSPENSIÓN","Avance guardado para continuar posteriormente");
+  }else{
+    save();
+  }
+}
+async function ipgGuardarYVolver(){
+  if(s.started){
+    ipgPauseAndSave();
+    await syncCentral("suspension","Suspendido");
+  }else{
+    save();
+  }
+  location.href="../";
+}
+async function ipgFinalizarYVolver(){
+  if(!s.studentId){
+    if(confirm("No hay una sesión académica iniciada. ¿Volver al portal de todos modos?")) location.href="../";
+    return;
+  }
+  if(!confirm("¿Finalizar esta sesión? Se registrará el cierre y conservará la evidencia obtenida.")) return;
+  if(s.started){ s.elapsed=elapsed(); s.started=false; s.start=0; }
+  s.finished=true;
+  save();
+  await syncCentral("finalizacion","Finalizado");
+  location.href="../";
+}
+document.getElementById("ipgPanelTop")?.addEventListener("click",()=>ipgShowView("inicio"));
+document.getElementById("ipgEvidenceTop")?.addEventListener("click",()=>ipgShowView("evidencia"));
+document.getElementById("ipgSavePortal")?.addEventListener("click",ipgGuardarYVolver);
+document.getElementById("ipgFinishPortal")?.addEventListener("click",ipgFinalizarYVolver);
+document.getElementById("finish")?.addEventListener("click",async()=>{
+  if(!s.studentId)return alert("Primero inicia una sesión.");
+  if(!confirm("¿Finalizar y registrar esta sesión?"))return;
+  if(s.started){s.elapsed=elapsed();s.started=false;s.start=0;}
+  s.finished=true;save();
+  const ok=await syncCentral("finalizacion","Finalizado");
+  alert(ok?"Sesión finalizada y registrada.":"Sesión finalizada localmente. No fue posible enviar el registro central.");
+});
+document.getElementById("ipgTopPortal")?.addEventListener("click",e=>{
+  if(s.started){
+    e.preventDefault();
+    if(confirm("Hay una sesión activa. ¿Guardar el avance antes de volver al portal?")) ipgGuardarYVolver();
+  }
+});
 
 const IPG_AUTH_URL="https://uegxxazgqvjjqnmpodln.supabase.co";
 const IPG_AUTH_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlZ3h4YXpncXZqanFubXBvZGxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTMxMDksImV4cCI6MjEwNjI2OTEwOX0.93hHsgPuCrPWZma29meYK2w5EDBff4tv80aUky4v_UQ";
