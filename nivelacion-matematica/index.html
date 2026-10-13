@@ -73,8 +73,8 @@ white-space:nowrap
 <button class="navb" data-go="u3">Unidad III</button>
 <button class="navb" data-go="registro">Registro</button>
 <button class="navb" data-go="evidencia">Evidencia</button>
-<button type="button" class="saveb" id="nivBack">Guardar y volver al portal</button>
-<button type="button" class="finishb" id="nivFinish">Finalizar y volver al portal</button>
+<button class="saveb" id="nivBack">Guardar y volver al portal</button>
+<button class="finishb" id="nivFinish">Finalizar y volver al portal</button>
 <small>Guardar y volver conserva tu progreso y detiene el tiempo. Finalizar cierra la actividad.</small>
 </div><div id="ipgAuthGate">
 <div class="ipg-auth-card">
@@ -138,11 +138,9 @@ function currentAverageScore(){
 }
 function currentAttempts(){return ["u1","u2","u3"].reduce((a,k)=>a+(s.tests?.[k]?.attempts||0),0)}
 async function syncCentral(evento,estado){
-  if(!s.studentId) return false;
-
+  if(!s.started||!s.studentId) return false;
   const row={
     session_id:s.sessionId,
-    email_institucional:(window.IPG_INSTITUTIONAL_EMAIL||ipgStoredEmail()||null),
     evento:evento,
     nombre:s.student,
     rut_id:s.studentId,
@@ -160,16 +158,8 @@ async function syncCentral(evento,estado){
     unidad_2:s.tests?.u2?.score ?? null,
     unidad_3:s.tests?.u3?.score ?? null
   };
-
   const box=document.getElementById("syncState");
-  if(box){
-    box.className="notice";
-    box.textContent="Enviando registro institucional...";
-  }
-
-  const controller=new AbortController();
-  const timer=setTimeout(()=>controller.abort(),5000);
-
+  if(box){box.className="notice";box.textContent="Enviando registro institucional...";}
   try{
     const r=await fetch(SUPABASE_URL+"/rest/v1/participaciones",{
       method:"POST",
@@ -179,30 +169,19 @@ async function syncCentral(evento,estado){
         "Authorization":"Bearer "+SUPABASE_ANON_KEY,
         "Prefer":"return=minimal"
       },
-      body:JSON.stringify(row),
-      signal:controller.signal
+      body:JSON.stringify(row)
     });
     if(!r.ok) throw new Error("HTTP "+r.status+" "+await r.text());
-
     s.lastSync=new Date().toLocaleString("es-CL");
     localStorage.setItem(KEY,JSON.stringify(s));
-    if(box){
-      box.className="notice";
-      box.innerHTML="<b>Registro enviado correctamente.</b> Última sincronización: "+s.lastSync;
-    }
+    if(box){box.className="notice";box.innerHTML="<b>Registro enviado correctamente.</b> Última sincronización: "+s.lastSync;}
     return true;
   }catch(e){
     console.error("Error de registro central:",e);
-    if(box){
-      box.className="notice w";
-      box.innerHTML="<b>No fue posible enviar al registro central.</b> El progreso local permanece guardado.";
-    }
+    if(box){box.className="notice w";box.innerHTML="<b>No fue posible enviar al registro central.</b> El progreso local permanece guardado. Revisa conexión y vuelve a intentar al finalizar.";}
     return false;
-  }finally{
-    clearTimeout(timer);
   }
 }
-
 let s=(()=>{try{return JSON.parse(localStorage.getItem(KEY))||init()}catch(e){return init()}})();
 const $=id=>document.getElementById(id),fmt=x=>{x=Math.max(0,x||0);let h=Math.floor(x/3600),m=Math.floor((x%3600)/60),q=x%60;return h?`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(q).padStart(2,"0")}`:`${String(m).padStart(2,"0")}:${String(q).padStart(2,"0")}`},elapsed=()=>s.started?s.elapsed+Math.floor((Date.now()-s.start)/1000):s.elapsed;
 function save(){localStorage.setItem(KEY,JSON.stringify(s));renderStats()}
@@ -247,84 +226,49 @@ setInterval(()=>{$("tmH").textContent=$("tF").textContent=fmt(elapsed())},1000);
 const IPG_AUTH_KEY="ipg_csd_email_access_v1";
 function ipgInstitutional(email){
   email=(email||"").trim().toLowerCase();
-  return email.endsWith("@alumnos.ipg.cl")||email.endsWith("@docentes.ipg.cl")||email.endsWith("@ipg.cl");
+  return /^[^\s@]+@(?:alumnos\.ipg\.cl|docentes\.ipg\.cl|ipg\.cl)$/.test(email);
 }
 function ipgAuthMsg(t,c=""){
   const x=document.getElementById("ipgAuthMsg");
-  if(x){x.className=c;x.textContent=t}
+  if(x){x.className=c;x.textContent=t;}
 }
-function ipgStoredEmail(){return (localStorage.getItem(IPG_AUTH_KEY)||"").trim().toLowerCase()}
 function ipgGrantEmailAccess(email){
   localStorage.setItem(IPG_AUTH_KEY,email);
-  document.body.classList.add("ipg-auth-ok");
   window.IPG_INSTITUTIONAL_EMAIL=email;
+  document.body.classList.add("ipg-auth-ok");
+}
+async function ipgRegistrarAcceso(email){
+  const sid="niv-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,10);
+  const r=await fetch(SUPABASE_URL+"/rest/v1/rpc/registrar_acceso_csd",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY},
+    body:JSON.stringify({p_email:email,p_modulo:"Nivelación Matemática",p_session_id:sid})
+  });
+  if(!r.ok)throw new Error("No se pudo registrar el ingreso ("+r.status+").");
+  const data=await r.json();
+  if(data && typeof data==="object" && (data.ok===false || data.success===false))throw new Error("El registro de acceso fue rechazado.");
 }
 document.getElementById("ipgAuthPortal")?.addEventListener("click",()=>location.href="../");
-
-async function registrarAccesoNivelacion(email){
-  const sid=s.sessionId||newSessionId();
-  s.sessionId=sid;
-  localStorage.setItem(KEY,JSON.stringify(s));
-  if(sessionStorage.getItem("csd_access_nivelacion_ok")==="1") return true;
-  const controller=new AbortController();
-  const timer=setTimeout(()=>controller.abort(),5000);
-
-  try{
-    const r=await fetch(SUPABASE_URL+"/rest/v1/rpc/registrar_acceso_csd",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "apikey":SUPABASE_ANON_KEY,
-        "Authorization":"Bearer "+SUPABASE_ANON_KEY
-      },
-      body:JSON.stringify({
-        p_email:email,
-        p_modulo:"Nivelación Matemática",
-        p_session_id:sid
-      }),
-      signal:controller.signal
-    });
-    if(!r.ok){
-      console.error("Registro de acceso Nivelación:",r.status,await r.text());
-      return false;
-    }
-    sessionStorage.setItem("csd_access_nivelacion_ok","1");
-    return true;
-  }catch(e){
-    console.error("Registro de acceso Nivelación:",e);
-    return false;
-  }finally{
-    clearTimeout(timer);
-  }
-}
-
-document.getElementById("ipgAuthLogin")?.addEventListener("click",async()=>{
+const ipgLoginBtn=document.getElementById("ipgAuthLogin");
+ipgLoginBtn?.addEventListener("click",async()=>{
   const email=(document.getElementById("ipgAuthEmail")?.value||"").trim().toLowerCase();
-
-  if(!email) return ipgAuthMsg("Ingresa tu correo institucional.","err");
-  if(!ipgInstitutional(email)){
-    return ipgAuthMsg("Debes usar un correo @alumnos.ipg.cl, @docentes.ipg.cl o @ipg.cl.","err");
-  }
-
-  const registrado=await registrarAccesoNivelacion(email);
-  ipgGrantEmailAccess(email);
-
-  ipgAuthMsg(
-    registrado
-      ? "Acceso correcto. El ingreso quedó registrado."
-      : "Acceso permitido. No se pudo confirmar el registro central; puedes continuar.",
-    registrado ? "ok" : "err"
-  );
+  if(!ipgInstitutional(email))return ipgAuthMsg("Ingresa un correo válido @alumnos.ipg.cl, @docentes.ipg.cl o @ipg.cl.","err");
+  ipgLoginBtn.disabled=true;
+  ipgAuthMsg("Registrando acceso institucional…");
+  try{
+    await ipgRegistrarAcceso(email);
+    ipgGrantEmailAccess(email);
+  }catch(err){
+    ipgAuthMsg("No se pudo registrar el acceso. Comprueba tu conexión e inténtalo nuevamente. "+err.message,"err");
+  }finally{ipgLoginBtn.disabled=false;}
 });
-
-const _ipgSavedEmail=ipgStoredEmail();
+document.getElementById("ipgAuthEmail")?.addEventListener("keydown",e=>{
+  if(e.key==="Enter"){e.preventDefault();ipgLoginBtn?.click();}
+});
+// Solo se recuerda el correo para facilitar su escritura: NUNCA se abre automáticamente el módulo.
+const _ipgSavedEmail=(localStorage.getItem(IPG_AUTH_KEY)||"").trim().toLowerCase();
 if(ipgInstitutional(_ipgSavedEmail)){
-  const _e=document.getElementById("ipgAuthEmail");
-  if(_e)_e.value=_ipgSavedEmail;
-  ipgGrantEmailAccess(_ipgSavedEmail);
-  // La entrada al módulo también se registra cuando el acceso institucional
-  // ya estaba autorizado en el navegador.
-  registrarAccesoNivelacion(_ipgSavedEmail).catch(()=>{});
+  const input=document.getElementById("ipgAuthEmail");if(input)input.value=_ipgSavedEmail;
 }
 
 
@@ -340,8 +284,7 @@ document.querySelectorAll("#ipgStudybar [data-go]").forEach(b=>b.addEventListene
 function nivPortalUrl(){
   return new URL("../",window.location.href).href;
 }
-
-function nivPauseLocal(){
+function nivSaveLocalAndPause(){
   if(s.started){
     s.elapsed=elapsed();
     s.started=false;
@@ -350,30 +293,28 @@ function nivPauseLocal(){
   localStorage.setItem(KEY,JSON.stringify(s));
   renderAll();
 }
-
+async function nivSyncWithTimeout(evento,estado,ms=1800){
+  try{
+    await Promise.race([
+      Promise.resolve(syncCentral(evento,estado)),
+      new Promise(resolve=>setTimeout(resolve,ms))
+    ]);
+  }catch(e){}
+}
 document.getElementById("nivBack")?.addEventListener("click",async e=>{
   const b=e.currentTarget;
   if(b.disabled)return;
-
   b.disabled=true;
   const original=b.textContent;
   b.textContent="Guardando...";
-
-  // Primero se registra la suspensión mientras la sesión aún está activa.
-  await syncCentral("suspension","Suspendido");
-  nivPauseLocal();
-
+  nivSaveLocalAndPause();
+  await nivSyncWithTimeout("suspension","Suspendido",1800);
   window.location.assign(nivPortalUrl());
-  setTimeout(()=>{
-    b.disabled=false;
-    b.textContent=original;
-  },5000);
+  setTimeout(()=>{b.disabled=false;b.textContent=original},2500);
 });
 
 document.getElementById("nivFinish")?.addEventListener("click",async e=>{
   const b=e.currentTarget;
-  if(b.disabled)return;
-
   if(b.dataset.confirmed!=="1"){
     b.dataset.confirmed="1";
     b.textContent="Confirmar finalización";
@@ -385,24 +326,19 @@ document.getElementById("nivFinish")?.addEventListener("click",async e=>{
     },5000);
     return;
   }
-
+  if(b.disabled)return;
   b.disabled=true;
   b.textContent="Finalizando...";
-
   const finalTime=elapsed();
-  s.elapsed=finalTime;
-
-  // El registro final se envía antes de detener la sesión.
-  await syncCentral("finalizacion","Finalizado");
-
-  s.started=false;
-  s.start=0;
-  s.finished=true;
-  localStorage.setItem(KEY,JSON.stringify(s));
-
+  if(s.started||s.elapsed>0||Object.keys(s.guides||{}).length>0||Object.keys(s.tests||{}).length>0){
+    s.elapsed=finalTime;
+    s.started=false;
+    s.start=0;
+    s.finished=true;
+    localStorage.setItem(KEY,JSON.stringify(s));
+    await nivSyncWithTimeout("finalizacion","Finalizado",2200);
+  }
   window.location.assign(nivPortalUrl());
 });
-
-window.addEventListener("error",e=>console.error("CSD Nivelación Matemática:",e.error||e.message));
 </script>
 </body></html>
