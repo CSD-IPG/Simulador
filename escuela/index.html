@@ -130,6 +130,18 @@
   </div>
 </div>
 
+<section class="panel" id="avanceUnidades">
+<h2>Seguimiento académico por unidad y test de salida</h2>
+<p class="sub">Detalle por correo declarado y módulo. La habilitación al 100% se confirma únicamente cuando existe evidencia explícita; un puntaje alto no equivale a habilitación.</p>
+<div class="repo-report-tools">
+<div class="f"><label>Módulo</label><select id="unitModule"><option value="">Todos los módulos</option></select></div>
+<div class="f"><label>Buscar correo</label><input id="unitEmail" placeholder="Correo institucional"></div>
+<div class="f"><label>Estado</label><select id="unitState"><option value="">Todos</option><option value="complete">100% acreditado</option><option value="progress">Con actividad</option><option value="unknown">Sin evidencia suficiente</option></select></div>
+</div>
+<div class="actions"><button class="btn teal" id="unitCsv">Descargar avance por unidad CSV</button></div>
+<div id="unitStatus" class="notice">Esperando registros académicos.</div>
+<div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>Correo</th><th>Módulo</th><th>Unidad</th><th>Test de salida</th><th>Mejor puntaje</th><th>Avance del módulo</th><th>Habilitación 100%</th><th>Última evidencia</th></tr></thead><tbody id="unitBody"></tbody></table></div>
+</section>
 <div class="repo-section" id="repositorioUso">
   <div class="panel">
     <h2 style="margin-top:0">Uso del Repositorio Académico</h2>
@@ -246,7 +258,7 @@ async function loadData(){
    if(r.status===401||r.status===403)throw new Error("Acceso no autorizado. Revisa que tu usuario esté registrado en perfiles_csd con rol escuela.");
    if(!r.ok)throw new Error("Error "+r.status+": "+await r.text());
    DATA=await r.json();
-   populateFilters();applyFilters();
+   populateFilters();applyFilters();if(ACCESS_DATA.length)renderAccessDashboard();
    $("statusBox").textContent=`Datos actualizados: ${DATA.length} sesiones consolidadas.`;
  }catch(e){$("statusBox").className="notice bad";$("statusBox").textContent=e.message;}
 }
@@ -483,63 +495,82 @@ async function loadRepositorioDashboard(){
 }
 
 
-function accessPair(email,modulo){return String(email||"").toLowerCase()+"||"+String(modulo||"")}
+// Consolidación basada en evidencia: no equipara un ingreso con una actividad.
+function normModule(v){
+ const raw=String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+ if(/bases.*(proyect|formulacion|evaluacion)/.test(raw))return 'Bases para Proyectos';
+ if(/fundamentos.*contables|contables.*financieros/.test(raw))return 'Fundamentos Contables y Financieros';
+ if(/politicas.*publicas/.test(raw))return 'Políticas Públicas';
+ if(/formacion.*humana/.test(raw))return 'Formación Humana y Empleabilidad';
+ if(/convivencia.*buen trato/.test(raw))return 'Convivencia Humana y Buen Trato';
+ return String(v||'').trim();
+}
+function accessPair(email,modulo){return String(email||'').trim().toLowerCase()+'||'+normModule(modulo).toLowerCase()}
+function accessEvidence(){
+ const started=new Set(),finished=new Set(),modules=new Set();
+ CSD_REF_ROWS.forEach(x=>{
+   if(!x.email_declarado||!x.modulo)return;
+   modules.add(normModule(x.modulo));
+   const k=accessPair(x.email_declarado,x.modulo);
+   if(x.evento==='evaluacion'){started.add(k);if(Number(x.avance)>=100)finished.add(k)}
+ });
+ ACCESS_PART.forEach(x=>{
+   const em=x.email_institucional||x.email||x.email_declarado;
+   const mod=x.simulador||x.modulo;
+   if(!mod)return;
+   modules.add(normModule(mod));
+   if(!em)return;
+   const k=accessPair(em,mod),event=String(x.evento||'').toLowerCase(),status=String(x.estado||'').toLowerCase();
+   if(['inicio','iniciado','reanudacion','avance','evaluacion','actividad','interaccion'].includes(event)||event.startsWith('test_')||event.startsWith('unidad_')||status.includes('progreso')||status.includes('finalizado'))started.add(k);
+   if(['finalizacion','finalizado','finalizada'].includes(event)||status.includes('finalizado')){started.add(k);finished.add(k)}
+ });
+ // Sesiones consolidadas: se incorporan solo si contienen un correo explícito.
+ DATA.forEach(x=>{
+   const mod=x.simulador||x.modulo;
+   if(!mod)return;
+   modules.add(normModule(mod));
+   const em=x.email_institucional||x.email||x.email_declarado;
+   if(!em)return;
+   const k=accessPair(em,mod),status=String(x.estado||'').toLowerCase();
+   if(Number(x.avance)>0||Number(x.eventos_registrados)>0||Number(x.intentos)>0||status.includes('progreso')||status.includes('finalizado'))started.add(k);
+   if(status.includes('finalizado')){started.add(k);finished.add(k)}
+ });
+ return {started,finished,modules};
+}
 function accessFiltered(){
-  const d=$("accDesde").value,h=$("accHasta").value,p=$("accPerfil").value,m=$("accModulo").value,q=$("accEmail").value.trim().toLowerCase();
-  return ACCESS_DATA.filter(x=>{
-    const day=String(x.fecha||"").slice(0,10);
-    return (!d||day>=d)&&(!h||day<=h)&&(!p||x.tipo_usuario===p)&&(!m||x.modulo===m)&&(!q||String(x.email||"").toLowerCase().includes(q));
-  });
+ const d=$('accDesde').value,h=$('accHasta').value,p=$('accPerfil').value,m=$('accModulo').value,q=$('accEmail').value.trim().toLowerCase();
+ return ACCESS_DATA.filter(x=>{
+  const day=String(x.fecha||'').slice(0,10);
+  return (!d||day>=d)&&(!h||day<=h)&&(!p||x.tipo_usuario===p)&&(!m||normModule(x.modulo)===m)&&(!q||String(x.email||'').toLowerCase().includes(q));
+ });
 }
 function renderAccessDashboard(){
-  const rows=accessFiltered();
-  const started=new Set(),finished=new Set();
-  CSD_REF_ROWS.filter(x=>x.evento==='evaluacion').forEach(x=>{const k=accessPair(x.email_declarado,x.modulo);started.add(k);if(Number(x.avance)>=100)finished.add(k)});
-  ACCESS_PART.forEach(x=>{
-    const k=accessPair(x.email_institucional,x.simulador);
-    if(x.evento==="inicio"||x.evento==="reanudacion"||x.evento==="avance"||String(x.evento||"").startsWith("test_"))started.add(k);
-    if(x.evento==="finalizacion"||x.estado==="Finalizado")finished.add(k);
-  });
-  const pairs=new Set(rows.map(x=>accessPair(x.email,x.modulo)));
-  const users=new Set(rows.map(x=>String(x.email||"").toLowerCase()).filter(Boolean));
-  const studentUsers=new Set(rows.filter(x=>x.tipo_usuario==="estudiante").map(x=>x.email));
-  const teacherUsers=new Set(rows.filter(x=>x.tipo_usuario==="docente").map(x=>x.email));
-  const startedPairs=[...pairs].filter(k=>started.has(k));
-  const finishedPairs=[...pairs].filter(k=>finished.has(k));
-  $("accTotal").textContent=rows.length;
-  $("accUsers").textContent=users.size;
-  $("accStudents").textContent=studentUsers.size;
-  $("accTeachers").textContent=teacherUsers.size;
-  $("accStarted").textContent=startedPairs.length;
-  $("accFinished").textContent=finishedPairs.length;
-  $("accNoStart").textContent=Math.max(0,pairs.size-startedPairs.length);
-  $("accStartRate").textContent=pairs.size?Math.round(startedPairs.length/pairs.size*100)+"%":"0%";
-
-  const mods=[...new Set(rows.map(x=>x.modulo).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"es"));
-  const sel=$("accModulo"),cur=sel.value;
-  sel.innerHTML='<option value="">Todos</option>'+mods.map(x=>`<option>${esc(x)}</option>`).join("");
-  if(mods.includes(cur))sel.value=cur;
-
-  const by={};
-  rows.forEach(x=>{
-    const m=x.modulo||"Sin módulo";
-    if(!by[m])by[m]={access:0,users:new Set(),pairs:new Set()};
-    by[m].access++;by[m].users.add(x.email);by[m].pairs.add(accessPair(x.email,m));
-  });
-  $("accModuleBody").innerHTML=Object.entries(by).length?Object.entries(by).sort((a,b)=>b[1].access-a[1].access).map(([m,v])=>{
-    const st=[...v.pairs].filter(k=>started.has(k)).length;
-    const fi=[...v.pairs].filter(k=>finished.has(k)).length;
-    const r1=v.pairs.size?Math.round(st/v.pairs.size*100):0;
-    const r2=st?Math.round(fi/st*100):0;
-    return `<tr><td>${esc(m)}</td><td>${v.access}</td><td>${v.users.size}</td><td>${st}</td><td>${fi}</td><td>${r1}%</td><td>${r2}%</td></tr>`;
-  }).join(""):'<tr><td colspan="7">Sin datos</td></tr>';
-
-  $("accDetailBody").innerHTML=rows.length?rows.slice(0,500).map(x=>{
-    const k=accessPair(x.email,x.modulo);
-    return `<tr><td>${dateCL(x.fecha)}</td><td>${esc(x.email)}</td><td>${esc(x.tipo_usuario)}</td><td>${esc(x.modulo)}</td><td>${started.has(k)?"Sí":"No"}</td><td>${finished.has(k)?"Sí":"No"}</td></tr>`;
-  }).join(""):'<tr><td colspan="6">Sin datos</td></tr>';
-
-  $("accStatus").textContent=`${rows.length} acceso(s) · ${users.size} usuario(s) único(s) · ${pairs.size} combinación(es) usuario/módulo.`;
+ const evidence=accessEvidence(),started=evidence.started,finished=evidence.finished;
+ const sel=$('accModulo'),selected=sel.value;
+ const mods=[...new Set([...ACCESS_DATA.map(x=>normModule(x.modulo)),...evidence.modules].filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+ sel.innerHTML='<option value="">Todos</option>'+mods.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');
+ if(mods.includes(selected))sel.value=selected;
+ const rows=accessFiltered(),pairs=new Set(rows.map(x=>accessPair(x.email,x.modulo)));
+ const users=new Set(rows.map(x=>String(x.email||'').toLowerCase()).filter(Boolean));
+ const studentUsers=new Set(rows.filter(x=>x.tipo_usuario==='estudiante').map(x=>String(x.email||'').toLowerCase()));
+ const teacherUsers=new Set(rows.filter(x=>x.tipo_usuario==='docente').map(x=>String(x.email||'').toLowerCase()));
+ const startedPairs=[...pairs].filter(k=>started.has(k)),finishedPairs=[...pairs].filter(k=>finished.has(k));
+ $('accTotal').textContent=rows.length;$('accUsers').textContent=users.size;
+ $('accStudents').textContent=studentUsers.size;$('accTeachers').textContent=teacherUsers.size;
+ $('accStarted').textContent=startedPairs.length;$('accFinished').textContent=finishedPairs.length;
+ $('accNoStart').textContent=Math.max(0,pairs.size-startedPairs.length);
+ $('accStartRate').textContent=pairs.size?Math.round(startedPairs.length/pairs.size*100)+'%':'0%';
+ const by={};
+ rows.forEach(x=>{const m=normModule(x.modulo)||'Sin módulo';if(!by[m])by[m]={access:0,users:new Set(),pairs:new Set()};by[m].access++;by[m].users.add(String(x.email||'').toLowerCase());by[m].pairs.add(accessPair(x.email,m))});
+ // Los módulos detectados en otras fuentes figuran aun si no registran accesos en esta tabla.
+ if(!$('accDesde').value&&!$('accHasta').value&&!$('accPerfil').value&&!$('accEmail').value){mods.forEach(m=>{if(!selected||m===selected){if(!by[m])by[m]={access:0,users:new Set(),pairs:new Set()}}})}
+ $('accModuleBody').innerHTML=Object.entries(by).length?Object.entries(by).sort((a,b)=>b[1].access-a[1].access).map(([m,v])=>{
+  const st=[...v.pairs].filter(k=>started.has(k)).length,fi=[...v.pairs].filter(k=>finished.has(k)).length;
+  const r1=v.pairs.size?Math.round(st/v.pairs.size*100):0,r2=st?Math.round(fi/st*100):0;
+  return `<tr><td>${esc(m)}</td><td>${v.access}</td><td>${v.users.size}</td><td>${st}</td><td>${fi}</td><td>${v.pairs.size?r1+'%':'—'}</td><td>${st?r2+'%':'—'}</td></tr>`
+ }).join(''):'<tr><td colspan="7">Sin datos</td></tr>';
+ $('accDetailBody').innerHTML=rows.length?rows.slice(0,500).map(x=>{const k=accessPair(x.email,x.modulo);return `<tr><td>${dateCL(x.fecha)}</td><td>${esc(x.email)}</td><td>${esc(x.tipo_usuario)}</td><td>${esc(normModule(x.modulo))}</td><td>${started.has(k)?'Sí':'Sin evidencia'}</td><td>${finished.has(k)?'Sí':'Sin evidencia'}</td></tr>`}).join(''):'<tr><td colspan="6">Sin datos</td></tr>';
+ $('accStatus').textContent=`${rows.length} acceso(s) · ${users.size} usuario(s) único(s) · ${pairs.size} combinación(es) usuario/módulo. Inicios y finalizaciones: solo eventos vinculables por correo y módulo. «Sin evidencia» no significa que el estudiante no haya trabajado.`;
 }
 async function loadAccessDashboard(){
   $("accStatus").className="notice";$("accStatus").textContent="Cargando accesos...";
@@ -553,20 +584,16 @@ async function loadAccessDashboard(){
     if(!rp.ok)throw new Error("Participación por email: "+rp.status+" · "+await rp.text());
     ACCESS_DATA=await ra.json();
     ACCESS_PART=await rp.json();
-    renderAccessDashboard();
+    renderAccessDashboard();renderUnits();
   }catch(e){
     console.error(e);$("accStatus").className="notice bad";$("accStatus").textContent=e.message;
   }
 }
 function downloadAccessCSV(){
-  const rows=accessFiltered();
-  const started=new Set(),finished=new Set();
-  CSD_REF_ROWS.filter(x=>x.evento==='evaluacion').forEach(x=>{const k=accessPair(x.email_declarado,x.modulo);started.add(k);if(Number(x.avance)>=100)finished.add(k)});
-  ACCESS_PART.forEach(x=>{const k=accessPair(x.email_institucional,x.simulador);if(x.evento==="inicio"||x.evento==="reanudacion"||x.evento==="avance"||String(x.evento||"").startsWith("test_"))started.add(k);if(x.evento==="finalizacion"||x.estado==="Finalizado")finished.add(k)});
-  const out=[["Fecha","Email","Perfil","Modulo","Inicio actividad","Finalizo"]];
-  rows.forEach(x=>{const k=accessPair(x.email,x.modulo);out.push([x.fecha,x.email,x.tipo_usuario,x.modulo,started.has(k)?"Si":"No",finished.has(k)?"Si":"No"])});
-  const csv="\ufeff"+out.map(r=>r.map(v=>`"${String(v??"").replaceAll('"','""')}"`).join(";")).join("\n");
-  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download="CSD_IPG_accesos.csv";a.click();URL.revokeObjectURL(a.href);
+ const rows=accessFiltered(),{started,finished}=accessEvidence();
+ const out=[['Fecha','Email','Perfil','Módulo','Inicio actividad con evidencia','Finalización con evidencia']];
+ rows.forEach(x=>{const k=accessPair(x.email,x.modulo);out.push([x.fecha,x.email,x.tipo_usuario,normModule(x.modulo),started.has(k)?'Sí':'Sin evidencia',finished.has(k)?'Sí':'Sin evidencia'])});
+ csvDownload(out,'CSD_IPG_accesos.csv');
 }
 
 async function loadAllData(){
@@ -574,6 +601,7 @@ async function loadAllData(){
   await loadData();
   await loadAccessDashboard();
   await loadRepositorioDashboard();
+  renderUnits();
 }
 
 $("loginBtn").onclick=login;$("refreshBtn").onclick=loadAllData;$("csvBtn").onclick=downloadCSV;$("logoutBtn").onclick=logout;
@@ -592,7 +620,69 @@ if(TOKEN){showDash();loadAllData();}
 let CSD_REF_ROWS=[];
 function csdRefFiltered(){const m=$('refMod').value,e=$('refEmail').value.trim().toLowerCase();return CSD_REF_ROWS.filter(x=>(!m||x.modulo===m)&&(!e||String(x.email_declarado||'').toLowerCase().includes(e)))}
 function csdRefRender(){const a=csdRefFiltered(),q=a.filter(x=>x.evento==='evaluacion'),u=new Set(a.map(x=>x.email_declarado));$('refUsers').textContent=u.size;const av=q.map(x=>Number(x.avance)).filter(Number.isFinite);$('refProgress').textContent=av.length?Math.max(...av)+'%':'—';$('refTests').textContent=q.length;$('refAvg').textContent=q.length?(q.reduce((t,x)=>t+Number(x.puntaje||0),0)/q.length).toFixed(1)+'%':'—';$('refPass').textContent=q.filter(x=>Number(x.puntaje)>=70).length;$('refBody').innerHTML=a.slice(0,400).map(x=>'<tr><td>'+esc(x.fecha||'')+'</td><td>'+esc(x.email_declarado||'')+'</td><td>'+esc(x.modulo||'')+'</td><td>'+esc(x.evento||'')+'</td><td>'+esc(x.unidad??'')+'</td><td>'+esc(x.puntaje??'')+'</td><td>'+esc(x.intento??'')+'</td><td>'+esc(x.avance??'')+'</td></tr>').join('')||'<tr><td colspan="8">Sin registros para los filtros seleccionados.</td></tr>'}
-async function loadCsdRef(){if(!TOKEN)return;const el=$('refStatus');el.textContent='Consultando resultados...';try{const r=await fetch(SUPABASE_URL+'/rest/v1/rpc/reporte_resultados_reforzamiento_csd',{method:'POST',headers:{'apikey':ANON_KEY,'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json'},body:'{}'});if(!r.ok){const detail=await r.text();throw Error('HTTP '+r.status+' · '+detail.slice(0,260))};const a=await r.json();if(!Array.isArray(a))throw Error('Respuesta no válida');CSD_REF_ROWS=a;el.textContent=a.length+' registros recibidos. Identidad declarada, no verificada. El detalle muestra hasta 400 filas; el CSV exporta los registros recibidos.';csdRefRender();if(ACCESS_DATA.length)renderAccessDashboard()}catch(e){el.textContent='No fue posible cargar resultados: '+e.message;CSD_REF_ROWS=[];csdRefRender()}}
+async function loadCsdRef(){if(!TOKEN)return;const el=$('refStatus');el.textContent='Consultando resultados...';try{const r=await fetch(SUPABASE_URL+'/rest/v1/rpc/reporte_resultados_reforzamiento_csd',{method:'POST',headers:{'apikey':ANON_KEY,'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json'},body:'{}'});if(!r.ok){const detail=await r.text();throw Error('HTTP '+r.status+' · '+detail.slice(0,260))};const a=await r.json();if(!Array.isArray(a))throw Error('Respuesta no válida');CSD_REF_ROWS=a;el.textContent=a.length+' registros recibidos. Identidad declarada, no verificada. El detalle muestra hasta 400 filas; el CSV exporta los registros recibidos.';csdRefRender();renderUnits();if(ACCESS_DATA.length)renderAccessDashboard()}catch(e){el.textContent='No fue posible cargar resultados: '+e.message;CSD_REF_ROWS=[];csdRefRender()}}
 $('refMod').addEventListener('change',csdRefRender);$('refEmail').addEventListener('input',csdRefRender);$('refCsv').onclick=()=>{const cols=['fecha','email_declarado','modulo','sesion','evento','unidad','puntaje','intento','avance','identidad_verificada'];csvDownload([cols,...csdRefFiltered().map(x=>cols.map(c=>x[c]))],'CSD_IPG_resultados_reforzamiento.csv')};
+
+// Reporte de unidades: separa evaluación, avance acumulado y habilitación verificada.
+function unitKey(email,mod){return String(email||'').trim().toLowerCase()+'||'+normModule(mod)}
+function unitNumber(x){
+ const direct=Number(x.unidad);
+ if(Number.isInteger(direct)&&direct>0&&direct<=30)return direct;
+ const ev=String(x.evento||x.actividad||'').toLowerCase();
+ const match=ev.match(/(?:unidad|unit|test|salida)[_\s:-]*(\d{1,2})/);
+ return match?Number(match[1]):null;
+}
+function unitEvidenceRows(){
+ const groups=new Map();
+ function get(email,mod,n){
+  if(!email||!mod||!n)return null;
+  const key=unitKey(email,mod)+'||'+n;
+  if(!groups.has(key))groups.set(key,{email:String(email).trim().toLowerCase(),mod:normModule(mod),unit:n,test:false,score:null,progress:null,enabled:false,enabledExplicit:false,at:null});
+  return groups.get(key);
+ }
+ function markDate(r,date){if(date&&(!r.at||new Date(date)>new Date(r.at)))r.at=date}
+ CSD_REF_ROWS.forEach(x=>{
+  const n=unitNumber(x),r=get(x.email_declarado,x.modulo,n);if(!r)return;
+  const event=String(x.evento||'').toLowerCase();
+  if(event==='evaluacion'||/test|salida|evaluac/.test(event)){
+   r.test=true;const p=Number(x.puntaje);if(x.puntaje!==null&&x.puntaje!==undefined&&Number.isFinite(p))r.score=r.score===null?p:Math.max(r.score,p)
+  }
+  if(x.avance!==null&&x.avance!==undefined&&Number.isFinite(Number(x.avance)))r.progress=Math.max(r.progress??0,Number(x.avance));
+  if(/habilitad|desbloquead|aprobada/.test(event)&&Number(x.avance)===100){r.enabled=true;r.enabledExplicit=true}
+  markDate(r,x.fecha);
+ });
+ ACCESS_PART.forEach(x=>{
+  const n=unitNumber(x),r=get(x.email_institucional||x.email||x.email_declarado,x.simulador||x.modulo,n);if(!r)return;
+  const ev=String(x.evento||'').toLowerCase(),status=String(x.estado||'').toLowerCase();
+  if(/test|salida|evaluac/.test(ev)){r.test=true;const p=Number(x.puntaje);if(x.puntaje!=null&&Number.isFinite(p))r.score=r.score===null?p:Math.max(r.score,p)}
+  if(x.avance!=null&&Number.isFinite(Number(x.avance)))r.progress=Math.max(r.progress??0,Number(x.avance));
+  if(/habilitad|desbloquead/.test(ev+' '+status)&&Number(x.avance)===100){r.enabled=true;r.enabledExplicit=true}
+  markDate(r,x.fecha||x.fecha_evento||x.created_at);
+ });
+ return [...groups.values()].sort((a,b)=>a.mod.localeCompare(b.mod,'es')||a.email.localeCompare(b.email)||a.unit-b.unit);
+}
+function filteredUnits(){
+ const m=$('unitModule').value,e=$('unitEmail').value.trim().toLowerCase(),st=$('unitState').value;
+ return unitEvidenceRows().filter(r=>(!m||r.mod===m)&&(!e||r.email.includes(e))&&(!st||(st==='complete'&&r.enabledExplicit)||(st==='progress'&&(r.test||r.progress>0))||(st==='unknown'&&!r.enabledExplicit&&!r.test&&!(r.progress>0))));
+}
+function renderUnits(){
+ const all=unitEvidenceRows(),sel=$('unitModule'),current=sel.value;
+ const mods=[...new Set([...all.map(x=>x.mod),...ACCESS_DATA.map(x=>normModule(x.modulo)),...CSD_REF_ROWS.map(x=>normModule(x.modulo))].filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+ sel.innerHTML='<option value="">Todos los módulos</option>'+mods.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join('');
+ if(mods.includes(current))sel.value=current;
+ const rows=filteredUnits();
+ $('unitStatus').textContent=`${rows.length} registro(s) por estudiante, módulo y unidad. «No verificable» significa que el sistema no recibió una confirmación explícita de habilitación al 100%.`;
+ $('unitBody').innerHTML=rows.length?rows.map(r=>`<tr><td>${esc(r.email)}</td><td>${esc(r.mod)}</td><td>${r.unit}</td><td>${r.test?'Rendido':'Sin evidencia'}</td><td>${r.score===null?'—':r.score+'%'}</td><td>${r.progress===null?'—':r.progress+'%'}</td><td>${r.enabledExplicit?'<span class="pill ok">Sí, acreditada</span>':'<span class="pill wa">No verificable</span>'}</td><td>${dateCL(r.at)}</td></tr>`).join(''):'<tr><td colspan="8">Sin evidencias por unidad para los filtros seleccionados.</td></tr>';
+}
+function downloadUnits(){
+ const rows=[['Correo','Módulo','Unidad','Test de salida','Mejor puntaje (%)','Avance acumulado (%)','Habilitación 100% verificada','Última evidencia']];
+ filteredUnits().forEach(r=>rows.push([r.email,r.mod,r.unit,r.test?'Rendido':'Sin evidencia',r.score??'',r.progress??'',r.enabledExplicit?'Sí':'No verificable',r.at??'']));
+ csvDownload(rows,'CSD_IPG_avance_por_unidad.csv');
+}
+$('unitModule').addEventListener('change',renderUnits);
+$('unitEmail').addEventListener('input',renderUnits);
+$('unitState').addEventListener('change',renderUnits);
+$('unitCsv').onclick=downloadUnits;
+
 </script>
 </body></html>
