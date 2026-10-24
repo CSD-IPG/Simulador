@@ -374,7 +374,6 @@ async function registrarAccesoModuloCSD(email){
 }
 function ipgGrant(email){
   email=(email||"").trim().toLowerCase();
-  localStorage.setItem(IPG_AUTH_KEY,email);
   window.IPG_INSTITUTIONAL_EMAIL=email;
   document.body.classList.add("ipg-auth-ok");
 }
@@ -384,18 +383,14 @@ async function ipgLoginEmail(){
   ipgAuthMsg("Registrando acceso...");
   const tracked=await registrarAccesoModuloCSD(email);
   ipgGrant(email);
-  ipgAuthMsg(tracked?"Acceso correcto.":"Acceso concedido; no fue posible registrar la trazabilidad.","ok");
+  ipgAuthMsg("Acceso correcto.","ok");
 }
 document.getElementById("ipgAuthPortal")?.addEventListener("click",()=>location.href="../");
 document.getElementById("ipgAuthLogin")?.addEventListener("click",ipgLoginEmail);
 document.getElementById("ipgAuthEmail")?.addEventListener("keydown",e=>{if(e.key==="Enter")ipgLoginEmail();});
-(function(){
-  const email=(localStorage.getItem(IPG_AUTH_KEY)||"").trim().toLowerCase();
-  if(ipgInstitutional(email)){
-    const input=document.getElementById("ipgAuthEmail"); if(input) input.value=email;
-    ipgGrant(email);
-    registrarAccesoModuloCSD(email);
-  }
-})();
+ // La pantalla de acceso se solicita en cada apertura del módulo.
+ // No se autoriza automáticamente por un correo guardado en el navegador.
+ document.body.classList.remove("ipg-auth-ok");
+ try{localStorage.removeItem(IPG_AUTH_KEY)}catch(_){}
 </script>
 </body></html>
