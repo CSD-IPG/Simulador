@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>IPG WMS Simulator V3.6</title>
+<title>IPG WMS Simulator V3.7 · Desafíos Laborales</title>
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--text:#17202a;--muted:#667085;--line:#dfe3e8;--accent:#174a78;--accent2:#0d3658;--ok:#207a45;--warn:#a15c00;--bad:#a12a2a;--soft:#eef4f8}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text)}
@@ -156,6 +156,7 @@ body.ipg-auth-ok #ipgAuthGate{display:none!important}
 </div>
 
 <section id="dashboard" class="view"></section>
+  <section id="challenges" class="view hidden"></section>
   <section id="reception" class="view hidden"></section>
   <section id="inventory" class="view hidden"></section>
   <section id="picking" class="view hidden"></section>
@@ -168,7 +169,7 @@ body.ipg-auth-ok #ipgAuthGate{display:none!important}
 </div>
 </div>
 <script>
-const VERSION='2.0';
+const VERSION='3.7';
 const STORAGE='ipgWmsV2Session';
 const seed={
   locations:["A-01-01","A-01-02","A-02-01","B-01-01","B-01-02","B-02-01","C-01-01","C-01-02","R-01-01"],
@@ -194,18 +195,18 @@ const seed={
 };
 let state=null;
 let timerHandle=null;
-const menu=[['dashboard','Panel'],['reception','Recepción'],['inventory','Inventario'],['picking','Picking'],['packing','Packing'],['dispatch','Despacho'],['cases','Casos'],['report','Evidencia'],['guide','Guía']];
+const menu=[['dashboard','Panel'],['challenges','Desafíos laborales'],['reception','Recepción'],['inventory','Inventario'],['picking','Picking'],['packing','Packing'],['dispatch','Despacho'],['cases','Casos'],['report','Evidencia'],['guide','Guía']];
 const clone=o=>JSON.parse(JSON.stringify(o));
 function esc(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 function formatDuration(sec){sec=Math.max(0,Math.floor(sec||0));const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;return [h,m,s].map(x=>String(x).padStart(2,'0')).join(':')}
 function elapsedSeconds(){if(!state)return 0;let base=state.elapsed||0;if(state.running&&state.lastStarted)base+=Math.floor((Date.now()-state.lastStarted)/1000);return base}
 function startTimer(){clearInterval(timerHandle);timerHandle=setInterval(()=>{if(state&&state.running){const e=document.getElementById('liveTimer');if(e)e.textContent=formatDuration(elapsedSeconds());}},1000)}
 function sessionMetaFromForm(){return {name:document.getElementById('loginName').value.trim(),studentId:document.getElementById('loginId').value.trim(),career:document.getElementById('loginCareer').value.trim(),section:document.getElementById('loginSection').value.trim(),activity:document.getElementById('loginActivity').value.trim(),teacher:document.getElementById('loginTeacher').value.trim()}}
-function startSession(){const meta=sessionMetaFromForm();if(!meta.name||!meta.studentId||!meta.career||!meta.section||!meta.activity){alert('Completa los campos obligatorios.');return}state={...clone(seed),meta,startedAt:new Date().toISOString(),finishedAt:null,elapsed:0,lastStarted:Date.now(),running:true,version:VERSION};log('Inicio','Sesión académica iniciada');persist(false);enterApp()}
+function startSession(){const meta=sessionMetaFromForm();if(!meta.name||!meta.studentId||!meta.career||!meta.section||!meta.activity){alert('Completa los campos obligatorios.');return}state={...clone(seed),meta,startedAt:new Date().toISOString(),finishedAt:null,elapsed:0,lastStarted:Date.now(),running:true,version:VERSION};log('Inicio','Sesión académica iniciada');localStorage.removeItem(CHALLENGE_SAVE);persist(false);enterApp()}
 function resumeSession(){const raw=localStorage.getItem(STORAGE);if(!raw){alert('No existe una sesión guardada en este navegador.');return}try{state=JSON.parse(raw);if(!state.finishedAt){state.running=true;state.lastStarted=Date.now()}enterApp()}catch(e){alert('No se pudo recuperar la sesión guardada.')}}
 function enterApp(){document.body.classList.add('ipg-session-open');document.getElementById('loginScreen').classList.add('hidden');document.getElementById('simApp').classList.remove('hidden');nav();renderAll();show('dashboard');startTimer();}
 function pauseClock(){if(state&&state.running){state.elapsed=elapsedSeconds();state.running=false;state.lastStarted=null}}
-function persist(render=true){if(!state)return;localStorage.setItem(STORAGE,JSON.stringify(state));if(render)renderAll();}
+function persist(render=true){if(!state)return;localStorage.setItem(STORAGE,JSON.stringify(state));if(state.challengeRun)localStorage.setItem(CHALLENGE_SAVE,JSON.stringify(state));else localStorage.setItem(FREE_SAVE,JSON.stringify(state));if(render)renderAll();}
 function save(){persist(true)}
 function newSession(){if(!confirm('¿Cerrar esta sesión e iniciar una nueva? La evidencia actual puede exportarse antes.'))return;pauseClock();persist(false);document.body.classList.remove('ipg-session-open');document.getElementById('simApp').classList.add('hidden');document.getElementById('loginScreen').classList.remove('hidden');}
 function resetOps(){if(confirm('¿Restablecer operaciones manteniendo la identificación del estudiante?')){const meta=state.meta,started=state.startedAt;state={...clone(seed),meta,startedAt:started,finishedAt:null,elapsed:elapsedSeconds(),lastStarted:Date.now(),running:true,version:VERSION};log('Reinicio','Operaciones restablecidas por el usuario');save()}}
@@ -213,7 +214,7 @@ function nav(){document.getElementById('nav').innerHTML=menu.map(([id,n])=>`<but
 <button class="secondary" onclick="resetOps()">Reiniciar ejercicio</button>
 <button class="danger" onclick="newSession()">Nueva sesión</button>
 `;document.querySelectorAll('#nav button[data-view]').forEach(b=>b.onclick=()=>show(b.dataset.view));}
-function show(id){document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===id));if(id==='report')renderReport()}
+function show(id){if(id==='challenges')renderChallenges();document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===id));if(id==='report')renderReport()}
 function prod(sku){return state.products.find(p=>p.sku===sku)}
 function log(type,msg,points=0,error=false){state.logs.unshift({time:new Date().toISOString(),display:new Date().toLocaleString('es-CL'),elapsed:elapsedSeconds(),type,msg,points,error});state.logs=state.logs.slice(0,200)}
 function statusBadge(s){let c=s==='Despachado'||s==='Recibida'||s==='Empacado'?'ok':s==='Error'?'bad':'';return `<span class="badge ${c}">${esc(s)}</span>`}
@@ -240,7 +241,7 @@ function triggerCase(type){let html='';state.caseCompleted=(state.caseCompleted|
 function scoreClass(){return state.score>=70?'complete':state.score>=40?'incomplete':''}
 function renderReport(){updateHeader();const recv=state.purchaseOrders.filter(x=>x.status==='Recibida').length,shipped=state.orders.filter(x=>x.status==='Despachado').length,comp=completion();document.getElementById('report').innerHTML=`<div class="section-title report-actions no-print">
 <div><h2>Evidencia de aprendizaje</h2><div class="muted">Reporte generado desde la bitácora del simulador. Usa la botonera superior para volver al Panel o cerrar tu sesión.</div></div>
-</div><div class="report-sheet" style="margin-top:14px"><div class="report-head"><div><div class="brand">IPG · CENTRO DE SIMULACIÓN DIGITAL</div><div class="report-title">Reporte WMS · ${esc(state.meta.activity)}</div><div class="muted">Versión ${VERSION}</div></div><div class="report-meta"><b>${esc(state.meta.name)}</b><br>ID: ${esc(state.meta.studentId)}<br>${esc(state.meta.career)} · ${esc(state.meta.section)}<br>Docente: ${esc(state.meta.teacher||'—')}</div></div><div class="report-grid"><div class="report-kpi ${scoreClass()}"><span class="muted">Puntaje</span><b>${state.score}</b></div><div class="report-kpi"><span class="muted">Errores</span><b>${state.errors}</b></div><div class="report-kpi"><span class="muted">Avance</span><b>${comp}%</b></div><div class="report-kpi"><span class="muted">Tiempo</span><b>${formatDuration(elapsedSeconds())}</b></div></div><div class="grid"><div class="span-6"><h3>Resumen operacional</h3><table><tr><th>Indicador</th><th>Resultado</th></tr><tr><td>OC recepcionadas</td><td>${recv}/${state.purchaseOrders.length}</td></tr><tr><td>Pedidos despachados</td><td>${shipped}/${state.orders.length}</td></tr><tr><td>Contingencias activadas</td><td>${state.caseCompleted||0}</td></tr><tr><td>Inicio</td><td>${new Date(state.startedAt).toLocaleString('es-CL')}</td></tr><tr><td>Finalización</td><td>${state.finishedAt?new Date(state.finishedAt).toLocaleString('es-CL'):'En curso'}</td></tr></table></div><div class="span-6"><h3>Respuesta a contingencia</h3><div class="card" style="box-shadow:none;min-height:130px">${state.notes?esc(state.notes):'<span class="muted">Sin respuesta registrada.</span>'}</div></div><div class="span-12"><h3>Bitácora de acciones</h3><div class="table-wrap"><table><thead><tr><th>Fecha/hora</th><th>Tiempo</th><th>Tipo</th><th>Acción</th><th>Puntos</th></tr></thead><tbody>${state.logs.slice().reverse().map(l=>`<tr><td>${esc(l.display)}</td><td>${formatDuration(l.elapsed)}</td><td>${esc(l.type)}</td><td>${esc(l.msg)}</td><td>${l.points||0}</td></tr>`).join('')}</tbody></table></div></div></div><div class="footer-note">Documento generado automáticamente por IPG WMS Simulator V3.6. Los datos provienen de la sesión almacenada en el navegador del estudiante.</div></div>`}
+</div><div class="report-sheet" style="margin-top:14px"><div class="report-head"><div><div class="brand">IPG · CENTRO DE SIMULACIÓN DIGITAL</div><div class="report-title">Reporte WMS · ${esc(state.meta.activity)}</div><div class="muted">Versión ${VERSION}</div></div><div class="report-meta"><b>${esc(state.meta.name)}</b><br>ID: ${esc(state.meta.studentId)}<br>${esc(state.meta.career)} · ${esc(state.meta.section)}<br>Docente: ${esc(state.meta.teacher||'—')}</div></div><div class="report-grid"><div class="report-kpi ${scoreClass()}"><span class="muted">Puntaje</span><b>${state.score}</b></div><div class="report-kpi"><span class="muted">Errores</span><b>${state.errors}</b></div><div class="report-kpi"><span class="muted">Avance</span><b>${comp}%</b></div><div class="report-kpi"><span class="muted">Tiempo</span><b>${formatDuration(elapsedSeconds())}</b></div></div><div class="grid"><div class="span-6"><h3>Resumen operacional</h3><table><tr><th>Indicador</th><th>Resultado</th></tr><tr><td>OC recepcionadas</td><td>${recv}/${state.purchaseOrders.length}</td></tr><tr><td>Pedidos despachados</td><td>${shipped}/${state.orders.length}</td></tr><tr><td>Contingencias activadas</td><td>${state.caseCompleted||0}</td></tr><tr><td>Inicio</td><td>${new Date(state.startedAt).toLocaleString('es-CL')}</td></tr><tr><td>Finalización</td><td>${state.finishedAt?new Date(state.finishedAt).toLocaleString('es-CL'):'En curso'}</td></tr></table></div><div class="span-6"><h3>Respuesta a contingencia</h3><div class="card" style="box-shadow:none;min-height:130px">${state.notes?esc(state.notes):'<span class="muted">Sin respuesta registrada.</span>'}</div></div><div class="span-12"><h3>Resultado del desafío laboral</h3>${challengeReportHTML()}</div><div class="span-12"><h3>Bitácora de acciones</h3><div class="table-wrap"><table><thead><tr><th>Fecha/hora</th><th>Tiempo</th><th>Tipo</th><th>Acción</th><th>Puntos</th></tr></thead><tbody>${state.logs.slice().reverse().map(l=>`<tr><td>${esc(l.display)}</td><td>${formatDuration(l.elapsed)}</td><td>${esc(l.type)}</td><td>${esc(l.msg)}</td><td>${l.points||0}</td></tr>`).join('')}</tbody></table></div></div></div><div class="footer-note">Documento generado automáticamente por IPG WMS Simulator V3.6. Los datos provienen de la sesión almacenada en el navegador del estudiante.</div></div>`}
 function finishSession(){if(!state.finishedAt){pauseClock();state.finishedAt=new Date().toISOString();log('Cierre','Actividad finalizada por el estudiante');persist(false)}renderReport();updateHeader()}
 function finishAndPrint(){window.print()}
 function csvCell(v){return '"'+String(v??'').replace(/"/g,'""')+'"'}
@@ -249,9 +250,56 @@ function downloadJSON(){downloadBlob(JSON.stringify(state,null,2),`WMS_${safeNam
 function safeName(s){return String(s||'').replace(/[^a-z0-9_-]/gi,'_')}
 function downloadBlob(content,name,type){const blob=new Blob([content],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},100)}
 function renderGuide(){document.getElementById('guide').innerHTML=`<h2>Guía rápida V2</h2><div class="grid" style="margin-top:14px"><div class="card span-8"><h3>Flujo sugerido</h3><ol><li>Completa identificación y código de actividad.</li><li>Revisa el Panel.</li><li>Recepciona al menos una OC.</li><li>Comprueba inventario.</li><li>Ejecuta Picking → Packing → Despacho.</li><li>Activa una contingencia y registra tu decisión.</li><li>Abre <b>Evidencia</b> y revisa tu bitácora.</li><li>Finaliza y guarda el reporte como PDF; opcionalmente descarga CSV.</li></ol><h3>Qué registra el sistema</h3><ul><li>Identificación del estudiante y sección.</li><li>Código de actividad.</li><li>Hora de inicio y tiempo efectivo de sesión.</li><li>Operaciones ejecutadas.</li><li>Puntaje y errores.</li><li>Contingencias activadas.</li><li>Respuesta del estudiante.</li></ul><h3>Uso del PDF</h3><p>Al pulsar <b>Guardar PDF</b>, se abre la impresión del navegador. Selecciona “Guardar como PDF” si necesitas conservar una copia de tu evidencia.</p></div><div class="card span-4"><button class="btn danger" onclick="resetOps()">Restablecer ejercicio</button></div></div><div class="footer-note">Este entorno modela procesos WMS genéricos con propósito formativo.</div>`}
-function renderAll(){renderDashboard();renderReception();renderInventory();renderPicking();renderPacking();renderDispatch();renderCases();renderReport();renderGuide();persist(false)}
+function renderAll(){renderDashboard();renderChallenges();renderReception();renderInventory();renderPicking();renderPacking();renderDispatch();renderCases();renderReport();renderGuide();persist(false)}
 window.addEventListener('beforeunload',()=>{if(state){pauseClock();persist(false)}});
 const saved=localStorage.getItem(STORAGE);if(saved){try{const s=JSON.parse(saved);if(s?.meta?.name){document.getElementById('loginName').value=s.meta.name;document.getElementById('loginId').value=s.meta.studentId||'';document.getElementById('loginCareer').value=s.meta.career||'';document.getElementById('loginSection').value=s.meta.section||'';document.getElementById('loginActivity').value=s.meta.activity||'';document.getElementById('loginTeacher').value=s.meta.teacher||'';}}catch(e){}}
+
+
+/* ===== CENTRO DE DESAFÍOS LABORALES · V3.7 ===== */
+const FREE_SAVE='ipg_wms_free_v37',CHALLENGE_SAVE='ipg_wms_challenge_v37';
+const CHALLENGES=[
+{id:'D01',level:'Básico',title:'Recepción con diferencias',brief:'La OC-1002 indica 20 notebooks, pero llegan solo 17 en condiciones conformes. Registra la recepción real y documenta la diferencia.',steps:['Recepcionar OC-1002 con 17 unidades','Seleccionar condición «Con diferencia»'],setup:s=>{},test:s=>[{label:'Recepción OC-1002 registrada',ok:s.purchaseOrders.some(p=>p.po==='OC-1002'&&p.status==='Recibida')},{label:'Cantidad real y diferencia documentadas',ok:s.logs.some(l=>l.type==='Recepción'&&/OC-1002: 17 unidades/.test(l.msg)&&/Con diferencia/.test(l.msg))}]},
+{id:'D02',level:'Básico',title:'Pedidos de prioridad alta',brief:'El jefe de operaciones solicita atender primero los pedidos de prioridad alta. Completa el flujo de preparación y despacho de PED-2002 y PED-2004.',steps:['Realizar picking de ambos pedidos','Confirmar packing y despacho de ambos'],setup:s=>{},test:s=>['PED-2002','PED-2004'].map(id=>({label:id+' despachado',ok:s.orders.some(o=>o.id===id&&o.status==='Despachado')}))},
+{id:'D03',level:'Intermedio',title:'Quiebre de stock y reposición',brief:'PED-2002 requiere 20 monitores, pero solo hay 12. Existe una orden de compra pendiente de 30 monitores. Regulariza la recepción y completa el despacho.',steps:['Verificar stock insuficiente','Recepcionar OC-1001','Completar picking, packing y despacho de PED-2002'],setup:s=>{s.orders.find(o=>o.id==='PED-2002').qty=20},test:s=>[{label:'Recepción de reposición OC-1001',ok:s.purchaseOrders.some(o=>o.po==='OC-1001'&&o.status==='Recibida')},{label:'Pedido urgente PED-2002 despachado',ok:s.orders.some(o=>o.id==='PED-2002'&&o.status==='Despachado')}]},
+{id:'D04',level:'Intermedio',title:'Error de ubicación en picking',brief:'Se detectó un error de ubicación durante la preparación de PED-2001. Comprueba el control del sistema, revisa la ubicación correcta y completa el despacho.',steps:['Intentar una ubicación equivocada y registrar el rechazo','Consultar Inventario','Repetir picking con ubicación correcta','Empacar y despachar PED-2001'],setup:s=>{},test:s=>[{label:'Error de picking detectado por el WMS',ok:s.logs.some(l=>l.type==='Error picking'&&l.msg.includes('PED-2001')&&l.msg.includes('ubicación incorrecta'))},{label:'Pedido PED-2001 corregido y despachado',ok:s.orders.some(o=>o.id==='PED-2001'&&o.status==='Despachado')}]},
+{id:'D05',level:'Avanzado',title:'Prioridades y capacidad operacional',brief:'La empresa debe atender simultáneamente dos pedidos de alta prioridad y uno normal. Debes despachar primero los prioritarios y registrar una decisión operativa.',steps:['Despachar PED-2002 y PED-2004','No despachar PED-2003 antes de ambos prioritarios','Registrar justificación en Casos y contingencias'],setup:s=>{},test:s=>{let l=s.logs.filter(x=>x.type==='Despacho').slice().reverse(),ids=l.map(x=>(x.msg.match(/PED-\d+/)||[])[0]);return [{label:'Ambos pedidos prioritarios despachados',ok:['PED-2002','PED-2004'].every(id=>ids.includes(id))},{label:'Orden de prioridad respetado',ok:['PED-2002','PED-2004'].every(id=>ids.includes(id))&&(!ids.includes('PED-2003')||ids.indexOf('PED-2003')>Math.max(ids.indexOf('PED-2002'),ids.indexOf('PED-2004')))},{label:'Decisión operativa fundamentada',ok:(s.notes||'').trim().length>=40}] }},
+{id:'D06',level:'Avanzado',title:'Jornada logística integral',brief:'Durante una jornada exigente debes recepcionar dos órdenes de compra, despachar dos pedidos, atender una contingencia y emitir evidencia de tus decisiones.',steps:['Recepcionar dos OC','Despachar dos pedidos','Activar una contingencia desde Casos','Registrar fundamento de la decisión'],setup:s=>{},test:s=>[{label:'Dos órdenes de compra recepcionadas',ok:s.purchaseOrders.filter(x=>x.status==='Recibida').length>=2},{label:'Dos pedidos despachados',ok:s.orders.filter(x=>x.status==='Despachado').length>=2},{label:'Contingencia atendida',ok:(s.caseCompleted||0)>=1},{label:'Decisión documentada',ok:(s.notes||'').trim().length>=40}]}
+];
+function challengeDef(id){return CHALLENGES.find(x=>x.id===id)}
+function challengeChecks(){if(!state?.challengeRun)return [];return challengeDef(state.challengeRun.id)?.test(state)||[]}
+function challengePercent(){let c=challengeChecks();return c.length?Math.round(c.filter(x=>x.ok).length/c.length*100):0}
+function switchToChallenge(id){
+ if(!state)return;
+ const def=challengeDef(id);if(!def)return;
+ if(state.challengeRun){if(!confirm('¿Reemplazar el desafío actual? Sus avances se perderán.'))return;}
+ else{localStorage.setItem(FREE_SAVE,JSON.stringify(state));}
+ const meta=clone(state.meta),startedAt=new Date().toISOString();
+ state={...clone(seed),meta,startedAt,finishedAt:null,elapsed:0,lastStarted:Date.now(),running:true,version:VERSION,challengeRun:{id,startedAt,mode:'laboral'}};
+ def.setup(state);log('Desafío','Iniciado '+id+' · '+def.title);persist(false);renderAll();show('challenges');
+}
+function restoreFree(){
+ if(!state)return;
+ if(!state.challengeRun){alert('Ya estás en gestión libre.');return;}
+ const raw=localStorage.getItem(FREE_SAVE);if(!raw){alert('No hay una sesión de gestión libre guardada.');return;}
+ localStorage.setItem(CHALLENGE_SAVE,JSON.stringify(state));
+ try{const previous=JSON.parse(raw);if(previous.meta?.studentId!==state.meta?.studentId){alert('La sesión libre corresponde a otra identificación.');return;}state=previous;state.running=true;state.lastStarted=Date.now();persist(false);renderAll();show('dashboard');}catch(e){alert('No se pudo recuperar la gestión libre.')}
+}
+function restoreChallenge(){
+ if(!state||state.challengeRun)return;
+ const raw=localStorage.getItem(CHALLENGE_SAVE);if(!raw){alert('Aún no hay un desafío iniciado.');return;}
+ try{const previous=JSON.parse(raw);if(previous.meta?.studentId!==state.meta?.studentId){alert('El desafío corresponde a otra identificación.');return;}localStorage.setItem(FREE_SAVE,JSON.stringify(state));state=previous;state.running=true;state.lastStarted=Date.now();persist(false);renderAll();show('challenges');}catch(e){alert('No se pudo recuperar el desafío.')}
+}
+function challengeReportHTML(){if(!state.challengeRun)return '<div class="muted">Sesión de gestión libre. No hay desafío activo.</div>';let checks=challengeChecks();return `<p><b>${esc(state.challengeRun.id)} · ${esc(challengeDef(state.challengeRun.id)?.title||'')}</b> · Cumplimiento ${challengePercent()}%</p><ul>${checks.map(x=>`<li>${x.ok?'✓':'○'} ${esc(x.label)}</li>`).join('')}</ul><p class="muted">Cumplimiento automático de hitos operativos. La fundamentación requiere revisión docente.</p>`}
+function renderChallenges(){
+ const el=document.getElementById('challenges');if(!el||!state)return;
+ let run=state.challengeRun,def=run?challengeDef(run.id):null,checks=challengeChecks();
+ el.innerHTML=`<div class="section-title"><div><h2>Centro de Desafíos Laborales</h2><p class="muted">Situaciones laborales que se resuelven operando el WMS, no contestando un cuestionario.</p></div><span class="badge">${run?'Desafío activo':'Gestión libre'}</span></div>
+ <div class="info"><b>Dos modalidades disponibles.</b> La gestión libre y los desafíos mantienen operaciones independientes en este navegador. Los desafíos no modifican el inventario de tu empresa principal.</div>
+ ${run?`<div class="card" style="margin:12px 0;border-color:#8db4d3"><div class="section-title"><div><span class="badge">${esc(def.level)}</span> <b>${esc(run.id)} · ${esc(def.title)}</b></div><b>${challengePercent()}% de hitos</b></div><p>${esc(def.brief)}</p><div class="progress"><div class="bar" style="width:${challengePercent()}%"></div></div><h3 style="margin-top:15px">Instrucciones de trabajo</h3><ol>${def.steps.map(x=>`<li>${esc(x)}</li>`).join('')}</ol><h3>Verificación automática</h3><ul>${checks.map(x=>`<li class="${x.ok?'ok':'warn'}">${x.ok?'✓':'○'} ${esc(x.label)}</li>`).join('')}</ul>${challengePercent()===100?'<div class="info"><b>Hitos operativos cumplidos.</b> Revisa Evidencia y entrega el reporte para evaluación docente.</div>':''}<div class="actions"><button class="btn primary" onclick="show('dashboard')">Ir a operar el WMS</button><button class="btn secondary" onclick="restoreFree()">Volver a gestión libre</button><button class="btn outline" onclick="show('report')">Ver evidencia</button></div></div>`:`<div class="card" style="margin:12px 0"><h3>Gestión libre activa</h3><p>Tu empresa y operaciones actuales permanecen intactas mientras trabajas en un desafío.</p><div class="actions"><button class="btn secondary" onclick="restoreChallenge()">Continuar desafío guardado</button></div></div>`}
+ <h3 style="margin-top:18px">Catálogo de desafíos</h3><div class="grid">${CHALLENGES.map(c=>`<div class="card span-6"><div class="section-title"><b>${c.id} · ${esc(c.title)}</b><span class="badge">${esc(c.level)}</span></div><p class="small">${esc(c.brief)}</p><button class="btn ${run?.id===c.id?'secondary':'primary'}" ${run?.id===c.id?'disabled':''} onclick="switchToChallenge('${c.id}')">${run?.id===c.id?'En desarrollo':'Iniciar desafío'}</button></div>`).join('')}</div>
+ <div class="footer-note">Los hitos se calculan desde las operaciones registradas. Esta versión utiliza almacenamiento local y no sincroniza automáticamente los desafíos con el Dashboard institucional.</div>`;
+}
+/* ===== FIN CENTRO DE DESAFÍOS ===== */
 
 /* ===== IPG TRAZABILIDAD CENTRAL ===== */
 const IPG_TRACE_URL="https://uegxxazgqvjjqnmpodln.supabase.co";
@@ -426,5 +474,5 @@ document.getElementById("ipgAuthEmail")?.addEventListener("keydown",e=>{if(e.key
   }
 })();
 </script>
-<div id="ipgTraceState" style="max-width:1200px;margin:10px auto 18px;padding:10px 14px;border:1px solid #dce5ed;border-radius:10px;background:#f7fafc;font:13px/1.4 system-ui;color:#425466"><b>Registro institucional:</b> <span id="ipgTraceText">listo para iniciar.</span></div></body>
+<div id="ipgTraceState" style="display:none;max-width:1200px;margin:10px auto 18px;padding:10px 14px;border:1px solid #dce5ed;border-radius:10px;background:#f7fafc;font:13px/1.4 system-ui;color:#425466"><b>Registro institucional:</b> <span id="ipgTraceText">listo para iniciar.</span></div></body>
 </html>
