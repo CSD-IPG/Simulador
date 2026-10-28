@@ -324,7 +324,7 @@ async function ipgTraceSync(evento,estado){
  const m=ipgTraceMeta();
  if(!m.studentId)return false;
  ipgTraceEnsureSession(false);
- const row={session_id:ipgTrace.sessionId,evento,nombre:m.nombre||null,rut_id:m.studentId,carrera:m.carrera||null,seccion:m.seccion||null,docente:m.docente||null,simulador:IPG_TRACE_SIM,actividad:m.actividad||null,estado,avance:ipgTraceAdvance(),puntaje:ipgTraceScore(),intentos:null,tiempo_segundos:ipgTraceTime(),unidad_1:null,unidad_2:null,unidad_3:null};
+ const row={session_id:ipgTrace.sessionId,evento,nombre:m.nombre||null,rut_id:m.studentId,carrera:m.carrera||null,seccion:m.seccion||null,docente:m.docente||null,simulador:IPG_TRACE_SIM,actividad:m.actividad||null,estado,avance:ipgTraceAdvance(),puntaje:ipgTraceScore(),intentos:null,tiempo_segundos:ipgTraceTime(),unidad_1:null,unidad_2:null,unidad_3:null,modalidad_wms:state?.challengeRun?'laboral':'libre',desafio_wms:state?.challengeRun?.id||null,hitos_wms:state?.challengeRun?challengeChecks().filter(x=>x.ok).length:null,hitos_totales_wms:state?.challengeRun?challengeChecks().length:null};
  ipgTraceStatus("enviando "+evento+"...");
  try{
    const r=await fetch(IPG_TRACE_URL+"/rest/v1/participaciones",{method:"POST",headers:{"Content-Type":"application/json","apikey":IPG_TRACE_ANON,"Authorization":"Bearer "+(ipgAccessToken()||IPG_TRACE_ANON),"Prefer":"return=minimal"},body:JSON.stringify(row)});
@@ -377,7 +377,7 @@ async function ipgPostFinalSnapshot(){
   const m=ipgTraceMeta();
   const totalTime=ipgTraceTime(), finalAdvance=ipgTraceAdvance(), finalScore=ipgTraceScore();
   ipgTraceEnsureSession(false);
-  const row={session_id:ipgTrace.sessionId,evento:"finalizacion",nombre:m.nombre||null,rut_id:m.studentId||null,carrera:m.carrera||null,seccion:m.seccion||null,docente:m.docente||null,simulador:IPG_TRACE_SIM,actividad:m.actividad||null,estado:"Finalizado",avance:finalAdvance,puntaje:finalScore,intentos:null,tiempo_segundos:totalTime,unidad_1:null,unidad_2:null,unidad_3:null};
+  const row={session_id:ipgTrace.sessionId,evento:"finalizacion",nombre:m.nombre||null,rut_id:m.studentId||null,carrera:m.carrera||null,seccion:m.seccion||null,docente:m.docente||null,simulador:IPG_TRACE_SIM,actividad:m.actividad||null,estado:"Finalizado",avance:finalAdvance,puntaje:finalScore,intentos:null,tiempo_segundos:totalTime,unidad_1:null,unidad_2:null,unidad_3:null,modalidad_wms:state?.challengeRun?'laboral':'libre',desafio_wms:state?.challengeRun?.id||null,hitos_wms:state?.challengeRun?challengeChecks().filter(x=>x.ok).length:null,hitos_totales_wms:state?.challengeRun?challengeChecks().length:null};
   pauseClock();if(state){state.finishedAt=new Date().toISOString();persist(false)}
   ipgTrace.finished=true;ipgTrace.paused=false;localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
   try{
