@@ -383,8 +383,9 @@ async function ipgLoginEmail(){
   if(!ipgInstitutional(email)) return ipgAuthMsg("Usa un correo @alumnos.ipg.cl, @docentes.ipg.cl o @ipg.cl.","err");
   ipgAuthMsg("Registrando acceso...");
   const tracked=await registrarAccesoModuloCSD(email);
+  if(!tracked)return ipgAuthMsg("No se pudo registrar el ingreso. Reintenta con conexión.","err");
   ipgGrant(email);
-  ipgAuthMsg("Acceso correcto.","ok");
+  ipgAuthMsg("Acceso registrado correctamente (correo declarado).","ok");
 }
 document.getElementById("ipgAuthPortal")?.addEventListener("click",()=>location.href="../");
 document.getElementById("ipgAuthLogin")?.addEventListener("click",ipgLoginEmail);
