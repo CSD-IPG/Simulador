@@ -88,7 +88,7 @@ body.ipg-auth-ok #ipgAuthGate{display:none!important}
 </div></div>
 
 <div class="ipg-exitbar" id="ipgMainToolbar">
-  <button class="ipg-back" id="ipgPanelTop">Panel</button>
+  <button class="ipg-back" id="ipgPanelTop">Panel</button><button class="ipg-back" id="ipgChangeAccount">Cambiar correo / nueva sesión</button>
   <button class="ipg-back" id="ipgEvidenceTop">Evidencia</button>
   <button class="ipg-back" id="ipgBackPortal">Guardar y volver al portal</button>
   <button class="ipg-finish" id="ipgFinishPortal">Finalizar y volver al portal</button>
@@ -450,8 +450,11 @@ async function registrarAccesoModuloCSD(email){
     sessionStorage.setItem(k,"1"); return true;
   }catch(e){console.error(e);return false;}
 }
+function ipgClearAccount(){if(!confirm("¿Cerrar esta identificación y comenzar desde cero? Se eliminarán únicamente las sesiones locales del WMS de este navegador. Exporta antes tus evidencias si las necesitas."))return;[STORAGE,FREE_SAVE,CHALLENGE_SAVE,IPG_TRACE_KEY,IPG_AUTH_KEY,"csd_ok_wms","csd_sid_wms"].forEach(k=>{localStorage.removeItem(k);sessionStorage.removeItem(k)});location.reload()}
 function ipgGrant(email){
   email=(email||"").trim().toLowerCase();
+  const previous=(localStorage.getItem(IPG_AUTH_KEY)||"").trim().toLowerCase();
+  if(previous&&previous!==email){[STORAGE,FREE_SAVE,CHALLENGE_SAVE,IPG_TRACE_KEY].forEach(k=>localStorage.removeItem(k));sessionStorage.removeItem("csd_ok_wms");sessionStorage.removeItem("csd_sid_wms");location.reload();return;}
   localStorage.setItem(IPG_AUTH_KEY,email);
   window.IPG_INSTITUTIONAL_EMAIL=email;
   document.body.classList.add("ipg-auth-ok");
@@ -465,15 +468,14 @@ async function ipgLoginEmail(){
   ipgAuthMsg(tracked?"Acceso correcto.":"Acceso concedido; no fue posible registrar la trazabilidad.","ok");
 }
 document.getElementById("ipgAuthPortal")?.addEventListener("click",()=>location.href="../");
+document.getElementById("ipgChangeAccount")?.addEventListener("click",ipgClearAccount);
 document.getElementById("ipgAuthLogin")?.addEventListener("click",ipgLoginEmail);
 document.getElementById("ipgAuthEmail")?.addEventListener("keydown",e=>{if(e.key==="Enter")ipgLoginEmail();});
 (function(){
+  // El correo anterior puede sugerirse, pero nunca omite el acceso explícito.
   const email=(localStorage.getItem(IPG_AUTH_KEY)||"").trim().toLowerCase();
-  if(ipgInstitutional(email)){
-    const input=document.getElementById("ipgAuthEmail"); if(input) input.value=email;
-    ipgGrant(email);
-    registrarAccesoModuloCSD(email);
-  }
+  if(ipgInstitutional(email)){const input=document.getElementById("ipgAuthEmail");if(input)input.value=email;}
+  document.body.classList.remove("ipg-auth-ok");
 })();
 </script>
 <div id="ipgTraceState" style="display:none;max-width:1200px;margin:10px auto 18px;padding:10px 14px;border:1px solid #dce5ed;border-radius:10px;background:#f7fafc;font:13px/1.4 system-ui;color:#425466"><b>Registro institucional:</b> <span id="ipgTraceText">listo para iniciar.</span></div></body>
