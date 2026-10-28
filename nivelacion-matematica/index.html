@@ -81,9 +81,7 @@ white-space:nowrap
 <div class="ipg-auth-brand">IPG · CENTRO DE SIMULACIÓN DIGITAL</div>
 <h1>Acceso institucional</h1>
 <p>Ingresa tu correo institucional para acceder al módulo.</p>
-<div class="ipg-auth-grid">
-<div><label>Correo institucional</label><input id="ipgAuthEmail" type="email" autocomplete="email" placeholder="nombre@alumnos.ipg.cl"></div>
-</div>
+<div class="ipg-auth-grid"><div><label>Perfil</label><select id="ipgPerfil"><option value="estudiante">Estudiante</option><option value="docente">Docente</option><option value="colaborador">Administrativo / comunidad IPG</option></select></div><div><label>Nombre completo</label><input id="ipgNombre" placeholder="Nombre y apellido"></div><div id="ipgRutWrap"><label>RUT</label><input id="ipgRut" placeholder="12.345.678-5"></div><div><label>Correo institucional</label><input id="ipgAuthEmail" type="email" placeholder="nombre@alumnos.ipg.cl"></div><div id="ipgCarreraWrap"><label>Carrera</label><select id="ipgCarrera"><option value="">Cargando carreras…</option></select></div></div>
 <div class="ipg-auth-actions">
 <button class="ipg-auth-primary" id="ipgAuthLogin">Ingresar</button>
 <button class="ipg-auth-secondary" id="ipgAuthPortal">Volver al CSD</button>
@@ -237,17 +235,10 @@ function ipgGrantEmailAccess(email){
   window.IPG_INSTITUTIONAL_EMAIL=email;
   document.body.classList.add("ipg-auth-ok");
 }
-async function ipgRegistrarAcceso(email){
-  const sid="niv-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,10);
-  const r=await fetch(SUPABASE_URL+"/rest/v1/rpc/registrar_acceso_csd",{
-    method:"POST",
-    headers:{"Content-Type":"application/json","apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY},
-    body:JSON.stringify({p_email:email,p_modulo:"Nivelación Matemática",p_session_id:sid})
-  });
-  if(!r.ok)throw new Error("No se pudo registrar el ingreso ("+r.status+").");
-  const data=await r.json();
-  if(data && typeof data==="object" && (data.ok===false || data.success===false))throw new Error("El registro de acceso fue rechazado.");
-}
+function ipgRutValido(v){const x=(v||"").replace(/[.\\s-]/g,"").toUpperCase();if(!/^\\d{7,8}[\\dK]$/.test(x))return false;let sum=0,mul=2;for(let i=x.length-2;i>=0;i--){sum+=Number(x[i])*mul;mul=mul===7?2:mul+1;}let n=11-sum%11;return (n===11?"0":n===10?"K":String(n))===x.slice(-1);}
+const ipgPerfil=document.getElementById("ipgPerfil"),ipgCarrera=document.getElementById("ipgCarrera");ipgPerfil.addEventListener("change",()=>{const academic=ipgPerfil.value!=="colaborador";document.getElementById("ipgRutWrap").hidden=!academic;document.getElementById("ipgCarreraWrap").hidden=!academic;});
+(async()=>{try{const r=await fetch(SUPABASE_URL+"/rest/v1/catalogo_carreras_csd?select=codigo,nombre&activo=eq.true&order=orden.asc",{headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}});if(!r.ok)throw Error();const data=await r.json();ipgCarrera.replaceChildren(new Option("Selecciona tu carrera",""),...data.map(x=>new Option(x.nombre,x.codigo)));}catch(e){ipgCarrera.replaceChildren(new Option("No fue posible cargar carreras",""));ipgAuthMsg("No fue posible cargar el catálogo de carreras. Actualiza la página.","err");}})();
+async function ipgRegistrarAcceso(email){const perfil=ipgPerfil.value,nombre=document.getElementById("ipgNombre").value.trim(),rut=document.getElementById("ipgRut").value.trim(),carrera=ipgCarrera.value;if(nombre.length<3)throw Error("Ingresa nombre completo.");if(perfil!=="colaborador"&&(!ipgRutValido(rut)||!carrera))throw Error("Ingresa un RUT válido y selecciona tu carrera.");const sid="niv-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,10);const r=await fetch(SUPABASE_URL+"/rest/v1/rpc/registrar_identificacion_csd",{method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY},body:JSON.stringify({p_email:email,p_nombre:nombre,p_rut:perfil==="colaborador"?null:rut,p_carrera_codigo:perfil==="colaborador"?null:carrera,p_perfil:perfil,p_modulo:"Nivelación Matemática",p_session_id:sid})});if(!r.ok||await r.json()!==true)throw Error("No se pudo registrar la identificación.");}
 document.getElementById("ipgAuthPortal")?.addEventListener("click",()=>location.href="../");
 const ipgLoginBtn=document.getElementById("ipgAuthLogin");
 ipgLoginBtn?.addEventListener("click",async()=>{
