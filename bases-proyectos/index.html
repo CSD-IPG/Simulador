@@ -152,6 +152,7 @@ async function ipgEmailLogin(){
   if(!ipgInstitutional(email))return ipgAuthMsg("Usa un correo @alumnos.ipg.cl, @docentes.ipg.cl o @ipg.cl.","err");
   ipgAuthMsg("Registrando acceso...");
   const tracked=await registrarAccesoModuloCSD(email);
+  if(!tracked)return ipgAuthMsg("No fue posible registrar el ingreso. Reintenta con conexión.","err");
   ipgGrantEmailAccess(email);
   ipgAuthMsg(tracked?"Acceso registrado correctamente.":"Acceso concedido. No fue posible registrar la trazabilidad; informa a Escuela.","ok");
 }
@@ -162,8 +163,7 @@ document.getElementById("ipgAuthEmail")?.addEventListener("keydown",e=>{if(e.key
   const email=ipgStoredEmail();
   if(ipgInstitutional(email)){
     const input=document.getElementById("ipgAuthEmail"); if(input)input.value=email;
-    ipgGrantEmailAccess(email);
-    registrarAccesoModuloCSD(email);
+    // El correo recordado solo completa el campo; se exige nuevo ingreso.
   }
 })();
 
