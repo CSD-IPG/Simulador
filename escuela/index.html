@@ -73,7 +73,7 @@
 </div>
 <div id="intStatus" class="notice">Inicia sesión para cargar los registros.</div>
 <div class="repo-report-actions"><button class="btn teal" id="intCsv">Exportar seguimiento integrado</button></div>
-<div class="tablewrap"><table><thead><tr><th>Último acceso</th><th>Correo declarado</th><th>Módulo</th><th>Accesos</th><th>Actividad</th><th>Finalización</th><th>Test por unidad</th><th>Avance</th><th>Verificación</th></tr></thead><tbody id="intBody"><tr><td colspan="9">Esperando datos.</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Último acceso</th><th>Correo declarado</th><th>Módulo</th><th>Accesos</th><th>Actividad</th><th>Finalización</th><th>Test por unidad</th><th>Mayor avance de unidad</th><th>Verificación</th></tr></thead><tbody id="intBody"><tr><td colspan="9">Esperando datos.</td></tr></tbody></table></div>
 </div>
 <div class="actions" style="margin-bottom:14px"><a href="#accesosCsd">Auditoría de accesos</a><a href="#avanceUnidades">Resultados por unidad</a><a href="#reforzamientoCsd">Resultados de reforzamiento</a></div>
 <div class="cards">
@@ -651,7 +651,7 @@ function renderIntegrated(){
  $('intBody').innerHTML=rows.slice(0,500).map(r=>'<tr><td>'+dateCL(r.last)+'</td><td>'+esc(r.email)+'</td><td>'+esc(r.mod)+'</td><td>'+r.count+'</td><td>'+(r.started?'Con evidencia':'Sin evidencia')+'</td><td>'+(r.finished?'Registrada':'Sin evidencia')+'</td><td>'+esc(r.tests.join(' · ')||'Sin evidencia')+'</td><td>'+(r.progress===null?'No verificable':r.progress+'%')+'</td><td>Identidad declarada</td></tr>').join('')||'<tr><td colspan="9">Sin registros para los filtros.</td></tr>';
 }
 function downloadIntegrated(){
- const rows=[['Último acceso','Primer acceso','Correo declarado','Módulo','Accesos','Inicio con evidencia','Finalización con evidencia','Test por unidad','Avance','Verificación']];
+ const rows=[['Último acceso','Primer acceso','Correo declarado','Módulo','Accesos','Inicio con evidencia','Finalización con evidencia','Test por unidad','Mayor avance de unidad','Verificación']];
  integratedFiltered().forEach(r=>rows.push([r.last,r.first,r.email,r.mod,r.count,r.started?'Sí':'Sin evidencia',r.finished?'Sí':'Sin evidencia',r.tests.join(' | '),r.progress??'No verificable','Identidad declarada']));
  csvDownload(rows,'CSD_IPG_seguimiento_integrado.csv');
 }
