@@ -74,7 +74,7 @@
 </div>
 <div id="statusBox" class="notice">Esperando carga de datos.</div>
 <div class="panel"><h3>Participación por simulador</h3><div id="chart" class="chart"></div></div>
-<div class="panel"><h3>Detalle consolidado</h3><div class="tablewrap"><table><thead><tr><th>Inicio</th><th>Estudiante</th><th>ID/RUT</th><th>Carrera</th><th>Sección</th><th>Simulador</th><th>Estado</th><th>Avance</th><th>Puntaje</th><th>Intentos</th><th>Tiempo</th><th>U1</th><th>U2</th><th>U3</th></tr></thead><tbody id="tbody"></tbody></table></div></div>
+<div class="panel"><h3>Detalle consolidado</h3><div class="tablewrap"><table><thead><tr><th>Inicio</th><th>Estudiante</th><th>ID/RUT</th><th>Carrera</th><th>Sección</th><th>Simulador</th><th>Estado</th><th>Avance</th><th>Puntaje</th><th>Intentos</th><th>Tiempo</th><th>U1</th><th>U2</th><th>U3</th><th>Modalidad WMS</th><th>Desafío</th><th>Hitos</th></tr></thead><tbody id="tbody"></tbody></table></div></div>
 
 
 <div class="repo-section" id="accesosCsd">
@@ -277,7 +277,7 @@ function render(){
  const scores=FILTERED.map(x=>Number(x.puntaje)).filter(x=>Number.isFinite(x));
  $("kStudents").textContent=students;$("kSessions").textContent=FILTERED.length;$("kFinished").textContent=finished;
  $("kRate").textContent=FILTERED.length?Math.round(finished/FILTERED.length*100)+"%":"0%";$("kHours").textContent=hours.toFixed(1)+" h";$("kScore").textContent=scores.length?(scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1):"—";
- $("tbody").innerHTML=FILTERED.map(x=>`<tr><td>${dateCL(x.fecha_inicio)}</td><td>${esc(x.nombre)}</td><td>${esc(x.rut_id)}</td><td>${esc(x.carrera)}</td><td>${esc(x.seccion)}</td><td>${esc(x.simulador)}</td><td>${statusPill(x.estado)}</td><td>${Number(x.avance)||0}%</td><td>${x.puntaje??"—"}</td><td>${x.intentos??0}</td><td>${fmtSec(x.tiempo_segundos)}</td><td>${x.unidad_1??"—"}</td><td>${x.unidad_2??"—"}</td><td>${x.unidad_3??"—"}</td></tr>`).join("")||'<tr><td colspan="14">Sin registros para los filtros seleccionados.</td></tr>';
+ $("tbody").innerHTML=FILTERED.map(x=>`<tr><td>${dateCL(x.fecha_inicio)}</td><td>${esc(x.nombre)}</td><td>${esc(x.rut_id)}</td><td>${esc(x.carrera)}</td><td>${esc(x.seccion)}</td><td>${esc(x.simulador)}</td><td>${statusPill(x.estado)}</td><td>${Number(x.avance)||0}%</td><td>${x.puntaje??"—"}</td><td>${x.intentos??0}</td><td>${fmtSec(x.tiempo_segundos)}</td><td>${x.unidad_1??"—"}</td><td>${x.unidad_2??"—"}</td><td>${x.unidad_3??"—"}</td><td>${esc(x.modalidad_wms==="laboral"?"Desafío laboral":x.modalidad_wms==="libre"?"Gestión libre":"—")}</td><td>${esc(x.desafio_wms||"—")}</td><td>${x.hitos_totales_wms?esc(x.hitos_wms??0)+"/"+esc(x.hitos_totales_wms):"—"}</td></tr>`).join("")||'<tr><td colspan="17">Sin registros para los filtros seleccionados.</td></tr>';
  renderChart();
 }
 function statusPill(s){let t=String(s||"—"),cl=t.toLowerCase().startsWith("finalizado")?"ok":t.toLowerCase().includes("habilitada")?"ok":t.toLowerCase().includes("progreso")||t.toLowerCase().includes("iniciado")?"wa":"wa";return `<span class="pill ${cl}">${esc(t)}</span>`}
@@ -287,8 +287,8 @@ function renderChart(){
  $("chart").innerHTML=vals.length?vals.map(([k,v])=>`<div class="barrow"><span>${esc(k)}</span><div class="bar"><span style="width:${Math.round(v/max*100)}%"></span></div><b class="right">${v}</b></div>`).join(""):'<span class="sub">Sin datos.</span>';
 }
 function downloadCSV(){
- const rows=[["Inicio","Estudiante","ID/RUT","Carrera","Sección","Docente","Simulador","Actividad","Estado","Avance","Puntaje","Intentos","Tiempo segundos","Unidad 1","Unidad 2","Unidad 3"]];
- FILTERED.forEach(x=>rows.push([x.fecha_inicio,x.nombre,x.rut_id,x.carrera,x.seccion,x.docente,x.simulador,x.actividad,x.estado,x.avance,x.puntaje,x.intentos,x.tiempo_segundos,x.unidad_1,x.unidad_2,x.unidad_3]));
+ const rows=[["Inicio","Estudiante","ID/RUT","Carrera","Sección","Docente","Simulador","Actividad","Estado","Avance","Puntaje","Intentos","Tiempo segundos","Unidad 1","Unidad 2","Unidad 3","Modalidad WMS","Desafío WMS","Hitos WMS","Hitos totales WMS"]];
+ FILTERED.forEach(x=>rows.push([x.fecha_inicio,x.nombre,x.rut_id,x.carrera,x.seccion,x.docente,x.simulador,x.actividad,x.estado,x.avance,x.puntaje,x.intentos,x.tiempo_segundos,x.unidad_1,x.unidad_2,x.unidad_3,x.modalidad_wms,x.desafio_wms,x.hitos_wms,x.hitos_totales_wms]));
  const txt="\ufeff"+rows.map(r=>r.map(v=>`"${String(v??"").replaceAll('"','""')}"`).join(";")).join("\n");
  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"text/csv;charset=utf-8"}));a.download="Reporte_Centro_Simulacion_IPG.csv";a.click();
 }
