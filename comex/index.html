@@ -327,7 +327,7 @@ function ipgGrant(email){
   window.IPG_INSTITUTIONAL_EMAIL=email;
   document.body.classList.add("ipg-auth-ok");
 }
-async function ipgLoginEmail(){
+async function ipgLoginEmail(){if(!window.__csdIdentOk)return;
   const email=(document.getElementById("ipgAuthEmail")?.value||"").trim().toLowerCase();
   if(!ipgInstitutional(email)) return ipgAuthMsg("Usa un correo @alumnos.ipg.cl, @docentes.ipg.cl o @ipg.cl.","err");
   ipgAuthMsg("Registrando acceso...");
@@ -338,14 +338,25 @@ async function ipgLoginEmail(){
 document.getElementById("ipgAuthPortal")?.addEventListener("click",()=>location.href="../");
 document.getElementById("ipgAuthLogin")?.addEventListener("click",ipgLoginEmail);
 document.getElementById("ipgAuthEmail")?.addEventListener("keydown",e=>{if(e.key==="Enter")ipgLoginEmail();});
+(function(){const email=(localStorage.getItem(IPG_AUTH_KEY)||"").trim().toLowerCase();if(ipgInstitutional(email)){const input=document.getElementById("ipgAuthEmail");if(input)input.value=email;}})();
+</script>
+<div id="ipgTraceState" style="max-width:1200px;margin:10px auto 18px;padding:10px 14px;border:1px solid #dce5ed;border-radius:10px;background:#f7fafc;font:13px/1.4 system-ui;color:#425466"><b>Registro institucional:</b> <span id="ipgTraceText">listo para iniciar.</span></div><script>
 (function(){
-  const email=(localStorage.getItem(IPG_AUTH_KEY)||"").trim().toLowerCase();
-  if(ipgInstitutional(email)){
-    const input=document.getElementById("ipgAuthEmail"); if(input) input.value=email;
-    ipgGrant(email);
-    registrarAccesoModuloCSD(email);
-  }
+const emailInput=document.getElementById('ipgAuthEmail'),btn=document.getElementById('ipgAuthLogin');
+if(!emailInput||!btn)return;
+const box=emailInput.closest('.ipg-auth-grid')||emailInput.parentElement;
+const fields=document.createElement('div');fields.innerHTML='<div><label>Perfil</label><select id="csdPerfil"><option value="estudiante">Estudiante</option><option value="docente">Docente</option><option value="colaborador">Administrativo / comunidad IPG</option></select></div><div><label>Nombre completo</label><input id="csdNombre" placeholder="Nombre y apellido" autocomplete="name"></div><div id="csdRutWrap"><label>RUT</label><input id="csdRut" placeholder="12.345.678-5"></div><div id="csdCarreraWrap"><label>Carrera</label><select id="csdCarrera"><option value="">Cargando carreras…</option></select></div>';
+box.prepend(...Array.from(fields.children));
+const $=id=>document.getElementById(id);
+$('csdPerfil').addEventListener('change',()=>{const academic=$('csdPerfil').value!=='colaborador';$('csdRutWrap').hidden=!academic;$('csdCarreraWrap').hidden=!academic});
+const url='https://uegxxazgqvjjqnmpodln.supabase.co',key=IPG_AUTH_ANON;
+fetch(url+'/rest/v1/catalogo_carreras_csd?select=codigo,nombre&activo=eq.true&order=orden.asc',{headers:{apikey:key,Authorization:'Bearer '+key}}).then(r=>{if(!r.ok)throw Error('Catálogo no disponible');return r.json()}).then(rows=>{$('csdCarrera').replaceChildren(new Option('Selecciona tu carrera',''),...rows.map(x=>new Option(x.nombre,x.codigo)))}).catch(()=>{$('csdCarrera').replaceChildren(new Option('Error al cargar carreras',''))});
+function validRut(v){let x=v.replace(/[.\s-]/g,'').toUpperCase();if(!/^\d{7,8}[\dK]$/.test(x))return false;let sum=0,f=2;for(let i=x.length-2;i>=0;i--){sum+=Number(x[i])*f;f=f===7?2:f+1}let n=11-sum%11;return(n===11?'0':n===10?'K':String(n))===x.slice(-1)}
+let busy=false;
+async function enter(e){if(window.__csdIdentOk)return;e.preventDefault();e.stopImmediatePropagation();if(busy)return;const perfil=$('csdPerfil').value,nombre=$('csdNombre').value.trim(),rut=$('csdRut').value.trim(),carrera=$('csdCarrera').value,email=emailInput.value.trim().toLowerCase(),msg=$('ipgAuthMsg');if(!/^[^ @]+@(alumnos\.ipg\.cl|docentes\.ipg\.cl|ipg\.cl)$/.test(email)||nombre.length<3||(perfil!=='colaborador'&&(!validRut(rut)||!carrera))){msg.textContent='Completa nombre, correo institucional y, si corresponde, RUT válido y carrera.';return}busy=true;btn.disabled=true;msg.textContent='Registrando identificación institucional…';try{const sid='csd-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);const r=await fetch(url+'/rest/v1/rpc/registrar_identificacion_csd',{method:'POST',headers:{'Content-Type':'application/json',apikey:key,Authorization:'Bearer '+key},body:JSON.stringify({p_email:email,p_nombre:nombre,p_rut:perfil==='colaborador'?null:rut,p_carrera_codigo:perfil==='colaborador'?null:carrera,p_perfil:perfil,p_modulo:document.title,p_session_id:sid})});if(!r.ok||await r.json()!==true)throw Error('Registro rechazado');window.__csdIdentOk=true;btn.disabled=false;btn.click()}catch(err){msg.textContent='No se pudo registrar el ingreso. Revisa la conexión y reintenta.'}finally{busy=false;btn.disabled=false}}
+btn.addEventListener('click',enter,true);
+emailInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!window.__csdIdentOk){e.preventDefault();e.stopImmediatePropagation();btn.click()}},true);
 })();
 </script>
-<div id="ipgTraceState" style="max-width:1200px;margin:10px auto 18px;padding:10px 14px;border:1px solid #dce5ed;border-radius:10px;background:#f7fafc;font:13px/1.4 system-ui;color:#425466"><b>Registro institucional:</b> <span id="ipgTraceText">listo para iniciar.</span></div></body>
+</body>
 </html>
