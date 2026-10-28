@@ -312,15 +312,14 @@ $("authLogin").onclick=async()=>{
   if(!email)return authMessage("Ingresa tu correo institucional.","err");
   if(!institutionalDomain(email))return authMessage("Debes usar @alumnos.ipg.cl, @docentes.ipg.cl o @ipg.cl.","err");
   const registrado=await registrarAccesoModuloCSD(email);
+  if(!registrado)return authMessage("No se pudo registrar el ingreso. Reintenta con conexión.","err");
   grantInstitutionalEmail(email);
   authMessage(registrado?"Acceso correcto. El ingreso quedó registrado.":"Acceso correcto. El registro central no respondió.","ok");
 };
 const _savedInstitutionalEmail=getInstitutionalEmail();
-if(institutionalDomain(_savedInstitutionalEmail)){
-  if($("authEmail"))$("authEmail").value=_savedInstitutionalEmail;
-  grantInstitutionalEmail(_savedInstitutionalEmail);
-  registrarAccesoModuloCSD(_savedInstitutionalEmail).catch(()=>{});
-}
+if(institutionalDomain(_savedInstitutionalEmail)&&$("authEmail"))$("authEmail").value=_savedInstitutionalEmail;
+document.body.classList.remove("ipg-auth-ok");
+
 
 
 </script>
