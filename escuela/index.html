@@ -56,6 +56,17 @@
 <section id="dashView" class="hidden">
 <div class="hero"><h1>Centro de Simulación Digital IPG</h1><p>Reporte consolidado de participación, resultados y uso del Repositorio Académico.</p></div>
 <div class="actions"><button class="btn light" id="refreshBtn">Actualizar datos</button><button class="btn teal" id="csvBtn">Descargar reporte CSV</button><button class="btn light" id="logoutBtn">Cerrar sesión</button></div>
+<style>
+.viz-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.viz-tab{border:1px solid #cbd5e1;background:#fff;color:#173b68;border-radius:10px;padding:9px 15px;cursor:pointer;font-weight:700}.viz-tab[aria-pressed="true"]{background:#173b68;color:#fff}.viz-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.viz-card{border:1px solid #dbe5ed;border-radius:12px;padding:16px;min-width:0}.viz-bars{display:flex;flex-direction:column;gap:9px}.viz-bar{width:100%;display:grid;grid-template-columns:minmax(125px,2fr) minmax(90px,3fr) 44px;align-items:center;gap:8px;background:transparent;border:0;text-align:left;color:inherit;cursor:pointer;padding:3px}.viz-track{height:15px;border-radius:6px;background:#e6edf3;overflow:hidden}.viz-fill{display:block;height:100%;background:#148fa1}.viz-bar:hover .viz-fill{background:#0d6076}.viz-kpis{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}.viz-kpis span{padding:9px 12px;background:#edf3f8;border-radius:9px}.viz-kpis strong{display:block;font-size:22px}.viz-muted{color:#64748b;font-size:13px}.viz-bar:focus-visible,.viz-tab:focus-visible{outline:3px solid #e0a735;outline-offset:2px}@media(max-width:760px){.viz-grid{grid-template-columns:1fr}.viz-bar{grid-template-columns:minmax(100px,2fr) minmax(70px,2fr) 35px}}
+</style>
+<section class="panel" id="tableroVisual">
+<h2 style="margin-top:0">Tablero interactivo · CSD</h2>
+<p class="sub">Gráficos basados en registros recibidos. Los accesos, eventos y evaluaciones no equivalen a estudiantes únicos ni acreditan superación de brechas.</p>
+<div class="viz-tabs" role="group" aria-label="Categoría del tablero"><button class="viz-tab" data-viz="general" aria-pressed="true">Resumen general</button><button class="viz-tab" data-viz="simulador" aria-pressed="false">Simuladores</button><button class="viz-tab" data-viz="refuerzo" aria-pressed="false">Reforzamiento</button></div>
+<div class="repo-report-tools"><div class="f"><label>Desde</label><input type="date" id="vizDesde"></div><div class="f"><label>Hasta</label><input type="date" id="vizHasta"></div><div class="f"><label>Módulo / simulador</label><select id="vizModulo"><option value="">Todos</option></select></div><div class="f"><label>Buscar correo</label><input id="vizEmail" placeholder="Correo declarado"></div></div>
+<div class="viz-kpis" id="vizKpis" aria-live="polite"></div><div class="viz-grid"><div class="viz-card"><h3>Accesos por recurso</h3><div class="viz-bars" id="vizAccessBars"></div></div><div class="viz-card"><h3>Accesos por día</h3><div class="viz-bars" id="vizTimeBars"></div></div><div class="viz-card"><h3>Estado de actividad por usuario y recurso</h3><div class="viz-bars" id="vizStateBars"></div></div><div class="viz-card"><h3>Tests de salida por unidad</h3><div class="viz-bars" id="vizTestBars"></div></div></div>
+<p class="viz-muted" id="vizNote">Esperando carga de datos.</p>
+</section>
 <div class="panel" id="seguimientoIntegrado">
 <h2 style="margin-top:0">Seguimiento integrado por usuario y módulo</h2>
 <p class="sub">Vista prioritaria de accesos y evidencias. El correo declarado identifica accesos, pero no acredita identidad por sí mismo. Una actividad sin vínculo verificable aparece como «Sin evidencia».</p>
@@ -606,7 +617,7 @@ async function loadAccessDashboard(){
     if(!rp.ok)throw new Error("Participación por email: "+rp.status+" · "+await rp.text());
     ACCESS_DATA=await ra.json();
     ACCESS_PART=await rp.json();
-    renderAccessDashboard();renderUnits();renderIntegrated();
+    renderAccessDashboard();renderUnits();renderIntegrated();renderViz();
   }catch(e){
     console.error(e);$("accStatus").className="notice bad";$("accStatus").textContent=e.message;
   }
@@ -659,12 +670,45 @@ function downloadIntegrated(){
 }
 ['intEmail','intCategoria','intModulo','intDesde','intHasta'].forEach(id=>$(id).addEventListener(id==='intEmail'?'input':'change',renderIntegrated));
 $('intCsv').onclick=downloadIntegrated;
+let VIZ_CATEGORY='general';
+function vizRows(){
+ const from=$('vizDesde').value,to=$('vizHasta').value,email=$('vizEmail').value.trim().toLowerCase(),mod=$('vizModulo').value;
+ return ACCESS_DATA.filter(x=>{
+  const m=normModule(x.modulo),date=String(x.fecha||x.created_at||'').slice(0,10),cat=moduleCategory(m);
+  return (!from||date>=from)&&(!to||date<=to)&&(!email||String(x.email||'').toLowerCase().includes(email))&&(!mod||m===mod)&&(VIZ_CATEGORY==='general'||cat===VIZ_CATEGORY);
+ });
+}
+function vizBars(id,entries,clickable=false){
+ const root=$(id);if(!entries.length){root.innerHTML='<p class="viz-muted">Sin datos verificables para estos filtros.</p>';return}
+ const max=Math.max(1,...entries.map(x=>x[1]));
+ root.innerHTML=entries.slice(0,12).map(([label,n])=>'<button type="button" class="viz-bar" '+(clickable?'data-viz-mod="'+esc(label)+'"':'disabled')+' title="'+esc(label)+'"><span>'+esc(label)+'</span><span class="viz-track"><span class="viz-fill" style="width:'+Math.round(n/max*100)+'%"></span></span><strong>'+n+'</strong></button>').join('');
+ if(clickable)root.querySelectorAll('[data-viz-mod]').forEach(b=>b.onclick=()=>{$('vizModulo').value=b.dataset.vizMod;renderViz()});
+}
+function renderViz(){
+ const sel=$('vizModulo'),previous=sel.value;
+ const mods=[...new Set(ACCESS_DATA.map(x=>normModule(x.modulo)).filter(m=>m&&(VIZ_CATEGORY==='general'||moduleCategory(m)===VIZ_CATEGORY)))].sort((a,b)=>a.localeCompare(b,'es'));
+ sel.innerHTML='<option value="">Todos</option>'+mods.map(m=>'<option value="'+esc(m)+'">'+esc(m)+'</option>').join('');
+ if(mods.includes(previous))sel.value=previous;
+ const rows=vizRows(),users=new Set(rows.map(x=>String(x.email||'').toLowerCase()).filter(Boolean)),pairs=new Set(rows.map(x=>accessPair(x.email,x.modulo)));
+ const ev=accessEvidence(),started=[...pairs].filter(k=>ev.started.has(k)),finished=[...pairs].filter(k=>ev.finished.has(k));
+ $('vizKpis').innerHTML=[['Accesos',rows.length],['Correos declarados',users.size],['Usuario-recurso con actividad',started.length],['Usuario-recurso con finalización',finished.length]].map(([label,n])=>'<span><strong>'+n+'</strong>'+esc(label)+'</span>').join('');
+ const count=(items,key)=>{const m=new Map();items.forEach(x=>{const k=key(x);if(k)m.set(k,(m.get(k)||0)+1)});return [...m.entries()].sort((a,b)=>b[1]-a[1])};
+ vizBars('vizAccessBars',count(rows,x=>normModule(x.modulo)),true);
+ vizBars('vizTimeBars',count(rows,x=>String(x.fecha||x.created_at||'').slice(0,10)).sort((a,b)=>a[0].localeCompare(b[0])).slice(-12));
+ vizBars('vizStateBars',[['Sin evidencia de inicio',pairs.size-started.length],['Con inicio registrado',started.length],['Con finalización registrada',finished.length]]);
+ const visible=new Set(rows.map(x=>accessPair(x.email,x.modulo)));
+ const units=unitEvidenceRows().filter(u=>visible.has(accessPair(u.email,u.mod))&&u.test&&moduleCategory(u.mod)==='refuerzo');
+ vizBars('vizTestBars',count(units,x=>normModule(x.mod)+' · U'+x.unit));
+ $('vizNote').textContent='Accesos: registros de ingreso. Inicio/finalización: evidencia vinculada por correo y recurso, no por sesión autenticada. Tests: combinaciones usuario-módulo-unidad con evaluación; no representan intentos individuales. Las fechas se filtran por el día almacenado.';
+}
+document.querySelectorAll('[data-viz]').forEach(b=>b.onclick=()=>{VIZ_CATEGORY=b.dataset.viz;document.querySelectorAll('[data-viz]').forEach(t=>t.setAttribute('aria-pressed',String(t===b)));$('vizModulo').value='';renderViz()});
+['vizDesde','vizHasta','vizModulo','vizEmail'].forEach(id=>$(id).addEventListener(id==='vizEmail'?'input':'change',renderViz));
 async function loadAllData(){
   await loadCsdRef();
   await loadData();
   await loadAccessDashboard();
   await loadRepositorioDashboard();
-  renderUnits();renderIntegrated();
+  renderUnits();renderIntegrated();renderViz();
 }
 
 $("loginBtn").onclick=login;$("refreshBtn").onclick=loadAllData;$("csvBtn").onclick=downloadCSV;$("logoutBtn").onclick=logout;
