@@ -13,7 +13,7 @@ function store(){if(email&&state)localStorage.setItem(STORAGE+'_'+email,JSON.str
 function log(action){state.events.push({at:new Date().toISOString(),action});store()}
 function load(e){try{const a=JSON.parse(localStorage.getItem(STORAGE+'_'+e));if(a&&Array.isArray(a.units)&&a.units.length===3)return a}catch(err){}return newState()}
 async function rpc(name,payload){try{const r=await fetch(SB+'/rest/v1/rpc/'+name,{method:'POST',headers:{'Content-Type':'application/json','apikey':KEY,'Authorization':'Bearer '+KEY},body:JSON.stringify(payload)});if(!r.ok)throw Error(await r.text());return true}catch(err){console.warn('CSD',name,err);return false}}
-async function access(){let sid=sessionStorage.getItem('csd_fh_sid');if(!sid){sid=state.session;sessionStorage.setItem('csd_fh_sid',sid)}return rpc('registrar_acceso_csd',{p_email:email,p_modulo:MOD,p_session_id:sid})}
+async function access(){if(!window.__csdIdentOk)throw Error('Identificación requerida');let sid=sessionStorage.getItem('csd_fh_sid');if(!sid){sid=state.session;sessionStorage.setItem('csd_fh_sid',sid)}return rpc('registrar_acceso_csd',{p_email:email,p_modulo:MOD,p_session_id:sid})}
 function start(){if(!state.started){state.started=true;log('inicio')}}
 function progress(){let n=0;state.units.forEach((u,i)=>{n+=u.read.length/4*8;n+=Object.keys(u.cases).length/3*12;n+=u.passed?13.333:0});return Math.min(100,Math.round(n))}
 function nav(v){view=v;page=0;render()}
@@ -49,6 +49,24 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');
  const grade0=window.grade;
  if(typeof grade0==='function'){window.grade=function(...a){const before=(()=>{const u=a[0];return {attempt:state.units[u]?.attempts||0}})();const r=grade0.apply(this,a);const after=(()=>{const u=a[0],x=state.units[u];return {valid:x.attempts>before.attempt,unit:u+1,score:x.best*10,attempt:x.attempts,advance:progress(),at:Date.now()}})();if(after && after.valid && (!before||after.attempt!==before.attempt||after.score!==before.score||after.at!==before.at)){send('evaluacion',after.unit,after.score,after.attempt,after.advance)}return r}}
  const origAccess=window.access;if(typeof origAccess==='function')window.access=async function(...a){const r=await origAccess.apply(this,a);if(valid(who())){note();send('ingreso',null,null,null,progress())}return r};
+})();
+</script>
+<script>
+(function(){
+const emailInput=document.getElementById('email'),btn=document.querySelector('#enter');
+if(!emailInput||!btn)return;
+const box=emailInput.closest('#auth, #gate, #login')||emailInput.parentElement;
+const fields=document.createElement('div');fields.innerHTML='<div><label>Perfil</label><select id="csdPerfil"><option value="estudiante">Estudiante</option><option value="docente">Docente</option><option value="colaborador">Administrativo / comunidad IPG</option></select></div><div><label>Nombre completo</label><input id="csdNombre" placeholder="Nombre y apellido" autocomplete="name"></div><div id="csdRutWrap"><label>RUT</label><input id="csdRut" placeholder="12.345.678-5"></div><div id="csdCarreraWrap"><label>Carrera</label><select id="csdCarrera"><option value="">Cargando carreras…</option></select></div>';
+box.prepend(...Array.from(fields.children));
+const $=id=>document.getElementById(id);
+$('csdPerfil').addEventListener('change',()=>{const academic=$('csdPerfil').value!=='colaborador';$('csdRutWrap').hidden=!academic;$('csdCarreraWrap').hidden=!academic});
+const url='https://uegxxazgqvjjqnmpodln.supabase.co',key=KEY;
+fetch(url+'/rest/v1/catalogo_carreras_csd?select=codigo,nombre&activo=eq.true&order=orden.asc',{headers:{apikey:key,Authorization:'Bearer '+key}}).then(r=>{if(!r.ok)throw Error('Catálogo no disponible');return r.json()}).then(rows=>{$('csdCarrera').replaceChildren(new Option('Selecciona tu carrera',''),...rows.map(x=>new Option(x.nombre,x.codigo)))}).catch(()=>{$('csdCarrera').replaceChildren(new Option('Error al cargar carreras',''))});
+function validRut(v){let x=v.replace(/[.\s-]/g,'').toUpperCase();if(!/^\d{7,8}[\dK]$/.test(x))return false;let sum=0,f=2;for(let i=x.length-2;i>=0;i--){sum+=Number(x[i])*f;f=f===7?2:f+1}let n=11-sum%11;return(n===11?'0':n===10?'K':String(n))===x.slice(-1)}
+let busy=false;
+async function enter(e){if(window.__csdIdentOk)return;e.preventDefault();e.stopImmediatePropagation();if(busy)return;const perfil=$('csdPerfil').value,nombre=$('csdNombre').value.trim(),rut=$('csdRut').value.trim(),carrera=$('csdCarrera').value,email=emailInput.value.trim().toLowerCase(),msg=$('loginmsg');if(!/^[^ @]+@(alumnos\.ipg\.cl|docentes\.ipg\.cl|ipg\.cl)$/.test(email)||nombre.length<3||(perfil!=='colaborador'&&(!validRut(rut)||!carrera))){msg.textContent='Completa nombre, correo institucional y, si corresponde, RUT válido y carrera.';return}busy=true;btn.disabled=true;msg.textContent='Registrando identificación institucional…';try{const sid='csd-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);const r=await fetch(url+'/rest/v1/rpc/registrar_identificacion_csd',{method:'POST',headers:{'Content-Type':'application/json',apikey:key,Authorization:'Bearer '+key},body:JSON.stringify({p_email:email,p_nombre:nombre,p_rut:perfil==='colaborador'?null:rut,p_carrera_codigo:perfil==='colaborador'?null:carrera,p_perfil:perfil,p_modulo:document.title,p_session_id:sid})});if(!r.ok||await r.json()!==true)throw Error('Registro rechazado');window.__csdIdentOk=true;btn.disabled=false;btn.click()}catch(err){msg.textContent='No se pudo registrar el ingreso. Revisa la conexión y reintenta.'}finally{busy=false;btn.disabled=false}}
+btn.addEventListener('click',enter,true);
+emailInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!window.__csdIdentOk){e.preventDefault();e.stopImmediatePropagation();btn.click()}},true);
 })();
 </script>
 </body></html>
