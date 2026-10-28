@@ -56,6 +56,26 @@
 <section id="dashView" class="hidden">
 <div class="hero"><h1>Centro de Simulación Digital IPG</h1><p>Reporte consolidado de participación, resultados y uso del Repositorio Académico.</p></div>
 <div class="actions"><button class="btn light" id="refreshBtn">Actualizar datos</button><button class="btn teal" id="csvBtn">Descargar reporte CSV</button><button class="btn light" id="logoutBtn">Cerrar sesión</button></div>
+<div class="panel" id="seguimientoIntegrado">
+<h2 style="margin-top:0">Seguimiento integrado por usuario y módulo</h2>
+<p class="sub">Vista prioritaria de accesos y evidencias. El correo declarado identifica accesos, pero no acredita identidad por sí mismo. Una actividad sin vínculo verificable aparece como «Sin evidencia».</p>
+<div class="repo-report-tools">
+<div class="f"><label>Buscar correo institucional</label><input id="intEmail" placeholder="usuario@ipg.cl"></div>
+<div class="f"><label>Módulo</label><select id="intModulo"><option value="">Todos los módulos</option></select></div>
+<div class="f"><label>Desde</label><input id="intDesde" type="date"></div>
+<div class="f"><label>Hasta</label><input id="intHasta" type="date"></div>
+</div>
+<div class="repo-grid">
+<div class="repo-kpi"><b id="intAccesos">—</b><small>Accesos registrados</small></div>
+<div class="repo-kpi"><b id="intUsuarios">—</b><small>Correos distintos</small></div>
+<div class="repo-kpi"><b id="intConEvidencia">—</b><small>Usuario-módulo con actividad</small></div>
+<div class="repo-kpi"><b id="intPendientes">—</b><small>Usuario-módulo sin evidencia de inicio</small></div>
+</div>
+<div id="intStatus" class="notice">Inicia sesión para cargar los registros.</div>
+<div class="repo-report-actions"><button class="btn teal" id="intCsv">Exportar seguimiento integrado</button></div>
+<div class="tablewrap"><table><thead><tr><th>Último acceso</th><th>Correo declarado</th><th>Módulo</th><th>Accesos</th><th>Actividad</th><th>Finalización</th><th>Test por unidad</th><th>Avance</th><th>Verificación</th></tr></thead><tbody id="intBody"><tr><td colspan="9">Esperando datos.</td></tr></tbody></table></div>
+</div>
+<div class="actions" style="margin-bottom:14px"><a href="#accesosCsd">Auditoría de accesos</a><a href="#avanceUnidades">Resultados por unidad</a><a href="#reforzamientoCsd">Resultados de reforzamiento</a></div>
 <div class="cards">
 <div class="kpi"><b id="kStudents">0</b><small>Estudiantes únicos</small></div>
 <div class="kpi"><b id="kSessions">0</b><small>Sesiones</small></div>
@@ -584,7 +604,7 @@ async function loadAccessDashboard(){
     if(!rp.ok)throw new Error("Participación por email: "+rp.status+" · "+await rp.text());
     ACCESS_DATA=await ra.json();
     ACCESS_PART=await rp.json();
-    renderAccessDashboard();renderUnits();
+    renderAccessDashboard();renderUnits();renderIntegrated();
   }catch(e){
     console.error(e);$("accStatus").className="notice bad";$("accStatus").textContent=e.message;
   }
@@ -596,12 +616,53 @@ function downloadAccessCSV(){
  csvDownload(out,'CSD_IPG_accesos.csv');
 }
 
+function integratedRows(){
+ const evidence=accessEvidence(),by=new Map();
+ ACCESS_DATA.forEach(x=>{
+  const email=String(x.email||'').trim().toLowerCase(),mod=normModule(x.modulo),key=accessPair(email,mod);
+  if(!email||!mod)return;
+  if(!by.has(key))by.set(key,{email,mod,count:0,first:null,last:null,started:evidence.started.has(key),finished:evidence.finished.has(key),tests:[],progress:null});
+  const row=by.get(key),dt=x.fecha||x.created_at||null;row.count++;
+  if(dt&&(!row.last||new Date(dt)>new Date(row.last)))row.last=dt;
+  if(dt&&(!row.first||new Date(dt)<new Date(row.first)))row.first=dt;
+ });
+ const units=unitEvidenceRows();
+ units.forEach(u=>{const row=by.get(accessPair(u.email,u.mod));if(!row)return;
+  if(u.test)row.tests.push('U'+u.unit+': '+(u.score===null?'sin puntaje':u.score+'%'));
+  if(u.progress!==null&&Number.isFinite(Number(u.progress)))row.progress=Math.max(row.progress??0,Number(u.progress));
+ });
+ return [...by.values()].sort((a,b)=>new Date(b.last||0)-new Date(a.last||0));
+}
+function integratedFiltered(){
+ const email=$('intEmail').value.trim().toLowerCase(),mod=$('intModulo').value,desde=$('intDesde').value,hasta=$('intHasta').value;
+ return integratedRows().filter(r=>(!email||r.email.includes(email))&&(!mod||r.mod===mod)&&(!desde||String(r.last||'').slice(0,10)>=desde)&&(!hasta||String(r.last||'').slice(0,10)<=hasta));
+}
+function renderIntegrated(){
+ const sel=$('intModulo'),prior=sel.value;
+ const mods=[...new Set(ACCESS_DATA.map(x=>normModule(x.modulo)).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+ sel.innerHTML='<option value="">Todos los módulos</option>'+mods.map(m=>'<option value="'+esc(m)+'">'+esc(m)+'</option>').join('');
+ if(mods.includes(prior))sel.value=prior;
+ const rows=integratedFiltered(),pairs=rows.length,started=rows.filter(x=>x.started).length;
+ $('intAccesos').textContent=rows.reduce((a,r)=>a+r.count,0);
+ $('intUsuarios').textContent=new Set(rows.map(x=>x.email)).size;
+ $('intConEvidencia').textContent=started;
+ $('intPendientes').textContent=pairs-started;
+ $('intStatus').textContent=rows.length+' combinaciones usuario-módulo con acceso. «Sin evidencia» no significa reprobación; los avances por unidad solo se muestran cuando existe un registro asociable al mismo correo y módulo.';
+ $('intBody').innerHTML=rows.slice(0,500).map(r=>'<tr><td>'+dateCL(r.last)+'</td><td>'+esc(r.email)+'</td><td>'+esc(r.mod)+'</td><td>'+r.count+'</td><td>'+(r.started?'Con evidencia':'Sin evidencia')+'</td><td>'+(r.finished?'Registrada':'Sin evidencia')+'</td><td>'+esc(r.tests.join(' · ')||'Sin evidencia')+'</td><td>'+(r.progress===null?'No verificable':r.progress+'%')+'</td><td>Identidad declarada</td></tr>').join('')||'<tr><td colspan="9">Sin registros para los filtros.</td></tr>';
+}
+function downloadIntegrated(){
+ const rows=[['Último acceso','Primer acceso','Correo declarado','Módulo','Accesos','Inicio con evidencia','Finalización con evidencia','Test por unidad','Avance','Verificación']];
+ integratedFiltered().forEach(r=>rows.push([r.last,r.first,r.email,r.mod,r.count,r.started?'Sí':'Sin evidencia',r.finished?'Sí':'Sin evidencia',r.tests.join(' | '),r.progress??'No verificable','Identidad declarada']));
+ csvDownload(rows,'CSD_IPG_seguimiento_integrado.csv');
+}
+['intEmail','intModulo','intDesde','intHasta'].forEach(id=>$(id).addEventListener(id==='intEmail'?'input':'change',renderIntegrated));
+$('intCsv').onclick=downloadIntegrated;
 async function loadAllData(){
   await loadCsdRef();
   await loadData();
   await loadAccessDashboard();
   await loadRepositorioDashboard();
-  renderUnits();
+  renderUnits();renderIntegrated();
 }
 
 $("loginBtn").onclick=login;$("refreshBtn").onclick=loadAllData;$("csvBtn").onclick=downloadCSV;$("logoutBtn").onclick=logout;
