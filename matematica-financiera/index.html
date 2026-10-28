@@ -192,7 +192,7 @@ function currentAverageScore(){
 }
 function currentAttempts(){return ["u1","u2","u3"].reduce((a,k)=>a+(s.tests?.[k]?.attempts||0),0)}
 async function syncCentral(evento,estado){
-  if(!s.started||!s.studentId) return false;
+  if(!s.studentId||!s.sessionId) return false;
   const row={
     session_id:s.sessionId,
     evento:evento,
@@ -318,6 +318,7 @@ document.getElementById("ipgSavePortal")?.addEventListener("click",ipgGuardarYVo
 document.getElementById("ipgFinishPortal")?.addEventListener("click",ipgFinalizarYVolver);
 document.getElementById("finish")?.addEventListener("click",async()=>{
   if(!s.studentId)return alert("Primero inicia una sesión.");
+  if(["u1","u2","u3"].some(k=>!Number.isFinite(Number(s.tests?.[k]?.score))||s.tests?.[k]?.score===undefined||s.tests?.[k]?.score===null)){alert("Debes rendir el test de salida de las tres unidades antes de finalizar. Puedes guardar y continuar después.");return;}
   if(!confirm("¿Finalizar y registrar esta sesión?"))return;
   if(s.started){s.elapsed=elapsed();s.started=false;s.start=0;}
   s.finished=true;save();
