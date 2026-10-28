@@ -147,7 +147,7 @@ function currentAverageScore(){
 }
 function currentAttempts(){return ["u1","u2","u3"].reduce((a,k)=>a+(s.tests?.[k]?.attempts||0),0)}
 async function syncCentral(evento,estado){
-  if(!s.started||!s.studentId) return false;
+  if(!s.studentId||!s.sessionId) return false;
   const row={
     session_id:s.sessionId,
     evento:evento,
@@ -267,6 +267,7 @@ document.getElementById("costosFinish")?.addEventListener("click",async e=>{
     setTimeout(()=>{if(b.dataset.confirmed==="1"){b.dataset.confirmed="0";b.textContent="Finalizar y volver al portal"}},5000);
     return;
   }
+  if(["u1","u2","u3"].some(k=>s.tests?.[k]?.score===undefined||s.tests?.[k]?.score===null)){alert("Para finalizar debes rendir el test de salida de cada unidad (U1, U2 y U3). Usa Guardar y volver si aún estás trabajando.");b.dataset.confirmed="0";b.textContent="Finalizar y volver al portal";return;}
   if(b.disabled)return;b.disabled=true;b.textContent="Finalizando...";
   const finalTime=elapsed();
   if(s.started||s.elapsed>0||Object.keys(s.guides||{}).length>0||Object.keys(s.tests||{}).length>0){
