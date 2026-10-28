@@ -67,6 +67,7 @@
 <div class="viz-kpis" id="vizKpis" aria-live="polite"></div><div class="viz-grid"><div class="viz-card"><h3>Accesos por recurso</h3><div class="viz-bars" id="vizAccessBars"></div></div><div class="viz-card"><h3>Accesos por día</h3><div class="viz-bars" id="vizTimeBars"></div></div><div class="viz-card"><h3>Estado de actividad por usuario y recurso</h3><div class="viz-bars" id="vizStateBars"></div></div><div class="viz-card"><h3>Tests de salida por unidad</h3><div class="viz-bars" id="vizTestBars"></div></div></div>
 <p class="viz-muted" id="vizNote">Esperando carga de datos.</p>
 </section>
+<section class="panel" id="identificacionesCSD"><h2>Identificación declarativa de participantes</h2><p class="sub">RUT, nombre, correo institucional, perfil y carrera declarados. No constituye verificación de identidad. Los registros anteriores se conservan en el seguimiento histórico.</p><div class="repo-report-tools"><div class="f"><label>Buscar participante, correo o RUT</label><input id="idBuscar" placeholder="Nombre, correo o RUT"></div><div class="f"><label>Carrera</label><select id="idCarrera"><option value="">Todas las carreras</option></select></div><div class="f"><label>Perfil</label><select id="idPerfil"><option value="">Todos</option><option value="estudiante">Estudiante</option><option value="docente">Docente</option><option value="colaborador">Administrativo / comunidad</option></select></div></div><p id="idEstado" class="sub">Sin cargar</p><div style="overflow:auto"><table><thead><tr><th>Fecha</th><th>Nombre</th><th>RUT</th><th>Correo</th><th>Perfil</th><th>Carrera</th><th>Módulo</th></tr></thead><tbody id="idFilas"></tbody></table></div></section>
 <div class="panel" id="seguimientoIntegrado">
 <h2 style="margin-top:0">Seguimiento integrado por usuario y módulo</h2>
 <p class="sub">Vista prioritaria de accesos y evidencias. El correo declarado identifica accesos, pero no acredita identidad por sí mismo. Una actividad sin vínculo verificable aparece como «Sin evidencia».</p>
@@ -268,6 +269,7 @@ const SUPABASE_URL='https://uegxxazgqvjjqnmpodln.supabase.co';
 const ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlZ3h4YXpncXZqanFubXBvZGxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTMxMDksImV4cCI6MjEwNjI2OTEwOX0.93hHsgPuCrPWZma29meYK2w5EDBff4tv80aUky4v_UQ';
 let TOKEN="";
 let DATA=[],FILTERED=[],REPO_REPORT=[],ACCESS_DATA=[],ACCESS_PART=[];
+let IDENTIFICACIONES=[];
 const $=id=>document.getElementById(id);
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 function fmtSec(n){n=Number(n)||0;let h=Math.floor(n/3600),m=Math.floor((n%3600)/60);return h?`${h}h ${m}m`:`${m} min`}
@@ -605,6 +607,9 @@ function renderAccessDashboard(){
  $('accDetailBody').innerHTML=rows.length?rows.slice(0,500).map(x=>{const k=accessPair(x.email,x.modulo);return `<tr><td>${dateCL(x.fecha)}</td><td>${esc(x.email)}</td><td>${esc(x.tipo_usuario)}</td><td>${esc(normModule(x.modulo))}</td><td>${started.has(k)?'Sí':'Sin evidencia'}</td><td>${finished.has(k)?'Sí':'Sin evidencia'}</td></tr>`}).join(''):'<tr><td colspan="6">Sin datos</td></tr>';
  $('accStatus').textContent=`${rows.length} acceso(s) · ${users.size} usuario(s) único(s) · ${pairs.size} combinación(es) usuario/módulo. Inicios y finalizaciones: solo eventos vinculables por correo y módulo. «Sin evidencia» no significa que el estudiante no haya trabajado.`;
 }
+async function loadIdentificaciones(){try{const r=await fetch(SUPABASE_URL+"/rest/v1/rpc/reporte_identificaciones_csd",{method:"POST",headers:{"apikey":ANON_KEY,"Authorization":"Bearer "+TOKEN,"Content-Type":"application/json"},body:"{}"});if(!r.ok)throw Error("No se pudo consultar el reporte de identificación ("+r.status+")");IDENTIFICACIONES=await r.json();const carreras=[...new Set(IDENTIFICACIONES.map(x=>x.carrera).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"es"));$("idCarrera").innerHTML='<option value="">Todas las carreras</option>'+carreras.map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join("");renderIdentificaciones();}catch(e){$("idEstado").textContent=e.message;}}
+function renderIdentificaciones(){const q=($("idBuscar").value||"").trim().toLowerCase(),c=$("idCarrera").value,p=$("idPerfil").value;const rows=IDENTIFICACIONES.filter(x=>(!c||x.carrera===c)&&(!p||x.perfil===p)&&(!q||[x.nombre,x.rut,x.email,x.modulo].some(v=>String(v||"").toLowerCase().includes(q))));$("idEstado").textContent=rows.length+" registros de identificación declarativa";$("idFilas").innerHTML=rows.slice(0,250).map(x=>'<tr>'+[dateCL(x.fecha),x.nombre,x.rut||"—",x.email,x.perfil,x.carrera||"No aplica",x.modulo].map(v=>'<td>'+esc(v)+'</td>').join("")+'</tr>').join("")||'<tr><td colspan="7">Sin registros para los filtros seleccionados</td></tr>';}
+["idBuscar","idCarrera","idPerfil"].forEach(id=>document.getElementById(id)?.addEventListener("input",renderIdentificaciones));
 async function loadAccessDashboard(){
   $("accStatus").className="notice";$("accStatus").textContent="Cargando accesos...";
   try{
