@@ -235,7 +235,7 @@
 <script>
 const SUPABASE_URL='https://uegxxazgqvjjqnmpodln.supabase.co';
 const ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlZ3h4YXpncXZqanFubXBvZGxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTMxMDksImV4cCI6MjEwNjI2OTEwOX0.93hHsgPuCrPWZma29meYK2w5EDBff4tv80aUky4v_UQ';
-let TOKEN=sessionStorage.getItem("csd_token")||"";
+let TOKEN="";
 let DATA=[],FILTERED=[],REPO_REPORT=[],ACCESS_DATA=[],ACCESS_PART=[];
 const $=id=>document.getElementById(id);
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
@@ -293,7 +293,7 @@ function downloadCSV(){
  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"text/csv;charset=utf-8"}));a.download="Reporte_Centro_Simulacion_IPG.csv";a.click();
 }
 function showDash(){$("loginView").classList.add("hidden");$("dashView").classList.remove("hidden")}
-function logout(){sessionStorage.removeItem("csd_token");TOKEN="";DATA=[];REPO_REPORT=[];$("dashView").classList.add("hidden");$("loginView").classList.remove("hidden")}
+function logout(){sessionStorage.removeItem("csd_token");TOKEN="";DATA=[];FILTERED=[];ACCESS_DATA=[];ACCESS_PART=[];REPO_REPORT=[];$("password").value="";$("email").value="";$("loginMsg").textContent="";$("dashView").classList.add("hidden");$("loginView").classList.remove("hidden")}
 
 
 function repoFilteredRows(){
@@ -615,7 +615,8 @@ $("repoUsuariosCsv").onclick=downloadRepositorioUsuarios;
 $("repoEmailSearch").addEventListener("input",renderRepoUsers);
 
 ["fSim","fCar","fSec","fDoc","fEst"].forEach(id=>$(id).addEventListener("change",applyFilters));$("fSearch").addEventListener("input",applyFilters);
-if(TOKEN){showDash();loadAllData();}
+// Acceso explícito en cada apertura; no restaurar sesiones previas automáticamente.
+sessionStorage.removeItem("csd_token");
 
 let CSD_REF_ROWS=[];
 function csdRefFiltered(){const m=$('refMod').value,e=$('refEmail').value.trim().toLowerCase();return CSD_REF_ROWS.filter(x=>(!m||x.modulo===m)&&(!e||String(x.email_declarado||'').toLowerCase().includes(e)))}
