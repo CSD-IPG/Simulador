@@ -454,7 +454,7 @@ function ipgClearAccount(){if(!confirm("¿Cerrar esta identificación y comenzar
 function ipgGrant(email){
   email=(email||"").trim().toLowerCase();
   const previous=(localStorage.getItem(IPG_AUTH_KEY)||"").trim().toLowerCase();
-  if(previous&&previous!==email){[STORAGE,FREE_SAVE,CHALLENGE_SAVE,IPG_TRACE_KEY].forEach(k=>localStorage.removeItem(k));sessionStorage.removeItem("csd_ok_wms");sessionStorage.removeItem("csd_sid_wms");location.reload();return;}
+  if(previous&&previous!==email){[STORAGE,FREE_SAVE,CHALLENGE_SAVE,IPG_TRACE_KEY].forEach(k=>localStorage.removeItem(k));sessionStorage.removeItem("csd_ok_wms");sessionStorage.removeItem("csd_sid_wms");localStorage.setItem(IPG_AUTH_KEY,email);location.reload();return;}
   localStorage.setItem(IPG_AUTH_KEY,email);
   window.IPG_INSTITUTIONAL_EMAIL=email;
   document.body.classList.add("ipg-auth-ok");
