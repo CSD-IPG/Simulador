@@ -20,3 +20,18 @@ a{color:#79e7ec}a:focus-visible,button:focus-visible,input:focus-visible,select:
 body[data-csd-prime="finanzas"],body[data-csd-prime="contabilidad-costos"],body[data-csd-prime="estado-financiero"],body[data-csd-prime="gestion-tributaria"]{--csd-prime-glow:#4cddb3;--csd-prime-glow2:#8f8cff}
 body[data-csd-prime="rrhh"],body[data-csd-prime="formacion-humana"],body[data-csd-prime="convivencia-buen-trato"]{--csd-prime-glow:#d08cff;--csd-prime-glow2:#7297ff}
 body[data-csd-prime="marketing"],body[data-csd-prime="segmentacion"],body[data-csd-prime="plan-negocios"]{--csd-prime-glow:#fc89b5;--csd-prime-glow2:#a88fff}
+
+/* Prime refinement: pantallas de acceso, estados y legibilidad */
+#loginScreen,.login-screen,.auth-screen,.welcome-screen{background:radial-gradient(circle at 78% 15%,#254e7999,transparent 44%),linear-gradient(140deg,#081426,#0e2239)!important;color:#edf7ff!important}
+#loginCard,.login-card,.auth-card,.welcome-card{background:linear-gradient(145deg,#173450,#0e2139)!important;border:1px solid #6b8caf55!important;box-shadow:0 28px 85px #0008!important;color:#f3f8ff!important;border-radius:20px}
+.badge,.pill,.tag{background:#28506d!important;color:#f6fbff!important;border:1px solid #ffffff27!important}
+.alert,.info,.notice{background:#173a52!important;color:#e8f5ff!important;border:1px solid #5e88a48c!important}
+.warn,.warning{color:#ffd18a!important}.bad,.error,.danger-text{color:#ffaaa9!important}.ok,.success-text{color:#79eac7!important}
+.secondary,.outline{background:#263d55!important;color:#ecf8ff!important;border:1px solid #6484a2!important}
+.danger{background:#582b40!important;color:#ffe1e5!important}.success{background:#194b45!important;color:#a4f8da!important}
+.primary,.btn-primary{background:linear-gradient(120deg,#2089b8,#1b6fa5)!important;color:#fff!important}
+.progress{background:#29445f!important}.bar{background:#48cbd7!important}
+.footer-note,.legend,.small{color:#b6cde4!important}
+.ipg-auth-grid label,.ipg-auth-box label,.ipg-auth-card label{color:#dbe9f8!important}
+button:disabled{opacity:.6;cursor:not-allowed;transform:none!important}
+::selection{background:#41aac0;color:#071426}
