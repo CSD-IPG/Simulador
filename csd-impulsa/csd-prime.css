@@ -1,0 +1,22 @@
+/* CSD Prime 2026 · capa visual no invasiva */
+:root{color-scheme:dark;--csd-prime-glow:#5be7e5;--csd-prime-glow2:#819bff;--bg:#081426;--bg2:#0d1b30;--card:#11243a;--panel:#11243a;--soft:#172d47;--line:#37516b;--text:#f2f7ff;--muted:#aec2da;--accent:#55dedb;--accent2:#2289b1}
+body{background:radial-gradient(ellipse at 82% 8%,color-mix(in srgb,var(--csd-prime-glow2) 22%,transparent),transparent 43%),radial-gradient(ellipse at 8% 82%,color-mix(in srgb,var(--csd-prime-glow) 15%,transparent),transparent 52%),linear-gradient(150deg,#0a1930,#07101e 62%,#0c1d30) fixed!important;color:#edf5ff}
+body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(#ffffff04 1px,transparent 1px),linear-gradient(90deg,#ffffff04 1px,transparent 1px);background-size:46px 46px}
+header,.topbar,.app-header{background:linear-gradient(115deg,#0c2340ef,#0b162bec)!important;color:#f4f9ff!important;border-bottom:1px solid #ffffff20!important;backdrop-filter:blur(16px)}
+nav,.sidebar,aside{background:#0e2036!important;color:#ecf5ff!important;border-color:#ffffff20!important}
+.card,.panel,.tile,.box,.module,.section-card,.kpi,.stat,.metric,.modal-content,.modal-card,.repo-panel,.result-card{background:linear-gradient(150deg,#17304aeF,#0e2239ef)!important;border-color:#ffffff21!important;color:#eff6ff!important;box-shadow:0 13px 36px #0003}
+nav button,.sidebar button{color:#e5f1ff!important}nav button:hover,nav button.active,.sidebar .active{background:#2c5673!important;color:#fff!important}
+h1,h2,h3,h4,th,label,strong{color:#f3f8ff}
+p,small,.muted,.sub,.hint,.desc{color:#b9cde2}
+input,select,textarea{background:#0b2035!important;color:#f2f8ff!important;border:1px solid #6084a5!important;border-radius:9px}
+input::placeholder,textarea::placeholder{color:#91a9c3}
+button,.btn{transition:transform .18s ease,box-shadow .18s ease}button:hover,.btn:hover{transform:translateY(-1px)}
+table{border-color:#ffffff22}thead,th{background:#193651!important}td,th{border-color:#ffffff1c!important;color:#e7f1ff}tr:nth-child(even){background:#ffffff06}
+a{color:#79e7ec}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #ffc774!important;outline-offset:2px}
+.ipg-auth-overlay,.ipg-auth-modal,.modal{backdrop-filter:blur(15px)}
+.ipg-auth-card,.ipg-auth-box,.ipg-auth-panel{background:linear-gradient(140deg,#152d48,#0b1a2e)!important;color:#f5f9ff!important;border:1px solid #ffffff29!important;box-shadow:0 35px 90px #0008!important}
+@media(max-width:720px){main{min-width:0}nav{max-width:100%}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
+body[data-csd-prime="finanzas"],body[data-csd-prime="contabilidad-costos"],body[data-csd-prime="estado-financiero"],body[data-csd-prime="gestion-tributaria"]{--csd-prime-glow:#4cddb3;--csd-prime-glow2:#8f8cff}
+body[data-csd-prime="rrhh"],body[data-csd-prime="formacion-humana"],body[data-csd-prime="convivencia-buen-trato"]{--csd-prime-glow:#d08cff;--csd-prime-glow2:#7297ff}
+body[data-csd-prime="marketing"],body[data-csd-prime="segmentacion"],body[data-csd-prime="plan-negocios"]{--csd-prime-glow:#fc89b5;--csd-prime-glow2:#a88fff}
