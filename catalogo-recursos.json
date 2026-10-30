@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "updated": "2026-10-30",
   "resources": [
     {
@@ -13,7 +13,10 @@
         "Transversal"
       ],
       "careers": [
-        "Transversal"
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
       ],
       "featured": false
     },
@@ -77,7 +80,10 @@
         "Contabilidad, Auditoría y Finanzas"
       ],
       "careers": [
-        "Transversal"
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
       ],
       "featured": false
     },
@@ -92,7 +98,10 @@
         "Gestión de Personas"
       ],
       "careers": [
-        "TNS en Administración de Recursos Humanos"
+        "TNS en Administración de Recursos Humanos",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
       ],
       "featured": false
     },
@@ -108,7 +117,10 @@
       ],
       "careers": [
         "TNS en Marketing Digital",
-        "Ingeniería en Marketing Digital"
+        "Ingeniería en Marketing Digital",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
       ],
       "featured": false
     },
@@ -124,7 +136,10 @@
         "Transversal"
       ],
       "careers": [
-        "Transversal"
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
       ],
       "featured": false
     },
@@ -157,7 +172,10 @@
       ],
       "careers": [
         "TNS en Marketing Digital",
-        "Ingeniería en Marketing Digital"
+        "Ingeniería en Marketing Digital",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
       ],
       "featured": true
     },
@@ -204,7 +222,10 @@
         "Contabilidad, Auditoría y Finanzas"
       ],
       "careers": [
-        "Transversal"
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
       ],
       "featured": false
     },
@@ -219,7 +240,10 @@
         "Administración y Negocios"
       ],
       "careers": [
-        "Transversal"
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
       ],
       "featured": false
     },
@@ -234,7 +258,10 @@
         "Transversal"
       ],
       "careers": [
-        "Transversal"
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
       ],
       "featured": false
     },
@@ -249,7 +276,10 @@
         "Transversal"
       ],
       "careers": [
-        "Transversal"
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
       ],
       "featured": false
     },
@@ -264,7 +294,10 @@
         "Transversal"
       ],
       "careers": [
-        "Transversal"
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
       ],
       "featured": false
     },
@@ -295,7 +328,10 @@
         "Transversal"
       ],
       "careers": [
-        "Transversal"
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
       ],
       "featured": false
     },
@@ -310,9 +346,36 @@
         "Contabilidad, Auditoría y Finanzas"
       ],
       "careers": [
-        "Transversal"
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
       ],
       "featured": false
     }
-  ]
+  ],
+  "careers": [
+    "Administración Pública",
+    "Contador Auditor",
+    "Ingeniería en Administración de Empresas",
+    "Ingeniería en Gestión Logística Portuaria, Plan de Continuidad",
+    "Ingeniería en Gestión Logística Profesional",
+    "Ingeniería en Marketing Digital",
+    "TNS en Administración de Empresas",
+    "TNS en Administración de Recursos Humanos",
+    "TNS en Administración Pública",
+    "TNS en Comercio Exterior, Mención Comercio Electrónico",
+    "TNS en Contabilidad General",
+    "TNS en Gestión Comercial y Ventas",
+    "TNS en Gestión Logística",
+    "TNS en Maquinaria Naval",
+    "TNS en Marketing Digital",
+    "TNS en Operaciones Portuarias",
+    "TNS en Transporte Marítimo",
+    "Ingeniería en Administración de Empresas, Plan de Continuidad",
+    "Ingeniería en Marketing Digital, Plan de Continuidad",
+    "Contador Auditor, Plan de Continuidad",
+    "Administración Pública, Plan de Continuidad"
+  ],
+  "notes": "Vinculaciones de afinidad disciplinar para exploración; no implican convalidación ni resultados de aprendizaje certificados."
 }
