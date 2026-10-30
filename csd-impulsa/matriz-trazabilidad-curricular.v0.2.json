@@ -1,5 +1,5 @@
 {
-  "version": "0.4.0",
+  "version": "0.5.0",
   "fecha": "2026-10-30",
   "estado": "auditoria_curricular_en_desarrollo",
   "criterio": "RA oficiales solo después de cotejo textual con programa original; se conserva redacción del módulo como evidencia de diseño, no como transcripción del RA oficial.",
@@ -674,5 +674,134 @@
       ]
     }
   ],
-  "observacion": "Los cuatro módulos utilizan estructura U con tres unidades, casos guiados y tests. Las descripciones son textos del código; no equivalen aún a transcripción certificada del programa."
+  "observacion": "Los cuatro módulos utilizan estructura U con tres unidades, casos guiados y tests. Las descripciones son textos del código; no equivalen aún a transcripción certificada del programa.",
+  "inventario_complementario": [
+    {
+      "modulo_id": "wms",
+      "fuente_codigo": "wms/index.html",
+      "tipo_recurso": "simulador",
+      "actividad_interactiva_identificada": true,
+      "referencias_unidad_en_codigo": true,
+      "referencias_a_evaluacion": true,
+      "ra_oficial_verificado": false,
+      "estado": "codigo_revisado_pendiente_desglose_actividades_y_cotejo_programa",
+      "observacion": "Evitar inferir unidades o RA a partir de palabras sueltas presentes en código."
+    },
+    {
+      "modulo_id": "comex",
+      "fuente_codigo": "comex/index.html",
+      "tipo_recurso": "simulador",
+      "actividad_interactiva_identificada": true,
+      "referencias_unidad_en_codigo": true,
+      "referencias_a_evaluacion": true,
+      "ra_oficial_verificado": false,
+      "estado": "codigo_revisado_pendiente_desglose_actividades_y_cotejo_programa",
+      "observacion": "Evitar inferir unidades o RA a partir de palabras sueltas presentes en código."
+    },
+    {
+      "modulo_id": "portsim",
+      "fuente_codigo": "portsim/index.html",
+      "tipo_recurso": "simulador",
+      "actividad_interactiva_identificada": true,
+      "referencias_unidad_en_codigo": true,
+      "referencias_a_evaluacion": false,
+      "ra_oficial_verificado": false,
+      "estado": "codigo_revisado_pendiente_desglose_actividades_y_cotejo_programa",
+      "observacion": "Evitar inferir unidades o RA a partir de palabras sueltas presentes en código."
+    },
+    {
+      "modulo_id": "finanzas",
+      "fuente_codigo": "finanzas/index.html",
+      "tipo_recurso": "simulador",
+      "actividad_interactiva_identificada": true,
+      "referencias_unidad_en_codigo": true,
+      "referencias_a_evaluacion": true,
+      "ra_oficial_verificado": false,
+      "estado": "codigo_revisado_pendiente_desglose_actividades_y_cotejo_programa",
+      "observacion": "Evitar inferir unidades o RA a partir de palabras sueltas presentes en código."
+    },
+    {
+      "modulo_id": "rrhh",
+      "fuente_codigo": "rrhh/index.html",
+      "tipo_recurso": "simulador",
+      "actividad_interactiva_identificada": true,
+      "referencias_unidad_en_codigo": true,
+      "referencias_a_evaluacion": true,
+      "ra_oficial_verificado": false,
+      "estado": "codigo_revisado_pendiente_desglose_actividades_y_cotejo_programa",
+      "observacion": "Evitar inferir unidades o RA a partir de palabras sueltas presentes en código."
+    },
+    {
+      "modulo_id": "marketing",
+      "fuente_codigo": "marketing/index.html",
+      "tipo_recurso": "simulador",
+      "actividad_interactiva_identificada": true,
+      "referencias_unidad_en_codigo": true,
+      "referencias_a_evaluacion": true,
+      "ra_oficial_verificado": false,
+      "estado": "codigo_revisado_pendiente_desglose_actividades_y_cotejo_programa",
+      "observacion": "Evitar inferir unidades o RA a partir de palabras sueltas presentes en código."
+    },
+    {
+      "modulo_id": "integrado",
+      "fuente_codigo": "integrado/index.html",
+      "tipo_recurso": "simulador",
+      "actividad_interactiva_identificada": true,
+      "referencias_unidad_en_codigo": true,
+      "referencias_a_evaluacion": false,
+      "ra_oficial_verificado": false,
+      "estado": "codigo_revisado_pendiente_desglose_actividades_y_cotejo_programa",
+      "observacion": "Evitar inferir unidades o RA a partir de palabras sueltas presentes en código."
+    },
+    {
+      "modulo_id": "repositorio",
+      "fuente_codigo": "repositorio/index.html",
+      "tipo_recurso": "repositorio",
+      "actividad_interactiva_identificada": true,
+      "referencias_unidad_en_codigo": true,
+      "referencias_a_evaluacion": true,
+      "ra_oficial_verificado": false,
+      "estado": "codigo_revisado_pendiente_desglose_actividades_y_cotejo_programa",
+      "observacion": "Repositorio de recursos: trazabilidad por documento/asignatura, no por resultado único de todo el repositorio."
+    },
+    {
+      "modulo_id": "formacion-humana",
+      "fuente_codigo": "formacion-humana/index.html",
+      "tipo_recurso": "refuerzo",
+      "actividad_interactiva_identificada": true,
+      "referencias_unidad_en_codigo": true,
+      "referencias_a_evaluacion": true,
+      "ra_oficial_verificado": false,
+      "estado": "codigo_revisado_pendiente_desglose_actividades_y_cotejo_programa",
+      "observacion": "Evitar inferir unidades o RA a partir de palabras sueltas presentes en código."
+    },
+    {
+      "modulo_id": "convivencia-buen-trato",
+      "fuente_codigo": "convivencia-buen-trato/index.html",
+      "tipo_recurso": "refuerzo",
+      "actividad_interactiva_identificada": true,
+      "referencias_unidad_en_codigo": true,
+      "referencias_a_evaluacion": true,
+      "ra_oficial_verificado": false,
+      "estado": "codigo_revisado_pendiente_desglose_actividades_y_cotejo_programa",
+      "observacion": "Evitar inferir unidades o RA a partir de palabras sueltas presentes en código."
+    },
+    {
+      "modulo_id": "fundamentos-contables",
+      "fuente_codigo": "fundamentos-contables/index.html",
+      "tipo_recurso": "refuerzo",
+      "actividad_interactiva_identificada": true,
+      "referencias_unidad_en_codigo": false,
+      "referencias_a_evaluacion": true,
+      "ra_oficial_verificado": false,
+      "estado": "codigo_revisado_pendiente_desglose_actividades_y_cotejo_programa",
+      "observacion": "Evitar inferir unidades o RA a partir de palabras sueltas presentes en código."
+    }
+  ],
+  "resumen_inventario": {
+    "recursos_catalogo": 20,
+    "modulos_con_unidades_documentadas": 9,
+    "recursos_adicionales_inspeccionados": 11,
+    "total_recursos_revisados": 20
+  }
 }
