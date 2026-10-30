@@ -41,7 +41,7 @@
 @media(max-width:850px){.repo-report-tools{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.repo-report-tools{grid-template-columns:1fr}}
 </style>
-</head>
+<link rel="stylesheet" href="../csd-impulsa/csd-prime.css"></head>
 <body>
 <div class="top"><div class="nav"><div class="brand"><div class="mark">IPG</div><div><strong>Dashboard Escuela</strong><small>Centro de Simulación Digital IPG</small></div></div><a href="../">← Volver al portal</a></div></div>
 <div class="shell">
@@ -107,6 +107,7 @@
 <div class="kpi"><b id="dirPromedio">—</b><small>Puntaje medio de evaluaciones (solo registros con puntaje)</small></div>
 </div>
 <div class="repo-panel" style="margin:12px 0"><h3>Participación por perfil declarado</h3><p class="sub">Fuente: perfil seleccionado en formularios de identificación o participación, cuando existe. Sin identificación declarada o con perfiles contradictorios se muestra sin clasificar.</p><div id="dirPerfilResumen">Esperando datos de acceso…</div></div>
+<div class="repo-panel" style="margin:12px 0"><h3>Lectura formativa diferenciada · perfil seleccionado</h3><p class="sub">Participación, avance y evidencias formativas son indicadores distintos. Los registros no verificados no certifican resultados de aprendizaje.</p><div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))"><div class="kpi"><b id="dirParticipacion">—</b><small>Participaciones del perfil filtrado</small></div><div class="kpi"><b id="dirAvance">—</b><small>Finalizaciones declaradas</small></div><div class="kpi"><b id="dirEvidencia">—</b><small>Evaluaciones con puntaje registradas</small></div></div><p class="sub" id="dirEvidenciaNota">No se atribuyen pruebas sin perfil declarado a estudiantes.</p></div>
 <div class="repo-panels">
 <div class="repo-panel"><h3>Módulos más utilizados</h3><div id="dirTop">Esperando datos…</div></div>
 <div class="repo-panel"><h3>Áreas para revisar apoyo académico</h3><div id="dirApoyo">Esperando datos…</div></div>
@@ -808,6 +809,10 @@ function renderDireccion(){
  const modCount=new Map();filtered.forEach(r=>{const k=moduleName(r);if(k)modCount.set(k,(modCount.get(k)||0)+1)});
  const ordered=[...modCount.entries()].sort((a,b)=>b[1]-a[1]);
  $('dirSesiones').textContent=String(filtered.length);
+ $('dirParticipacion').textContent=String(filtered.length);
+ $('dirAvance').textContent=String(filtered.filter(x=>String(x.estado||'').toLowerCase().startsWith('finalizado')).length);
+ $('dirEvidencia').textContent=String(valid.length);
+ $('dirEvidenciaNota').textContent=perfil==='todos'?'Uso institucional general: no equivale a logro estudiantil.':perfil==='estudiante'?'Solo pruebas vinculadas a estudiantes mediante perfil declarado inequívoco.':'Actividad del perfil declarado: no se interpreta como evidencia estudiantil.';
  $('dirModulos').textContent=String(modCount.size);
  $('dirEvaluaciones').textContent=car?'—':String(valid.length);
  $('dirPromedio').textContent=car?'—':valid.length?(valid.reduce((s,r)=>s+Number(r.puntaje),0)/valid.length).toFixed(1):'—';
