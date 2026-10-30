@@ -114,6 +114,21 @@
 <p class="sub">Sesiones y finalizaciones registradas. Los puntajes proceden solo de sesiones con un valor numérico explícito; no equivalen al logro oficial de resultados de aprendizaje. Los grupos pequeños se presentan sin promedios.</p>
 <div class="tablewrap"><table style="min-width:750px"><thead><tr><th>Carrera declarada</th><th>Módulo</th><th>Sesiones</th><th>Finalizadas</th><th>Sesiones con puntaje</th><th>Puntaje medio registrado</th><th>Revisión sugerida</th></tr></thead><tbody id="dirCobertura"><tr><td colspan="7">Esperando datos…</td></tr></tbody></table></div>
 </div>
+<div class="repo-panel" style="margin-top:14px" id="dirTrazabilidad">
+<h3>Trazabilidad curricular y evidencias de aprendizaje</h3>
+<p class="sub">Mapa de recursos, unidades y textos de aprendizaje documentados en el CSD. La relación oficial con RA institucionales se marca como pendiente de cotejo; no se atribuyen resultados a estudiantes.</p>
+<div class="filters" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))">
+<div class="f"><label for="trCarrera">Carrera</label><select id="trCarrera"><option value="">Todas las carreras</option></select></div>
+<div class="f"><label for="trModulo">Recurso</label><select id="trModulo"><option value="">Todos los recursos</option></select></div>
+</div>
+<div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
+<div class="kpi"><b id="trRecursos">—</b><small>Recursos vinculados</small></div>
+<div class="kpi"><b id="trUnidades">—</b><small>Unidades documentadas</small></div>
+<div class="kpi"><b id="trVerificados">—</b><small>RA oficiales cotejados</small></div>
+</div>
+<div class="tablewrap"><table style="min-width:780px"><thead><tr><th>Recurso</th><th>Unidad</th><th>Descripción de aprendizaje encontrada</th><th>Validación curricular</th></tr></thead><tbody id="trBody"><tr><td colspan="4">Cargando matriz…</td></tr></tbody></table></div>
+<p class="sub" id="trStatus" role="status">Esperando matriz curricular.</p>
+</div>
 <p class="notice" id="dirNota" role="status">Los valores dependerán de las evidencias disponibles y del período consultado. No se identifican estudiantes en este resumen.</p>
 </section>
 <div class="cards">
@@ -781,13 +796,41 @@ function renderDireccion(){
  $('dirNota').textContent='Sesiones según carrera declarada, módulo y fechas disponibles. Evaluaciones de reforzamiento sin carrera verificada: solo se muestran en la vista general. Los puntajes no acreditan resultados de aprendizaje ni permiten inferir riesgo individual.';
 }
 
+let TRACE_CATALOG=null;
+async function loadTrace(){
+ try{
+ const res=await fetch('../csd-impulsa/trazabilidad-publica.json',{cache:'no-store'});
+ if(!res.ok)throw Error('HTTP '+res.status);
+ const data=await res.json();
+ if(!Array.isArray(data.recursos)||!Array.isArray(data.unidades))throw Error('Matriz incompleta');
+ TRACE_CATALOG=data;
+ const cars=[...new Set(data.recursos.flatMap(r=>r.carreras||[]))].filter(x=>x!=='Transversal').sort((a,b)=>a.localeCompare(b,'es'));
+ $('trCarrera').replaceChildren(new Option('Todas las carreras',''),...cars.map(x=>new Option(x,x)));
+ $('trModulo').replaceChildren(new Option('Todos los recursos',''),...data.recursos.map(r=>new Option(r.nombre,r.id)));
+ renderTrace();
+ }catch(e){$('trStatus').textContent='No fue posible consultar la matriz: '+e.message;$('trBody').innerHTML='<tr><td colspan="4">Datos no disponibles.</td></tr>';}
+}
+function renderTrace(){
+ if(!TRACE_CATALOG)return;
+ const car=$('trCarrera').value,mod=$('trModulo').value;
+ const resources=TRACE_CATALOG.recursos.filter(r=>(!car||(r.carreras||[]).includes(car)||(r.carreras||[]).includes('Transversal'))&&(!mod||r.id===mod));
+ const ids=new Set(resources.map(r=>r.id)),units=TRACE_CATALOG.unidades.filter(u=>ids.has(u.id));
+ const names=new Map(resources.map(r=>[r.id,r.nombre]));
+ $('trRecursos').textContent=resources.length;
+ $('trUnidades').textContent=units.length;
+ $('trVerificados').textContent=units.filter(u=>u.validado===true).length;
+ $('trBody').innerHTML=units.length?units.map(u=>'<tr><td>'+esc(names.get(u.id)||u.id)+'</td><td>'+esc(u.titulo||('Unidad '+u.unidad))+'</td><td>'+esc(u.resultado||'Sin texto')+'</td><td>'+(u.validado?'RA cotejado':'Pendiente cotejo con programa')+'</td></tr>').join(''):'<tr><td colspan="4">Sin unidades documentadas para estos filtros. El recurso puede seguir siendo pertinente, pero requiere desglose.</td></tr>';
+ $('trStatus').textContent='La cobertura muestra relaciones preliminares del catálogo. No representa logro de RA ni equivalencia de evaluación institucional.';
+}
+$('trCarrera').addEventListener('change',renderTrace);
+$('trModulo').addEventListener('change',renderTrace);
 async function loadAllData(){
   await loadCsdRef();
   await loadData();
   await loadAccessDashboard();
   await loadIdentificaciones();
   await loadRepositorioDashboard();
-  renderUnits();renderIntegrated();renderViz();renderDireccion();
+  renderUnits();renderIntegrated();renderViz();renderDireccion();await loadTrace();
 }
 
 ['dirCar','dirMod','dirDesde','dirHasta'].forEach(id=>$(id).addEventListener('change',renderDireccion));
