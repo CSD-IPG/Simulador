@@ -831,6 +831,7 @@ function renderTrace(){
  if(!TRACE_CATALOG)return;
  const car=$('trCarrera').value,mod=$('trModulo').value;
  const resources=TRACE_CATALOG.recursos.filter(r=>(!car||(r.carreras||[]).includes(car)||(r.carreras||[]).includes('Transversal'))&&(!mod||r.id===mod));
+ const simWithoutUnit=resources.filter(r=>TRACE_CRITERIA?.simuladores?.[r.id]&&!TRACE_CATALOG.unidades.some(u=>u.id===r.id));
  const ids=new Set(resources.map(r=>r.id)),units=TRACE_CATALOG.unidades.filter(u=>ids.has(u.id));
  const names=new Map(resources.map(r=>[r.id,r.nombre]));
  const evidence=car?[]:(TOKEN?unitEvidenceRows():[]);
@@ -859,7 +860,11 @@ function renderTrace(){
    }
   }
   return '<tr><td>'+esc(names.get(u.id)||u.id)+'</td><td>'+esc(u.titulo||('Unidad '+u.unidad))+'</td><td>'+esc(u.resultado||'Sin texto')+'</td><td>'+(u.validado?'RA cotejado':'Pendiente cotejo con programa')+'</td><td>'+esc(summary)+'</td><td>'+esc(priority)+'</td></tr>';
- }).join(''):'<tr><td colspan="6">Sin unidades documentadas para estos filtros. El recurso puede seguir siendo pertinente, pero requiere desglose.</td></tr>';
+ }).join(''):'';
+ if(simWithoutUnit.length){
+  $('trBody').innerHTML+=simWithoutUnit.map(r=>'<tr><td>'+esc(r.nombre)+'</td><td>Operación integrada</td><td>Simulación de procesos y decisiones; pendiente desglose curricular por actividad</td><td>Pendiente cotejo de RA</td><td>Registros de sesiones, avance, puntaje y errores en tablero operativo</td><td>Sin umbral comparable con test de unidad</td></tr>').join('');
+ }
+ if(!$('trBody').innerHTML)$('trBody').innerHTML='<tr><td colspan="6">Sin unidades ni simuladores documentados para estos filtros.</td></tr>';
  $('trStatus').textContent=car?'Cobertura curricular propuesta por carrera; sin atribución de evaluaciones hasta validar matrícula.':'Puntajes descriptivos de mejor intento, solo si hay al menos cinco identificadores declarados con test en escala 0–100. Los criterios se obtienen del código del módulo y no acreditan el RA ni diagnostican individualmente.';
 }
 $('trCarrera').addEventListener('change',renderTrace);
