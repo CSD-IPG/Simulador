@@ -368,7 +368,7 @@ function downloadCSV(){
  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"text/csv;charset=utf-8"}));a.download="Reporte_Centro_Simulacion_IPG.csv";a.click();
 }
 function showDash(){$("loginView").classList.add("hidden");$("dashView").classList.remove("hidden")}
-function logout(){sessionStorage.removeItem("csd_token");TOKEN="";DATA=[];FILTERED=[];ACCESS_DATA=[];ACCESS_PART=[];REPO_REPORT=[];IDENTIFICACIONES=[];if($("idFilas"))$("idFilas").innerHTML="";if($("idEstado"))$("idEstado").textContent="Sin cargar";$("password").value="";$("email").value="";$("loginMsg").textContent="";TRACE_CATALOG=null;CSD_REF_ROWS=[];if($("trBody"))$("trBody").replaceChildren();$("dashView").classList.add("hidden");$("loginView").classList.remove("hidden")}
+function logout(){sessionStorage.removeItem("csd_token");TOKEN="";DATA=[];FILTERED=[];ACCESS_DATA=[];ACCESS_PART=[];REPO_REPORT=[];IDENTIFICACIONES=[];if($("idFilas"))$("idFilas").innerHTML="";if($("idEstado"))$("idEstado").textContent="Sin cargar";$("password").value="";$("email").value="";$("loginMsg").textContent="";TRACE_CATALOG=null;TRACE_CRITERIA=null;CSD_REF_ROWS=[];if($("trBody"))$("trBody").replaceChildren();$("dashView").classList.add("hidden");$("loginView").classList.remove("hidden")}
 
 
 function repoFilteredRows(){
@@ -797,6 +797,7 @@ function renderDireccion(){
 }
 
 let TRACE_CATALOG=null;
+let TRACE_CRITERIA=null;
 async function loadTrace(){
  try{
  const res=await fetch('../csd-impulsa/trazabilidad-publica.json',{cache:'no-store'});
@@ -804,6 +805,7 @@ async function loadTrace(){
  const data=await res.json();
  if(!Array.isArray(data.recursos)||!Array.isArray(data.unidades))throw Error('Matriz incompleta');
  TRACE_CATALOG=data;
+ try{const cr=await fetch('../csd-impulsa/criterios-habilitacion.json',{cache:'no-store'});TRACE_CRITERIA=cr.ok?await cr.json():null}catch(_){TRACE_CRITERIA=null}
  const cars=[...new Set(data.recursos.flatMap(r=>r.carreras||[]))].filter(x=>x!=='Transversal').sort((a,b)=>a.localeCompare(b,'es'));
  $('trCarrera').replaceChildren(new Option('Todas las carreras',''),...cars.map(x=>new Option(x,x)));
  $('trModulo').replaceChildren(new Option('Todos los recursos',''),...data.recursos.map(r=>new Option(r.nombre,r.id)));
@@ -850,13 +852,15 @@ function renderTrace(){
     const valid=evaluated.map(x=>Number(x.score)).filter(v=>v>=0&&v<=100);
     if(valid.length>=5){
       const mean=valid.reduce((a,b)=>a+b,0)/valid.length;
-      priority='Puntaje observado: '+mean.toFixed(1)+'/100 (mejor intento registrado) · '+(mean<70?'Revisar actividades y criterios de apoyo':'Seguimiento periódico');
+      const rule=TRACE_CRITERIA?.modulos?.[u.id];
+      if(rule){const below=valid.filter(x=>x+0.01<rule.porcentajeMinimoEfectivo).length;priority='Test: '+rule.minCorrectas+'/'+rule.preguntas+' correctas para habilitar · '+below+' de '+valid.length+' mejores puntajes bajo umbral · Promedio descriptivo '+mean.toFixed(1)+'/100';}
+      else priority='Puntaje observado '+mean.toFixed(1)+'/100 · Criterio de habilitación pendiente de verificar';
     }else priority='Revisar escala de puntajes antes de comparar';
    }
   }
   return '<tr><td>'+esc(names.get(u.id)||u.id)+'</td><td>'+esc(u.titulo||('Unidad '+u.unidad))+'</td><td>'+esc(u.resultado||'Sin texto')+'</td><td>'+(u.validado?'RA cotejado':'Pendiente cotejo con programa')+'</td><td>'+esc(summary)+'</td><td>'+esc(priority)+'</td></tr>';
  }).join(''):'<tr><td colspan="6">Sin unidades documentadas para estos filtros. El recurso puede seguir siendo pertinente, pero requiere desglose.</td></tr>';
- $('trStatus').textContent=car?'Cobertura curricular propuesta por carrera; sin atribución de evaluaciones hasta validar matrícula.':'Puntajes descriptivos de mejor intento, solo si hay al menos cinco identificadores declarados con test en escala 0–100. El umbral de revisión 70 es orientativo, no acreditación del RA ni diagnóstico individual.';
+ $('trStatus').textContent=car?'Cobertura curricular propuesta por carrera; sin atribución de evaluaciones hasta validar matrícula.':'Puntajes descriptivos de mejor intento, solo si hay al menos cinco identificadores declarados con test en escala 0–100. Los criterios se obtienen del código del módulo y no acreditan el RA ni diagnostican individualmente.';
 }
 $('trCarrera').addEventListener('change',renderTrace);
 $('trModulo').addEventListener('change',renderTrace);
