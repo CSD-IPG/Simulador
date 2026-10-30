@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "1.1",
   "criterio": "Umbrales de habilitación observados en código; no equivalen a calificaciones oficiales.",
   "modulos": {
     "nivelacion-matematica": {
@@ -41,6 +41,98 @@
       "preguntas": 6,
       "minCorrectas": 5,
       "porcentajeMinimoEfectivo": 83.33
+    },
+    "formacion-humana": {
+      "preguntas": 10,
+      "minCorrectas": 7,
+      "porcentajeMinimoEfectivo": 70
+    },
+    "convivencia-buen-trato": {
+      "preguntas": 10,
+      "minCorrectas": 7,
+      "porcentajeMinimoEfectivo": 70
+    },
+    "fundamentos-contables": {
+      "preguntas": 10,
+      "minCorrectas": 7,
+      "porcentajeMinimoEfectivo": 70
+    },
+    "politicas-publicas": {
+      "preguntas": 10,
+      "minCorrectas": 7,
+      "porcentajeMinimoEfectivo": 70
+    }
+  },
+  "simuladores": {
+    "wms": {
+      "tipo": "simulacion_operativa",
+      "indicadores": [
+        "puntaje",
+        "avance",
+        "errores"
+      ],
+      "umbralAprobacion": null,
+      "interpretacion": "Puntaje operativo; sin umbral de habilitación equiparable a tests por unidad"
+    },
+    "comex": {
+      "tipo": "simulacion_operativa",
+      "indicadores": [
+        "puntaje",
+        "avance",
+        "errores"
+      ],
+      "umbralAprobacion": null,
+      "interpretacion": "Puntaje operativo; sin umbral de habilitación equiparable a tests por unidad"
+    },
+    "portsim": {
+      "tipo": "simulacion_operativa",
+      "indicadores": [
+        "puntaje",
+        "avance",
+        "errores"
+      ],
+      "umbralAprobacion": null,
+      "interpretacion": "Puntaje operativo; sin umbral de habilitación equiparable a tests por unidad"
+    },
+    "finanzas": {
+      "tipo": "simulacion_operativa",
+      "indicadores": [
+        "puntaje",
+        "avance",
+        "errores"
+      ],
+      "umbralAprobacion": null,
+      "interpretacion": "Puntaje operativo; sin umbral de habilitación equiparable a tests por unidad"
+    },
+    "rrhh": {
+      "tipo": "simulacion_operativa",
+      "indicadores": [
+        "puntaje",
+        "avance",
+        "errores"
+      ],
+      "umbralAprobacion": null,
+      "interpretacion": "Puntaje operativo; sin umbral de habilitación equiparable a tests por unidad"
+    },
+    "marketing": {
+      "tipo": "simulacion_operativa",
+      "indicadores": [
+        "puntaje",
+        "avance",
+        "errores"
+      ],
+      "umbralAprobacion": null,
+      "interpretacion": "Puntaje operativo; sin umbral de habilitación equiparable a tests por unidad"
+    },
+    "integrado": {
+      "tipo": "simulacion_operativa",
+      "indicadores": [
+        "puntaje",
+        "avance",
+        "errores"
+      ],
+      "umbralAprobacion": null,
+      "interpretacion": "Puntaje operativo; sin umbral de habilitación equiparable a tests por unidad"
     }
   }
 }
