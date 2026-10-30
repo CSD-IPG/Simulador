@@ -1,0 +1,46 @@
+{
+  "version": "1.0",
+  "criterio": "Umbrales de habilitación observados en código; no equivalen a calificaciones oficiales.",
+  "modulos": {
+    "nivelacion-matematica": {
+      "preguntas": 5,
+      "minCorrectas": 4,
+      "porcentajeMinimoEfectivo": 80
+    },
+    "matematica-financiera": {
+      "preguntas": 5,
+      "minCorrectas": 4,
+      "porcentajeMinimoEfectivo": 80
+    },
+    "contabilidad-costos": {
+      "preguntas": 5,
+      "minCorrectas": 4,
+      "porcentajeMinimoEfectivo": 80
+    },
+    "bases-proyectos": {
+      "preguntas": 5,
+      "minCorrectas": 4,
+      "porcentajeMinimoEfectivo": 80
+    },
+    "plan-negocios": {
+      "preguntas": 6,
+      "minCorrectas": 5,
+      "porcentajeMinimoEfectivo": 83.33
+    },
+    "gestion-tributaria": {
+      "preguntas": 6,
+      "minCorrectas": 5,
+      "porcentajeMinimoEfectivo": 83.33
+    },
+    "segmentacion": {
+      "preguntas": 6,
+      "minCorrectas": 5,
+      "porcentajeMinimoEfectivo": 83.33
+    },
+    "estado-financiero": {
+      "preguntas": 6,
+      "minCorrectas": 5,
+      "porcentajeMinimoEfectivo": 83.33
+    }
+  }
+}
