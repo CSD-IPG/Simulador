@@ -89,6 +89,21 @@
 </div>
 <div id="resultadosRefuerzo" hidden aria-hidden="true"><select id="refMod"><option value="">Todos los módulos</option></select><input id="refEmail"><button id="refCsv" type="button">Exportar</button><b id="refProgress"></b><b id="refUsers"></b><b id="refTests"></b><b id="refAvg"></b><b id="refPass"></b><p id="refStatus"></p><table><tbody id="refBody"></tbody></table></div>
 <div class="actions" style="margin-bottom:14px"><a href="#accesosCsd">Auditoría de accesos</a><a href="#avanceUnidades">Resultados por unidad</a><a href="#avanceUnidades">Resultados de reforzamiento por unidad</a></div>
+<section class="panel" id="direccionAprendizaje" aria-labelledby="dirTitle">
+<h2 id="dirTitle">Dirección de Escuela · Seguimiento de aprendizajes</h2>
+<p class="sub">Síntesis institucional con registros disponibles. El uso no equivale a logro de aprendizaje; los resultados se muestran por separado y las alertas indican dónde revisar posibles necesidades de apoyo, no diagnósticos individuales.</p>
+<div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
+<div class="kpi"><b id="dirSesiones">—</b><small>Sesiones registradas</small></div>
+<div class="kpi"><b id="dirModulos">—</b><small>Módulos con sesiones</small></div>
+<div class="kpi"><b id="dirEvaluaciones">—</b><small>Evaluaciones registradas</small></div>
+<div class="kpi"><b id="dirPromedio">—</b><small>Puntaje medio de evaluaciones (solo registros con puntaje)</small></div>
+</div>
+<div class="repo-panels">
+<div class="repo-panel"><h3>Módulos más utilizados</h3><div id="dirTop">Esperando datos…</div></div>
+<div class="repo-panel"><h3>Áreas para revisar apoyo académico</h3><div id="dirApoyo">Esperando datos…</div></div>
+</div>
+<p class="notice" id="dirNota" role="status">Los valores dependerán de las evidencias disponibles y del período consultado. No se identifican estudiantes en este resumen.</p>
+</section>
 <div class="cards">
 <div class="kpi"><b id="kStudents">0</b><small>Estudiantes únicos</small></div>
 <div class="kpi"><b id="kSessions">0</b><small>Sesiones</small></div>
@@ -301,7 +316,7 @@ function populateFilters(){fill($("fSim"),unique("simulador"),"Todos");fill($("f
 function applyFilters(){
  const sim=$("fSim").value,car=$("fCar").value,sec=$("fSec").value,doc=$("fDoc").value,est=$("fEst").value,q=$("fSearch").value.trim().toLowerCase();
  FILTERED=DATA.filter(x=>(!sim||x.simulador===sim)&&(!car||x.carrera===car)&&(!sec||x.seccion===sec)&&(!doc||x.docente===doc)&&(!est||x.estado===est)&&(!q||String(x.nombre||"").toLowerCase().includes(q)||String(x.rut_id||"").toLowerCase().includes(q)));
- render();
+ render();renderDireccion();
 }
 function render(){
  const students=new Set(FILTERED.map(x=>x.rut_id||x.nombre).filter(Boolean)).size;
@@ -708,13 +723,34 @@ function renderViz(){
 }
 document.querySelectorAll('[data-viz]').forEach(b=>b.onclick=()=>{VIZ_CATEGORY=b.dataset.viz;document.querySelectorAll('[data-viz]').forEach(t=>t.setAttribute('aria-pressed',String(t===b)));$('vizModulo').value='';renderViz()});
 ['vizDesde','vizHasta','vizModulo','vizEmail'].forEach(id=>$(id).addEventListener(id==='vizEmail'?'input':'change',renderViz));
+
+// Resumen ejecutivo agregado. No publica datos personales ni infiere aprobación de una asignatura.
+function renderDireccion(){
+ const sessions=Array.isArray(DATA)?DATA:[];
+ const ref=Array.isArray(CSD_REF_ROWS)?CSD_REF_ROWS:[];
+ const valid=ref.filter(r=>r.puntaje!==null&&r.puntaje!==undefined&&r.puntaje!==''&&Number.isFinite(Number(r.puntaje))&&/evaluac|test|salida/i.test(String(r.evento||'')));
+ const moduleName=x=>String(x.simulador||x.modulo||'').trim();
+ const mod=new Map();sessions.forEach(r=>{const k=moduleName(r);if(k)mod.set(k,(mod.get(k)||0)+1)});
+ const ordered=[...mod.entries()].sort((a,b)=>b[1]-a[1]);
+ $('dirSesiones').textContent=String(sessions.length);
+ $('dirModulos').textContent=String(mod.size);
+ $('dirEvaluaciones').textContent=String(valid.length);
+ $('dirPromedio').textContent=valid.length?(valid.reduce((s,r)=>s+Number(r.puntaje),0)/valid.length).toFixed(1):'—';
+ $('dirTop').innerHTML=ordered.length?ordered.slice(0,8).map(([name,n])=>'<div class="barrow"><span>'+esc(name)+'</span><div class="bar"><span style="width:'+Math.round(n/ordered[0][1]*100)+'%"></span></div><strong>'+n+'</strong></div>').join(''):'<p class="sub">Sin sesiones disponibles.</p>';
+ // Indicador descriptivo basado solo en evaluaciones: no asignar etiquetas a personas.
+ const byModule=new Map();valid.forEach(r=>{const k=moduleName(r);if(!k)return;const a=byModule.get(k)||[];a.push(Number(r.puntaje));byModule.set(k,a)});
+ const groups=[...byModule.entries()].filter(([,scores])=>scores.length>=5).map(([name,scores])=>({name,n:scores.length,avg:scores.reduce((a,b)=>a+b,0)/scores.length})).sort((a,b)=>a.avg-b.avg);
+ $('dirApoyo').innerHTML=groups.length?'<p class="sub">Módulos con al menos cinco evaluaciones registradas; ordenados por menor puntaje medio. Su revisión requiere interpretación académica.</p>'+groups.slice(0,8).map(x=>'<div class="barrow"><span>'+esc(x.name)+'</span><div class="bar"><span style="width:'+Math.max(0,Math.min(100,x.avg))+'%"></span></div><strong>'+x.avg.toFixed(1)+'</strong></div>').join(''):'<p class="sub">Evidencia insuficiente para comparar módulos con resguardo de grupos pequeños.</p>';
+ $('dirNota').textContent='Fuente: sesiones consolidadas y resultados de reforzamiento accesibles a Dirección. Las evaluaciones no representan necesariamente estudiantes únicos; sin umbrales institucionales validados no se clasifica logro o riesgo individual.';
+}
+
 async function loadAllData(){
   await loadCsdRef();
   await loadData();
   await loadAccessDashboard();
   await loadIdentificaciones();
   await loadRepositorioDashboard();
-  renderUnits();renderIntegrated();renderViz();
+  renderUnits();renderIntegrated();renderViz();renderDireccion();
 }
 
 $("loginBtn").onclick=login;$("refreshBtn").onclick=loadAllData;$("csvBtn").onclick=downloadCSV;$("logoutBtn").onclick=logout;
