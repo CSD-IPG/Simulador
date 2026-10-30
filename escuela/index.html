@@ -853,7 +853,7 @@ function renderTrace(){
     if(valid.length>=5){
       const mean=valid.reduce((a,b)=>a+b,0)/valid.length;
       const rule=TRACE_CRITERIA?.modulos?.[u.id];
-      if(rule){const below=valid.filter(x=>x+0.01<rule.porcentajeMinimoEfectivo).length;priority='Test: '+rule.minCorrectas+'/'+rule.preguntas+' correctas para habilitar · '+below+' de '+valid.length+' mejores puntajes bajo umbral · Promedio descriptivo '+mean.toFixed(1)+'/100';}
+      if(rule){const below=valid.filter(x=>x<Math.round(100*rule.minCorrectas/rule.preguntas)).length;priority='Test: '+rule.minCorrectas+'/'+rule.preguntas+' correctas para habilitar · '+below+' de '+valid.length+' mejores puntajes bajo umbral · Promedio descriptivo '+mean.toFixed(1)+'/100';}
       else priority='Puntaje observado '+mean.toFixed(1)+'/100 · Criterio de habilitación pendiente de verificar';
     }else priority='Revisar escala de puntajes antes de comparar';
    }
