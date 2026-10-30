@@ -94,6 +94,7 @@
 <p class="sub">Síntesis institucional con registros disponibles. El uso no equivale a logro de aprendizaje; los resultados se muestran por separado y las alertas indican dónde revisar posibles necesidades de apoyo, no diagnósticos individuales.</p>
 <div class="filters" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))" aria-label="Filtros del seguimiento ejecutivo">
 <div class="f"><label for="dirCar">Carrera</label><select id="dirCar"><option value="">Todas las carreras</option></select></div>
+<div class="f"><label for="dirPerfil">Perfil de seguimiento</label><select id="dirPerfil"><option value="estudiante">Estudiantes (correo alumnos)</option><option value="docente">Docentes (correo docentes)</option><option value="colaborador">Colaboradores / equipo IPG</option><option value="sin_clasificar">Sin perfil verificable</option><option value="todos">Todos (uso general)</option></select></div>
 <div class="f"><label for="dirMod">Módulo</label><select id="dirMod"><option value="">Todos los módulos</option></select></div>
 <div class="f"><label for="dirDesde">Desde</label><input type="date" id="dirDesde"></div>
 <div class="f"><label for="dirHasta">Hasta</label><input type="date" id="dirHasta"></div>
@@ -752,6 +753,13 @@ document.querySelectorAll('[data-viz]').forEach(b=>b.onclick=()=>{VIZ_CATEGORY=b
 ['vizDesde','vizHasta','vizModulo','vizEmail'].forEach(id=>$(id).addEventListener(id==='vizEmail'?'input':'change',renderViz));
 
 // Resumen ejecutivo agregado. No publica datos personales ni infiere aprobación de una asignatura.
+function perfilCsdDeclarado(x){
+ const email=String(x.email_institucional||x.email_declarado||x.email||'').trim().toLowerCase();
+ if(/^[^\\s@]+@alumnos\\.ipg\\.cl$/.test(email))return 'estudiante';
+ if(/^[^\\s@]+@docentes\\.ipg\\.cl$/.test(email))return 'docente';
+ if(/^[^\\s@]+@ipg\\.cl$/.test(email))return 'colaborador';
+ return 'sin_clasificar';
+}
 function renderDireccion(){
  const sessions=Array.isArray(DATA)?DATA:[];
  const ref=Array.isArray(CSD_REF_ROWS)?CSD_REF_ROWS:[];
@@ -761,12 +769,12 @@ function renderDireccion(){
  const allCareers=[...new Set(sessions.map(x=>String(x.carrera||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
  function choices(sel,items,label){const prev=sel.value;sel.replaceChildren(new Option(label,''),...items.map(x=>new Option(x,x)));if(items.includes(prev))sel.value=prev;}
  choices($car,allCareers,'Todas las carreras');choices($mod,allModules,'Todos los módulos');
- const car=$car.value,mod=$mod.value,from=$('dirDesde').value,to=$('dirHasta').value;
+ const car=$car.value,mod=$mod.value,from=$('dirDesde').value,to=$('dirHasta').value,perfil=$('dirPerfil').value;
  const day=x=>{const d=new Date(x);return Number.isNaN(d.getTime())?'':d.toISOString().slice(0,10)};
  const inPeriod=x=>{const d=day(x);return !!d&&(!from||d>=from)&&(!to||d<=to)};
- const filtered=sessions.filter(x=>(!car||x.carrera===car)&&(!mod||moduleName(x)===mod)&&inPeriod(x.fecha_inicio||x.fecha||x.ultima_actividad));
+ const filtered=sessions.filter(x=>(perfil==='todos'||perfilCsdDeclarado(x)===perfil)&&(!car||x.carrera===car)&&(!mod||moduleName(x)===mod)&&inPeriod(x.fecha_inicio||x.fecha||x.ultima_actividad));
  // Los resultados de reforzamiento no contienen carrera verificada: no se atribuyen a carreras.
- const refBase=car?[]:ref.filter(x=>(!mod||moduleName(x)===mod)&&inPeriod(x.fecha));
+ const refBase=car?[]:ref.filter(x=>(perfil==='todos'||perfilCsdDeclarado(x)===perfil)&&(!mod||moduleName(x)===mod)&&inPeriod(x.fecha));
  const valid=refBase.filter(r=>r.puntaje!==null&&r.puntaje!==undefined&&r.puntaje!==''&&Number.isFinite(Number(r.puntaje))&&/evaluac|test|salida/i.test(String(r.evento||'')));
  const modCount=new Map();filtered.forEach(r=>{const k=moduleName(r);if(k)modCount.set(k,(modCount.get(k)||0)+1)});
  const ordered=[...modCount.entries()].sort((a,b)=>b[1]-a[1]);
@@ -911,8 +919,8 @@ async function loadAllData(){
   renderUnits();renderIntegrated();renderViz();renderDireccion();await loadTrace();await loadSecuredProcessSummary();
 }
 
-['dirCar','dirMod','dirDesde','dirHasta'].forEach(id=>$(id).addEventListener('change',renderDireccion));
-$('dirReset').onclick=()=>{['dirCar','dirMod','dirDesde','dirHasta'].forEach(id=>$(id).value='');renderDireccion()};
+['dirCar','dirMod','dirDesde','dirHasta','dirPerfil'].forEach(id=>$(id).addEventListener('change',renderDireccion));
+$('dirReset').onclick=()=>{['dirCar','dirMod','dirDesde','dirHasta'].forEach(id=>$(id).value='');$('dirPerfil').value='estudiante';renderDireccion()};
 $("loginBtn").onclick=login;$("refreshBtn").onclick=loadAllData;$("csvBtn").onclick=downloadCSV;$("logoutBtn").onclick=logout;
 
 ["accDesde","accHasta","accPerfil","accModulo"].forEach(id=>$(id).addEventListener("change",renderAccessDashboard));
