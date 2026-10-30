@@ -824,7 +824,7 @@ function traceResourceKey(id){
  };
  return (aliases[id]||[]).map(traceClean);
 }
-function traceClean(s){return String(s||'').normalize('NFD').replace(/\\p{M}/gu,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim()}
+function traceClean(s){return String(s||'').normalize('NFD').replace(/\p{M}/gu,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim()}
 function renderTrace(){
  if(!TRACE_CATALOG)return;
  const car=$('trCarrera').value,mod=$('trModulo').value;
