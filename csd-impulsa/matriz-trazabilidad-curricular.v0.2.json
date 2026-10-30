@@ -1,0 +1,421 @@
+{
+  "version": "0.2.0",
+  "fecha": "2026-10-30",
+  "estado": "auditoria_curricular_en_desarrollo",
+  "criterio": "RA oficiales solo después de cotejo textual con programa original; se conserva redacción del módulo como evidencia de diseño, no como transcripción del RA oficial.",
+  "fuente_catalogo": "catalogo-recursos.json",
+  "recursos": [
+    {
+      "id": "nivelacion-matematica",
+      "nombre": "NIVELACIÓN MATEMÁTICA",
+      "tipo": "refuerzo",
+      "carreras_ruta": [
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "nivelacion-matematica/",
+      "unidad_evidencia": "inspeccion_del_codigo_iniciada",
+      "asignatura_oficial": null,
+      "codigo_asignatura": null,
+      "ra_oficial": null,
+      "estado_validacion": "pendiente_cotejo_programa",
+      "actividades_evaluativas": [],
+      "resultados_instrumento": []
+    },
+    {
+      "id": "wms",
+      "nombre": "IPG WMS",
+      "tipo": "simulador",
+      "carreras_ruta": [
+        "TNS en Gestión Logística",
+        "Ingeniería en Gestión Logística Profesional"
+      ],
+      "url": "wms/",
+      "unidad_evidencia": "pendiente_inspeccion",
+      "asignatura_oficial": null,
+      "codigo_asignatura": null,
+      "ra_oficial": null,
+      "estado_validacion": "pendiente_cotejo_programa",
+      "actividades_evaluativas": [],
+      "resultados_instrumento": []
+    },
+    {
+      "id": "comex",
+      "nombre": "IPG COMEX",
+      "tipo": "simulador",
+      "carreras_ruta": [
+        "TNS en Comercio Exterior, Mención Comercio Electrónico"
+      ],
+      "url": "comex/",
+      "unidad_evidencia": "pendiente_inspeccion",
+      "asignatura_oficial": null,
+      "codigo_asignatura": null,
+      "ra_oficial": null,
+      "estado_validacion": "pendiente_cotejo_programa",
+      "actividades_evaluativas": [],
+      "resultados_instrumento": []
+    },
+    {
+      "id": "portsim",
+      "nombre": "IPG PORTSIM",
+      "tipo": "simulador",
+      "carreras_ruta": [
+        "TNS en Operaciones Portuarias",
+        "Ingeniería en Gestión Logística Portuaria, Plan de Continuidad"
+      ],
+      "url": "portsim/",
+      "unidad_evidencia": "pendiente_inspeccion",
+      "asignatura_oficial": null,
+      "codigo_asignatura": null,
+      "ra_oficial": null,
+      "estado_validacion": "pendiente_cotejo_programa",
+      "actividades_evaluativas": [],
+      "resultados_instrumento": []
+    },
+    {
+      "id": "finanzas",
+      "nombre": "IPG FIN-SIM",
+      "tipo": "simulador",
+      "carreras_ruta": [
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "finanzas/",
+      "unidad_evidencia": "pendiente_inspeccion",
+      "asignatura_oficial": null,
+      "codigo_asignatura": null,
+      "ra_oficial": null,
+      "estado_validacion": "pendiente_cotejo_programa",
+      "actividades_evaluativas": [],
+      "resultados_instrumento": []
+    },
+    {
+      "id": "rrhh",
+      "nombre": "IPG PEOPLE",
+      "tipo": "simulador",
+      "carreras_ruta": [
+        "TNS en Administración de Recursos Humanos",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "rrhh/",
+      "unidad_evidencia": "pendiente_inspeccion",
+      "asignatura_oficial": null,
+      "codigo_asignatura": null,
+      "ra_oficial": null,
+      "estado_validacion": "pendiente_cotejo_programa",
+      "actividades_evaluativas": [],
+      "resultados_instrumento": []
+    },
+    {
+      "id": "marketing",
+      "nombre": "IPG MARKETING",
+      "tipo": "simulador",
+      "carreras_ruta": [
+        "TNS en Marketing Digital",
+        "Ingeniería en Marketing Digital",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "marketing/",
+      "unidad_evidencia": "pendiente_inspeccion",
+      "asignatura_oficial": null,
+      "codigo_asignatura": null,
+      "ra_oficial": null,
+      "estado_validacion": "pendiente_cotejo_programa",
+      "actividades_evaluativas": [],
+      "resultados_instrumento": []
+    },
+    {
+      "id": "matematica-financiera",
+      "nombre": "MATEMÁTICA FINANCIERA",
+      "tipo": "refuerzo",
+      "carreras_ruta": [
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "matematica-financiera/",
+      "unidad_evidencia": "inspeccion_del_codigo_iniciada",
+      "asignatura_oficial": null,
+      "codigo_asignatura": null,
+      "ra_oficial": null,
+      "estado_validacion": "pendiente_cotejo_programa",
+      "actividades_evaluativas": [],
+      "resultados_instrumento": []
+    },
+    {
+      "id": "segmentacion",
+      "nombre": "SEGMENTACIÓN",
+      "tipo": "refuerzo",
+      "carreras_ruta": [
+        "TNS en Marketing Digital",
+        "Ingeniería en Marketing Digital"
+      ],
+      "url": "segmentacion/",
+      "unidad_evidencia": "inspeccion_del_codigo_iniciada",
+      "asignatura_oficial": null,
+      "codigo_asignatura": null,
+      "ra_oficial": null,
+      "estado_validacion": "pendiente_cotejo_programa",
+      "actividades_evaluativas": [],
+      "resultados_instrumento": []
+    },
+    {
+      "id": "plan-negocios",
+      "nombre": "PLAN DE NEGOCIOS",
+      "tipo": "refuerzo",
+      "carreras_ruta": [
+        "TNS en Marketing Digital",
+        "Ingeniería en Marketing Digital",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "plan-negocios/",
+      "unidad_evidencia": "inspeccion_del_codigo_iniciada",
+      "asignatura_oficial": null,
+      "codigo_asignatura": null,
+      "ra_oficial": null,
+      "estado_validacion": "pendiente_cotejo_programa",
+      "actividades_evaluativas": [],
+      "resultados_instrumento": []
+    },
+    {
+      "id": "gestion-tributaria",
+      "nombre": "GESTIÓN TRIBUTARIA",
+      "tipo": "refuerzo",
+      "carreras_ruta": [
+        "Contador Auditor",
+        "Contador Auditor, Plan de Continuidad"
+      ],
+      "url": "gestion-tributaria/",
+      "unidad_evidencia": "pendiente_inspeccion",
+      "asignatura_oficial": null,
+      "codigo_asignatura": null,
+      "ra_oficial": null,
+      "estado_validacion": "pendiente_cotejo_programa",
+      "actividades_evaluativas": [],
+      "resultados_instrumento": []
+    },
+    {
+      "id": "estado-financiero",
+      "nombre": "ESTADO FINANCIERO",
+      "tipo": "refuerzo",
+      "carreras_ruta": [
+        "Contador Auditor",
+        "TNS en Contabilidad General"
+      ],
+      "url": "estado-financiero/",
+      "unidad_evidencia": "inspeccion_del_codigo_iniciada",
+      "asignatura_oficial": null,
+      "codigo_asignatura": null,
+      "ra_oficial": null,
+      "estado_validacion": "pendiente_cotejo_programa",
+      "actividades_evaluativas": [],
+      "resultados_instrumento": []
+    },
+    {
+      "id": "contabilidad-costos",
+      "nombre": "CONTABILIDAD DE COSTOS",
+      "tipo": "refuerzo",
+      "carreras_ruta": [
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "contabilidad-costos/",
+      "unidad_evidencia": "inspeccion_del_codigo_iniciada",
+      "asignatura_oficial": null,
+      "codigo_asignatura": null,
+      "ra_oficial": null,
+      "estado_validacion": "pendiente_cotejo_programa",
+      "actividades_evaluativas": [],
+      "resultados_instrumento": []
+    },
+    {
+      "id": "bases-proyectos",
+      "nombre": "IPG BASES PARA PROYECTOS",
+      "tipo": "refuerzo",
+      "carreras_ruta": [
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "bases-proyectos/",
+      "unidad_evidencia": "inspeccion_del_codigo_iniciada",
+      "asignatura_oficial": null,
+      "codigo_asignatura": null,
+      "ra_oficial": null,
+      "estado_validacion": "pendiente_cotejo_programa",
+      "actividades_evaluativas": [],
+      "resultados_instrumento": []
+    },
+    {
+      "id": "integrado",
+      "nombre": "IPG SIMULADOR INTEGRADO",
+      "tipo": "simulador",
+      "carreras_ruta": [
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "integrado/",
+      "unidad_evidencia": "pendiente_inspeccion",
+      "asignatura_oficial": null,
+      "codigo_asignatura": null,
+      "ra_oficial": null,
+      "estado_validacion": "pendiente_cotejo_programa",
+      "actividades_evaluativas": [],
+      "resultados_instrumento": []
+    },
+    {
+      "id": "repositorio",
+      "nombre": "REPOSITORIO ACADÉMICO",
+      "tipo": "repositorio",
+      "carreras_ruta": [
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "repositorio/",
+      "unidad_evidencia": "pendiente_inspeccion",
+      "asignatura_oficial": null,
+      "codigo_asignatura": null,
+      "ra_oficial": null,
+      "estado_validacion": "pendiente_cotejo_programa",
+      "actividades_evaluativas": [],
+      "resultados_instrumento": []
+    },
+    {
+      "id": "formacion-humana",
+      "nombre": "ESCUELA DE GESTIÓN – FORMACIÓN HUMANA Y EMPLEABILIDAD",
+      "tipo": "refuerzo",
+      "carreras_ruta": [
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "formacion-humana/",
+      "unidad_evidencia": "inspeccion_del_codigo_iniciada",
+      "asignatura_oficial": null,
+      "codigo_asignatura": null,
+      "ra_oficial": null,
+      "estado_validacion": "pendiente_cotejo_programa",
+      "actividades_evaluativas": [],
+      "resultados_instrumento": []
+    },
+    {
+      "id": "politicas-publicas",
+      "nombre": "POLÍTICAS PÚBLICAS – REFORZAMIENTO",
+      "tipo": "refuerzo",
+      "carreras_ruta": [
+        "Administración Pública",
+        "TNS en Administración Pública"
+      ],
+      "url": "politicas-publicas/",
+      "unidad_evidencia": "inspeccion_del_codigo_iniciada",
+      "asignatura_oficial": null,
+      "codigo_asignatura": null,
+      "ra_oficial": null,
+      "estado_validacion": "pendiente_cotejo_programa",
+      "actividades_evaluativas": [],
+      "resultados_instrumento": []
+    },
+    {
+      "id": "convivencia-buen-trato",
+      "nombre": "CONVIVENCIA HUMANA, BIENESTAR EMOCIONAL Y CULTURA DEL BUEN TRATO",
+      "tipo": "refuerzo",
+      "carreras_ruta": [
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "convivencia-buen-trato/",
+      "unidad_evidencia": "pendiente_inspeccion",
+      "asignatura_oficial": null,
+      "codigo_asignatura": null,
+      "ra_oficial": null,
+      "estado_validacion": "pendiente_cotejo_programa",
+      "actividades_evaluativas": [],
+      "resultados_instrumento": []
+    },
+    {
+      "id": "fundamentos-contables",
+      "nombre": "FUNDAMENTOS CONTABLES Y FINANCIEROS – REFORZAMIENTO",
+      "tipo": "refuerzo",
+      "carreras_ruta": [
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "fundamentos-contables/",
+      "unidad_evidencia": "inspeccion_del_codigo_iniciada",
+      "asignatura_oficial": null,
+      "codigo_asignatura": null,
+      "ra_oficial": null,
+      "estado_validacion": "pendiente_cotejo_programa",
+      "actividades_evaluativas": [],
+      "resultados_instrumento": []
+    }
+  ],
+  "ejemplos_documentados": [
+    {
+      "recurso_id": "matematica-financiera",
+      "asignatura_propuesta": "Matemática Financiera",
+      "unidades": [
+        {
+          "n": 1,
+          "titulo": "Interés Simple y Compuesto",
+          "ra_declarado_en_modulo": "Resuelve ejercicios y situaciones problemáticas que involucran tasas de interés, interés simple y compuesto."
+        },
+        {
+          "n": 2,
+          "titulo": "Anualidades, Amortización y Depreciación",
+          "ra_declarado_en_modulo": "Analiza métodos y resultados de anualidades, amortización y depreciación."
+        },
+        {
+          "n": 3,
+          "titulo": "Criterios Financieros para la Toma de Decisiones",
+          "ra_declarado_en_modulo": "Analiza resultados obtenidos mediante VAN y TIR."
+        }
+      ],
+      "evidencia": "Código del módulo con DATA.u1/u2/u3 y test por unidad",
+      "pendiente": "Cotejar código y texto exacto RA con programa oficial"
+    }
+  ],
+  "propuesta_campos": [
+    "carrera_codigo",
+    "asignatura_codigo",
+    "unidad_codigo",
+    "ra_codigo",
+    "ra_texto_oficial",
+    "modulo_id",
+    "actividad_id",
+    "tipo_evaluacion",
+    "criterio_logro",
+    "evidencia_trazabilidad",
+    "estado_validacion"
+  ],
+  "reglas": [
+    "No inferir aprobación de asignaturas por finalizar simulador",
+    "No vincular identidad declarativa a matrícula verificada",
+    "No mostrar promedios de grupos pequeños",
+    "Distinguir RA textual del módulo del RA oficial del programa",
+    "Permitir relaciones muchos-a-muchos por carrera, asignatura y módulo"
+  ]
+}
