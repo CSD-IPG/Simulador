@@ -106,7 +106,7 @@
 <div class="kpi"><b id="dirEvaluaciones">—</b><small>Evaluaciones registradas</small></div>
 <div class="kpi"><b id="dirPromedio">—</b><small>Puntaje medio de evaluaciones (solo registros con puntaje)</small></div>
 </div>
-<div class="repo-panel" style="margin:12px 0"><h3>Participación por perfil declarado</h3><p class="sub">Fuente: registros de acceso por correo institucional; no es una certificación de identidad. Los usuarios con perfiles contradictorios se mantienen separados.</p><div id="dirPerfilResumen">Esperando datos de acceso…</div></div>
+<div class="repo-panel" style="margin:12px 0"><h3>Participación por perfil declarado</h3><p class="sub">Fuente: perfil seleccionado en formularios de identificación, cuando existe. Sin identificación declarada o con perfiles contradictorios se muestra sin clasificar.</p><div id="dirPerfilResumen">Esperando datos de acceso…</div></div>
 <div class="repo-panels">
 <div class="repo-panel"><h3>Módulos más utilizados</h3><div id="dirTop">Esperando datos…</div></div>
 <div class="repo-panel"><h3>Áreas para revisar apoyo académico</h3><div id="dirApoyo">Esperando datos…</div></div>
@@ -756,11 +756,14 @@ document.querySelectorAll('[data-viz]').forEach(b=>b.onclick=()=>{VIZ_CATEGORY=b
 // Resumen ejecutivo agregado. No publica datos personales ni infiere aprobación de una asignatura.
 function perfilesAccesoCsd(){
  const map=new Map();
- (Array.isArray(ACCESS_DATA)?ACCESS_DATA:[]).forEach(r=>{
-  const email=String(r.email||'').trim().toLowerCase(),perfil=String(r.tipo_usuario||'').trim().toLowerCase();
-  if(!email||!['estudiante','docente','colaborador','equipo_academico'].includes(perfil))return;
+ // La función registrar_acceso_csd infiere tipo_usuario del dominio; NO es un perfil declarado.
+ // Solo reporte_identificaciones_csd expone un perfil seleccionado en formulario.
+ (Array.isArray(IDENTIFICACIONES)?IDENTIFICACIONES:[]).forEach(r=>{
+  const email=String(r.email||'').trim().toLowerCase(),perfil=String(r.perfil||'').trim().toLowerCase();
+  const normalized=perfil==='equipo académico'?'equipo_academico':perfil;
+  if(!email||!['estudiante','docente','colaborador','equipo_academico'].includes(normalized))return;
   if(!map.has(email))map.set(email,new Set());
-  map.get(email).add(perfil);
+  map.get(email).add(normalized);
  });
  return map;
 }
@@ -793,7 +796,7 @@ function renderDireccion(){
   const p=[...values][0];conteos.set(p,(conteos.get(p)||0)+1);
  }
  const resumen=Object.entries(perfilesNombres).map(([p,label])=>'<div class="barrow"><span>'+label+'</span><strong>'+String(conteos.get(p)||0)+'</strong></div>').join('');
- $('dirPerfilResumen').innerHTML=resumen+'<p class="sub">Correos con perfiles contradictorios: '+conflictos.size+'. Correos sin perfil explícito: no clasificados. Conteos de correos declarados distintos, no personas verificadas.</p>';
+ $('dirPerfilResumen').innerHTML=resumen+'<p class="sub">Correos con perfiles contradictorios: '+conflictos.size+'. Registros sin perfil explícito: no clasificados. Conteos de correos declarados distintos, no personas verificadas.</p>';
  const modCount=new Map();filtered.forEach(r=>{const k=moduleName(r);if(k)modCount.set(k,(modCount.get(k)||0)+1)});
  const ordered=[...modCount.entries()].sort((a,b)=>b[1]-a[1]);
  $('dirSesiones').textContent=String(filtered.length);
@@ -819,7 +822,7 @@ function renderDireccion(){
   const flag=g.total<5?'Muestra reducida':g.finished===0?'Revisar finalizaciones':'Seguimiento habitual';
   return '<tr><td>'+esc(g.carrera)+'</td><td>'+esc(g.modulo)+'</td><td>'+g.total+'</td><td>'+g.finished+'</td><td>'+g.scores.length+'</td><td>'+(avg===null?'No publicable (<5)':' '+avg.toFixed(1))+'</td><td>'+esc(flag)+'</td></tr>';
  }).join(''):'<tr><td colspan="7">No hay sesiones registradas para estos filtros.</td></tr>';
- $('dirNota').textContent='El filtro usa el perfil explícitamente declarado en accesos_csd, relacionado por correo; no verifica identidad ni matrícula. Registros sin vínculo o con perfiles contradictorios permanecen sin clasificar. Los puntajes no acreditan resultados de aprendizaje.';
+ $('dirNota').textContent='El filtro usa perfiles declarados en identificaciones_csd y relacionados por correo cuando hay una correspondencia inequívoca; no verifica identidad ni matrícula. Registros sin vínculo o con perfiles contradictorios permanecen sin clasificar. Los puntajes no acreditan resultados de aprendizaje.';
 }
 
 let TRACE_CATALOG=null;
