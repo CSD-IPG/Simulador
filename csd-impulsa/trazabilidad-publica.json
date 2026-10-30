@@ -1,0 +1,425 @@
+{
+  "version": "0.5.0",
+  "estado": "en_validacion",
+  "nota": "Textos de diseño del módulo. Los RA oficiales requieren cotejo con programas.",
+  "recursos": [
+    {
+      "id": "nivelacion-matematica",
+      "nombre": "NIVELACIÓN MATEMÁTICA",
+      "tipo": "refuerzo",
+      "carreras": [
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "nivelacion-matematica/"
+    },
+    {
+      "id": "wms",
+      "nombre": "IPG WMS",
+      "tipo": "simulador",
+      "carreras": [
+        "TNS en Gestión Logística",
+        "Ingeniería en Gestión Logística Profesional"
+      ],
+      "url": "wms/"
+    },
+    {
+      "id": "comex",
+      "nombre": "IPG COMEX",
+      "tipo": "simulador",
+      "carreras": [
+        "TNS en Comercio Exterior, Mención Comercio Electrónico"
+      ],
+      "url": "comex/"
+    },
+    {
+      "id": "portsim",
+      "nombre": "IPG PORTSIM",
+      "tipo": "simulador",
+      "carreras": [
+        "TNS en Operaciones Portuarias",
+        "Ingeniería en Gestión Logística Portuaria, Plan de Continuidad"
+      ],
+      "url": "portsim/"
+    },
+    {
+      "id": "finanzas",
+      "nombre": "IPG FIN-SIM",
+      "tipo": "simulador",
+      "carreras": [
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "finanzas/"
+    },
+    {
+      "id": "rrhh",
+      "nombre": "IPG PEOPLE",
+      "tipo": "simulador",
+      "carreras": [
+        "TNS en Administración de Recursos Humanos",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "rrhh/"
+    },
+    {
+      "id": "marketing",
+      "nombre": "IPG MARKETING",
+      "tipo": "simulador",
+      "carreras": [
+        "TNS en Marketing Digital",
+        "Ingeniería en Marketing Digital",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "marketing/"
+    },
+    {
+      "id": "matematica-financiera",
+      "nombre": "MATEMÁTICA FINANCIERA",
+      "tipo": "refuerzo",
+      "carreras": [
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "matematica-financiera/"
+    },
+    {
+      "id": "segmentacion",
+      "nombre": "SEGMENTACIÓN",
+      "tipo": "refuerzo",
+      "carreras": [
+        "TNS en Marketing Digital",
+        "Ingeniería en Marketing Digital"
+      ],
+      "url": "segmentacion/"
+    },
+    {
+      "id": "plan-negocios",
+      "nombre": "PLAN DE NEGOCIOS",
+      "tipo": "refuerzo",
+      "carreras": [
+        "TNS en Marketing Digital",
+        "Ingeniería en Marketing Digital",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "plan-negocios/"
+    },
+    {
+      "id": "gestion-tributaria",
+      "nombre": "GESTIÓN TRIBUTARIA",
+      "tipo": "refuerzo",
+      "carreras": [
+        "Contador Auditor",
+        "Contador Auditor, Plan de Continuidad"
+      ],
+      "url": "gestion-tributaria/"
+    },
+    {
+      "id": "estado-financiero",
+      "nombre": "ESTADO FINANCIERO",
+      "tipo": "refuerzo",
+      "carreras": [
+        "Contador Auditor",
+        "TNS en Contabilidad General"
+      ],
+      "url": "estado-financiero/"
+    },
+    {
+      "id": "contabilidad-costos",
+      "nombre": "CONTABILIDAD DE COSTOS",
+      "tipo": "refuerzo",
+      "carreras": [
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "contabilidad-costos/"
+    },
+    {
+      "id": "bases-proyectos",
+      "nombre": "IPG BASES PARA PROYECTOS",
+      "tipo": "refuerzo",
+      "carreras": [
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "bases-proyectos/"
+    },
+    {
+      "id": "integrado",
+      "nombre": "IPG SIMULADOR INTEGRADO",
+      "tipo": "simulador",
+      "carreras": [
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "integrado/"
+    },
+    {
+      "id": "repositorio",
+      "nombre": "REPOSITORIO ACADÉMICO",
+      "tipo": "repositorio",
+      "carreras": [
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "repositorio/"
+    },
+    {
+      "id": "formacion-humana",
+      "nombre": "ESCUELA DE GESTIÓN – FORMACIÓN HUMANA Y EMPLEABILIDAD",
+      "tipo": "refuerzo",
+      "carreras": [
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "formacion-humana/"
+    },
+    {
+      "id": "politicas-publicas",
+      "nombre": "POLÍTICAS PÚBLICAS – REFORZAMIENTO",
+      "tipo": "refuerzo",
+      "carreras": [
+        "Administración Pública",
+        "TNS en Administración Pública"
+      ],
+      "url": "politicas-publicas/"
+    },
+    {
+      "id": "convivencia-buen-trato",
+      "nombre": "CONVIVENCIA HUMANA, BIENESTAR EMOCIONAL Y CULTURA DEL BUEN TRATO",
+      "tipo": "refuerzo",
+      "carreras": [
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "convivencia-buen-trato/"
+    },
+    {
+      "id": "fundamentos-contables",
+      "nombre": "FUNDAMENTOS CONTABLES Y FINANCIEROS – REFORZAMIENTO",
+      "tipo": "refuerzo",
+      "carreras": [
+        "Transversal",
+        "Ingeniería en Administración de Empresas",
+        "TNS en Administración de Empresas",
+        "Ingeniería en Administración de Empresas, Plan de Continuidad"
+      ],
+      "url": "fundamentos-contables/"
+    }
+  ],
+  "unidades": [
+    {
+      "id": "bases-proyectos",
+      "unidad": 1,
+      "titulo": "Unidad 1",
+      "resultado": "Comprende los fundamentos para la realización de proyectos, aplicando herramientas básicas para la formulación inicial y la gestión eficiente de recursos.",
+      "validado": false
+    },
+    {
+      "id": "bases-proyectos",
+      "unidad": 2,
+      "titulo": "Unidad 2",
+      "resultado": "Analiza la viabilidad económica y financiera de proyectos mediante flujos de caja, VAN, TIR, sensibilidad, riesgo y fuentes de financiamiento.",
+      "validado": false
+    },
+    {
+      "id": "bases-proyectos",
+      "unidad": 3,
+      "titulo": "Unidad 3",
+      "resultado": "Implementa técnicas de planificación, ejecución y control mediante metodologías, indicadores, presupuesto, gestión de riesgos y cierre.",
+      "validado": false
+    },
+    {
+      "id": "matematica-financiera",
+      "unidad": 1,
+      "titulo": "Unidad 1",
+      "resultado": "Resuelve ejercicios y situaciones problemáticas que involucran tasas de interés, interés simple y compuesto.",
+      "validado": false
+    },
+    {
+      "id": "matematica-financiera",
+      "unidad": 2,
+      "titulo": "Unidad 2",
+      "resultado": "Analiza métodos y resultados de anualidades, amortización y depreciación.",
+      "validado": false
+    },
+    {
+      "id": "matematica-financiera",
+      "unidad": 3,
+      "titulo": "Unidad 3",
+      "resultado": "Analiza resultados obtenidos mediante VAN y TIR.",
+      "validado": false
+    },
+    {
+      "id": "politicas-publicas",
+      "unidad": 1,
+      "titulo": "Unidad 1",
+      "resultado": "Reconoce las fases iniciales del proceso de las políticas públicas, utilizando herramientas básicas para identificar actores y su impacto en la formulación.",
+      "validado": false
+    },
+    {
+      "id": "politicas-publicas",
+      "unidad": 2,
+      "titulo": "Unidad 2",
+      "resultado": "Aplica herramientas para la implementación y evaluación de políticas públicas, considerando actores, recursos e indicadores.",
+      "validado": false
+    },
+    {
+      "id": "politicas-publicas",
+      "unidad": 3,
+      "titulo": "Unidad 3",
+      "resultado": "Evalúa críticamente políticas públicas mediante comparación de modelos y herramientas avanzadas, proponiendo mejoras basadas en evidencia.",
+      "validado": false
+    },
+    {
+      "id": "contabilidad-costos",
+      "unidad": 1,
+      "titulo": "Unidad 1",
+      "resultado": "Distingue la contabilidad de costos y sus métodos como parte fundamental de las herramientas de control contable.",
+      "validado": false
+    },
+    {
+      "id": "contabilidad-costos",
+      "unidad": 2,
+      "titulo": "Unidad 2",
+      "resultado": "Evalúa los distintos sistemas de costos asociándolos a la práctica profesional.",
+      "validado": false
+    },
+    {
+      "id": "contabilidad-costos",
+      "unidad": 3,
+      "titulo": "Unidad 3",
+      "resultado": "Explica las nuevas tendencias de costos aplicadas al área contable, asociándolas a la práctica profesional.",
+      "validado": false
+    },
+    {
+      "id": "nivelacion-matematica",
+      "unidad": 1,
+      "titulo": "Unidad 1",
+      "resultado": "Fortalece el manejo de números enteros, decimales, fracciones, porcentajes y prioridad de operaciones como base para el trabajo con números reales.",
+      "validado": false
+    },
+    {
+      "id": "nivelacion-matematica",
+      "unidad": 2,
+      "titulo": "Unidad 2",
+      "resultado": "Aplica razones, proporciones y expresiones algebraicas sencillas como preparación para ecuaciones, variaciones y modelación.",
+      "validado": false
+    },
+    {
+      "id": "nivelacion-matematica",
+      "unidad": 3,
+      "titulo": "Unidad 3",
+      "resultado": "Resuelve ecuaciones elementales e interpreta tablas, pares ordenados y relaciones lineales simples como preparación para sistemas y funciones.",
+      "validado": false
+    },
+    {
+      "id": "estado-financiero",
+      "unidad": 1,
+      "titulo": "Ratios financieros",
+      "resultado": "Liquidez, rentabilidad, endeudamiento y eficiencia",
+      "validado": false
+    },
+    {
+      "id": "estado-financiero",
+      "unidad": 2,
+      "titulo": "Estados financieros y aplicación de ratios",
+      "resultado": "Estado de situación, resultados y análisis DuPont",
+      "validado": false
+    },
+    {
+      "id": "estado-financiero",
+      "unidad": 3,
+      "titulo": "Diseño de informes de análisis financiero",
+      "resultado": "Metodología, evidencias, hallazgos y recomendaciones",
+      "validado": false
+    },
+    {
+      "id": "plan-negocios",
+      "unidad": 1,
+      "titulo": "Definición del negocio",
+      "resultado": "16 horas del programa. Estudio de mercado, identificación de necesidades, rol del cliente y propuesta de valor. Resultado: reconoce la importancia de definir el negocio antes de diseñar el plan comercial.",
+      "validado": false
+    },
+    {
+      "id": "plan-negocios",
+      "unidad": 2,
+      "titulo": "Modelo de negocio",
+      "resultado": "20 horas del programa. Business Model Canvas, emprendimiento, innovación, público objetivo, viabilidad comercial y producto mínimo viable. Resultado: desarrolla un modelo de negocio coherente y evaluable.",
+      "validado": false
+    },
+    {
+      "id": "plan-negocios",
+      "unidad": 3,
+      "titulo": "Plan de negocio",
+      "resultado": "18 horas del programa. Integración de definición del negocio, modelo, estrategia comercial, factibilidad y presentación ante audiencia simulada. Resultado: elabora y defiende un plan de negocio sustentado.",
+      "validado": false
+    },
+    {
+      "id": "gestion-tributaria",
+      "unidad": 1,
+      "titulo": "Fundamentos de la Tributación y Regímenes de Renta",
+      "resultado": "Sistema tributario chileno, categorías de renta, regímenes tributarios, renta líquida imponible, créditos y exenciones. Resultado: describe fundamentos y regímenes considerando su impacto organizacional.",
+      "validado": false
+    },
+    {
+      "id": "gestion-tributaria",
+      "unidad": 2,
+      "titulo": "Aplicación de Registros Tributarios y Créditos Fiscales",
+      "resultado": "Registros históricos FUT, FUNT, FUF y FUR; transición a registros actuales; retiros, créditos, inversión extranjera e impuestos diferidos. Resultado: aplica conceptos de renta en registros y créditos.",
+      "validado": false
+    },
+    {
+      "id": "gestion-tributaria",
+      "unidad": 3,
+      "titulo": "Planificación Tributaria y Cumplimiento Normativo",
+      "resultado": "Planificación tributaria lícita, riesgos, normativa anti-elusión, inversión extranjera, auditoría y fiscalización del SII. Resultado: evalúa planificación y cumplimiento con fundamento normativo.",
+      "validado": false
+    },
+    {
+      "id": "segmentacion",
+      "unidad": 1,
+      "titulo": "La segmentación",
+      "resultado": "16 horas. Segmentación de mercados; variables demográficas, geográficas, psicográficas y conductuales; etapas y objetivos medibles. Resultado: identifica etapas de segmentación para un plan de marketing.",
+      "validado": false
+    },
+    {
+      "id": "segmentacion",
+      "unidad": 2,
+      "titulo": "Enfoques de la segmentación de mercado",
+      "resultado": "20 horas. Marketing masivo, por segmentos, de nichos y personalizado; estrategia, plataformas digitales y segmentación publicitaria. Resultado: distingue enfoques y justifica su selección.",
+      "validado": false
+    },
+    {
+      "id": "segmentacion",
+      "unidad": 3,
+      "titulo": "Diseño de un plan de segmentación",
+      "resultado": "18 horas. Instrumentos, recolección de información, análisis de segmentos, perfiles y ventajas competitivas. Resultado: elabora un plan de segmentación aplicado.",
+      "validado": false
+    }
+  ]
+}
