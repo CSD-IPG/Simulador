@@ -868,7 +868,7 @@ function renderTrace(){
  }
  if(!$('trBody').innerHTML)$('trBody').innerHTML='<tr><td colspan="6">Sin unidades ni simuladores documentados para estos filtros.</td></tr>';
  const processes=(TRACE_PROCESSES?.simuladores||[]).filter(x=>ids.has(x.id));
- $('trProcesos').innerHTML=processes.length?processes.flatMap(x=>x.actividades.map(a=>'<tr><td>'+esc(names.get(x.id)||x.id)+'</td><td>'+esc(a.nombre)+'</td><td>Pendiente cotejo con programa</td><td>Indicadores generales disponibles; evento individual aún no validado en base de datos</td></tr>')).join(''):'<tr><td colspan="4">Sin procesos de simulación para los recursos seleccionados.</td></tr>';
+ $('trProcesos').innerHTML=processes.length?processes.flatMap(x=>x.actividades.map(a=>'<tr><td>'+esc(names.get(x.id)||x.id)+'</td><td>'+esc(a.nombre)+'</td><td>Pendiente cotejo con programa</td><td>'+(a.evento_local_observado?'Evento local: '+esc(a.evento_local_observado)+' · ':'')+'Persistencia por etapa no verificada</td></tr>')).join(''):'<tr><td colspan="4">Sin procesos de simulación para los recursos seleccionados.</td></tr>';
  $('trProcesosNota').textContent='Inventario de procesos observados en código. No indica resultados por etapa ni evaluaciones oficiales.';
  $('trStatus').textContent=car?'Cobertura curricular propuesta por carrera; sin atribución de evaluaciones hasta validar matrícula.':'Puntajes descriptivos de mejor intento, solo si hay al menos cinco identificadores declarados con test en escala 0–100. Los criterios se obtienen del código del módulo y no acreditan el RA ni diagnostican individualmente.';
 }
