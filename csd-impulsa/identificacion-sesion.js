@@ -35,7 +35,7 @@
  async function registrarPerfil(){
   const email=findValue('email').toLowerCase(),perfil=findValue('perfil');
   if(!validEmail(email)||!['estudiante','docente','colaborador','equipo_academico'].includes(perfil))return;
-  const module=location.pathname.split('/').filter(Boolean).slice(-1)[0]||'recurso';
+  const parts=location.pathname.split('/').filter(Boolean);const module=(parts.at(-1)==='index.html'?parts.at(-2):parts.at(-1))||'recurso';
   const sidKey='csd_perfil_sid_'+module;
   let sid=sessionStorage.getItem(sidKey);
   if(!sid){sid=crypto.randomUUID?crypto.randomUUID():'csd-'+Date.now()+'-'+Math.random().toString(36).slice(2);sessionStorage.setItem(sidKey,sid)}
