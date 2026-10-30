@@ -368,7 +368,7 @@ function downloadCSV(){
  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"text/csv;charset=utf-8"}));a.download="Reporte_Centro_Simulacion_IPG.csv";a.click();
 }
 function showDash(){$("loginView").classList.add("hidden");$("dashView").classList.remove("hidden")}
-function logout(){sessionStorage.removeItem("csd_token");TOKEN="";DATA=[];FILTERED=[];ACCESS_DATA=[];ACCESS_PART=[];REPO_REPORT=[];IDENTIFICACIONES=[];if($("idFilas"))$("idFilas").innerHTML="";if($("idEstado"))$("idEstado").textContent="Sin cargar";$("password").value="";$("email").value="";$("loginMsg").textContent="";$("dashView").classList.add("hidden");$("loginView").classList.remove("hidden")}
+function logout(){sessionStorage.removeItem("csd_token");TOKEN="";DATA=[];FILTERED=[];ACCESS_DATA=[];ACCESS_PART=[];REPO_REPORT=[];IDENTIFICACIONES=[];if($("idFilas"))$("idFilas").innerHTML="";if($("idEstado"))$("idEstado").textContent="Sin cargar";$("password").value="";$("email").value="";$("loginMsg").textContent="";TRACE_CATALOG=null;CSD_REF_ROWS=[];if($("trBody"))$("trBody").replaceChildren();$("dashView").classList.add("hidden");$("loginView").classList.remove("hidden")}
 
 
 function repoFilteredRows(){
@@ -833,7 +833,8 @@ function renderTrace(){
  const names=new Map(resources.map(r=>[r.id,r.nombre]));
  // La carrera procede de selección de catálogo, no de una matrícula verificada.
  // Por tanto, no se le asignan las evaluaciones declarativas disponibles.
- const evidence=car?[]:unitEvidenceRows();
+ // No reutilizar datos entre sesiones después de cerrar sesión.
+ const evidence=car?[]:(TOKEN?unitEvidenceRows():[]);
  const clean=s=>String(s||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
  $('trRecursos').textContent=resources.length;
  $('trUnidades').textContent=units.length;
@@ -843,10 +844,10 @@ function renderTrace(){
   const matching=evidence.filter(e=>e.unit===Number(u.unidad)&&aliases.includes(clean(e.mod)));
   const evaluated=matching.filter(e=>e.test&&e.score!==null&&Number.isFinite(Number(e.score)));
   const enabled=matching.filter(e=>e.enabledExplicit).length;
-  const summary=car?'No atribuible a carrera':!aliases.length?'Sin equivalencia de módulo confirmada':matching.length<5?'Evidencia insuficiente (<5 registros)':evaluated.length?'Registros por unidad: '+matching.length+' · Test con puntaje: '+evaluated.length+' · Habilitaciones explícitas: '+enabled:'Registros por unidad: '+matching.length+' · Sin test puntuado';
+  const summary=car?'No atribuible a carrera':!aliases.length?'Sin equivalencia de módulo confirmada':matching.length<5?'Evidencia insuficiente (<5 registros)':evaluated.length?'Participantes declarados con actividad: '+matching.length+' · Con test puntuado: '+evaluated.length+' · Habilitaciones explícitas: '+enabled:'Registros por unidad: '+matching.length+' · Sin test puntuado';
   return '<tr><td>'+esc(names.get(u.id)||u.id)+'</td><td>'+esc(u.titulo||('Unidad '+u.unidad))+'</td><td>'+esc(u.resultado||'Sin texto')+'</td><td>'+(u.validado?'RA cotejado':'Pendiente cotejo con programa')+'</td><td>'+esc(summary)+'</td></tr>';
  }).join(''):'<tr><td colspan="5">Sin unidades documentadas para estos filtros. El recurso puede seguir siendo pertinente, pero requiere desglose.</td></tr>';
- $('trStatus').textContent=car?'La selección de carrera muestra cobertura curricular propuesta. Las evaluaciones no se atribuyen a una carrera sin identificación académica verificada.':'Evidencias observadas por módulo y unidad, deduplicadas por correo declarado en el reporte actual. No son calificaciones oficiales ni logro certificado de RA.';
+ $('trStatus').textContent=car?'La selección de carrera muestra cobertura curricular propuesta. Los resultados no se atribuyen a una carrera sin matrícula verificada.':'El conteo consolida registros por correo declarado, módulo y unidad; no equivale a estudiantes únicos verificados. Resultados no homologables a calificaciones oficiales.';
 }
 $('trCarrera').addEventListener('change',renderTrace);
 $('trModulo').addEventListener('change',renderTrace);
