@@ -92,6 +92,13 @@
 <section class="panel" id="direccionAprendizaje" aria-labelledby="dirTitle">
 <h2 id="dirTitle">Dirección de Escuela · Seguimiento de aprendizajes</h2>
 <p class="sub">Síntesis institucional con registros disponibles. El uso no equivale a logro de aprendizaje; los resultados se muestran por separado y las alertas indican dónde revisar posibles necesidades de apoyo, no diagnósticos individuales.</p>
+<div class="filters" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))" aria-label="Filtros del seguimiento ejecutivo">
+<div class="f"><label for="dirCar">Carrera</label><select id="dirCar"><option value="">Todas las carreras</option></select></div>
+<div class="f"><label for="dirMod">Módulo</label><select id="dirMod"><option value="">Todos los módulos</option></select></div>
+<div class="f"><label for="dirDesde">Desde</label><input type="date" id="dirDesde"></div>
+<div class="f"><label for="dirHasta">Hasta</label><input type="date" id="dirHasta"></div>
+<div class="f"><label for="dirReset">Acción</label><button class="btn light" id="dirReset" type="button">Limpiar filtros</button></div>
+</div>
 <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
 <div class="kpi"><b id="dirSesiones">—</b><small>Sesiones registradas</small></div>
 <div class="kpi"><b id="dirModulos">—</b><small>Módulos con sesiones</small></div>
@@ -728,20 +735,30 @@ document.querySelectorAll('[data-viz]').forEach(b=>b.onclick=()=>{VIZ_CATEGORY=b
 function renderDireccion(){
  const sessions=Array.isArray(DATA)?DATA:[];
  const ref=Array.isArray(CSD_REF_ROWS)?CSD_REF_ROWS:[];
- const valid=ref.filter(r=>r.puntaje!==null&&r.puntaje!==undefined&&r.puntaje!==''&&Number.isFinite(Number(r.puntaje))&&/evaluac|test|salida/i.test(String(r.evento||'')));
+ const $car=$('dirCar'),$mod=$('dirMod');
  const moduleName=x=>String(x.simulador||x.modulo||'').trim();
- const mod=new Map();sessions.forEach(r=>{const k=moduleName(r);if(k)mod.set(k,(mod.get(k)||0)+1)});
- const ordered=[...mod.entries()].sort((a,b)=>b[1]-a[1]);
- $('dirSesiones').textContent=String(sessions.length);
- $('dirModulos').textContent=String(mod.size);
- $('dirEvaluaciones').textContent=String(valid.length);
- $('dirPromedio').textContent=valid.length?(valid.reduce((s,r)=>s+Number(r.puntaje),0)/valid.length).toFixed(1):'—';
- $('dirTop').innerHTML=ordered.length?ordered.slice(0,8).map(([name,n])=>'<div class="barrow"><span>'+esc(name)+'</span><div class="bar"><span style="width:'+Math.round(n/ordered[0][1]*100)+'%"></span></div><strong>'+n+'</strong></div>').join(''):'<p class="sub">Sin sesiones disponibles.</p>';
- // Indicador descriptivo basado solo en evaluaciones: no asignar etiquetas a personas.
- const byModule=new Map();valid.forEach(r=>{const k=moduleName(r);if(!k)return;const a=byModule.get(k)||[];a.push(Number(r.puntaje));byModule.set(k,a)});
- const groups=[...byModule.entries()].filter(([,scores])=>scores.length>=5).map(([name,scores])=>({name,n:scores.length,avg:scores.reduce((a,b)=>a+b,0)/scores.length})).sort((a,b)=>a.avg-b.avg);
- $('dirApoyo').innerHTML=groups.length?'<p class="sub">Módulos con al menos cinco evaluaciones registradas; ordenados por menor puntaje medio. Su revisión requiere interpretación académica.</p>'+groups.slice(0,8).map(x=>'<div class="barrow"><span>'+esc(x.name)+'</span><div class="bar"><span style="width:'+Math.max(0,Math.min(100,x.avg))+'%"></span></div><strong>'+x.avg.toFixed(1)+'</strong></div>').join(''):'<p class="sub">Evidencia insuficiente para comparar módulos con resguardo de grupos pequeños.</p>';
- $('dirNota').textContent='Fuente: sesiones consolidadas y resultados de reforzamiento accesibles a Dirección. Las evaluaciones no representan necesariamente estudiantes únicos; sin umbrales institucionales validados no se clasifica logro o riesgo individual.';
+ const allModules=[...new Set([...sessions.map(moduleName),...ref.map(moduleName)].filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+ const allCareers=[...new Set(sessions.map(x=>String(x.carrera||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+ function choices(sel,items,label){const prev=sel.value;sel.replaceChildren(new Option(label,''),...items.map(x=>new Option(x,x)));if(items.includes(prev))sel.value=prev;}
+ choices($car,allCareers,'Todas las carreras');choices($mod,allModules,'Todos los módulos');
+ const car=$car.value,mod=$mod.value,from=$('dirDesde').value,to=$('dirHasta').value;
+ const day=x=>{const d=new Date(x);return Number.isNaN(d.getTime())?'':d.toISOString().slice(0,10)};
+ const inPeriod=x=>{const d=day(x);return !!d&&(!from||d>=from)&&(!to||d<=to)};
+ const filtered=sessions.filter(x=>(!car||x.carrera===car)&&(!mod||moduleName(x)===mod)&&inPeriod(x.fecha_inicio||x.fecha||x.ultima_actividad));
+ // Los resultados de reforzamiento no contienen carrera verificada: no se atribuyen a carreras.
+ const refBase=car?[]:ref.filter(x=>(!mod||moduleName(x)===mod)&&inPeriod(x.fecha));
+ const valid=refBase.filter(r=>r.puntaje!==null&&r.puntaje!==undefined&&r.puntaje!==''&&Number.isFinite(Number(r.puntaje))&&/evaluac|test|salida/i.test(String(r.evento||'')));
+ const modCount=new Map();filtered.forEach(r=>{const k=moduleName(r);if(k)modCount.set(k,(modCount.get(k)||0)+1)});
+ const ordered=[...modCount.entries()].sort((a,b)=>b[1]-a[1]);
+ $('dirSesiones').textContent=String(filtered.length);
+ $('dirModulos').textContent=String(modCount.size);
+ $('dirEvaluaciones').textContent=car?'—':String(valid.length);
+ $('dirPromedio').textContent=car?'—':valid.length?(valid.reduce((s,r)=>s+Number(r.puntaje),0)/valid.length).toFixed(1):'—';
+ $('dirTop').innerHTML=ordered.length?ordered.slice(0,8).map(([name,n])=>'<div class="barrow"><span>'+esc(name)+'</span><div class="bar"><span style="width:'+Math.round(n/ordered[0][1]*100)+'%"></span></div><strong>'+n+'</strong></div>').join(''):'<p class="sub">Sin sesiones registradas para estos filtros.</p>';
+ const groups=new Map();valid.forEach(r=>{const k=moduleName(r);if(!k)return;const scores=groups.get(k)||[];scores.push(Number(r.puntaje));groups.set(k,scores)});
+ const orderedResults=[...groups.entries()].filter(([,a])=>a.length>=5).map(([name,a])=>({name,n:a.length,avg:a.reduce((u,v)=>u+v,0)/a.length})).sort((a,b)=>a.avg-b.avg);
+ $('dirApoyo').innerHTML=car?'<p class="sub">No se atribuyen resultados de reforzamiento a una carrera sin una vinculación de identidad y matrícula verificada. Consulte los módulos en la vista general.</p>':orderedResults.length?'<p class="sub">Promedios descriptivos de módulos con cinco o más evaluaciones; menor puntaje primero. No es una clasificación institucional de logro.</p>'+orderedResults.slice(0,8).map(x=>'<div class="barrow"><span>'+esc(x.name)+'</span><div class="bar"><span style="width:'+Math.max(0,Math.min(100,x.avg))+'%"></span></div><strong>'+x.avg.toFixed(1)+'</strong></div>').join(''):'<p class="sub">Sin evidencia suficiente para comparar resultados de evaluación.</p>';
+ $('dirNota').textContent='Sesiones según carrera declarada, módulo y fechas disponibles. Evaluaciones de reforzamiento sin carrera verificada: solo se muestran en la vista general. Los puntajes no acreditan resultados de aprendizaje ni permiten inferir riesgo individual.';
 }
 
 async function loadAllData(){
@@ -753,6 +770,8 @@ async function loadAllData(){
   renderUnits();renderIntegrated();renderViz();renderDireccion();
 }
 
+['dirCar','dirMod','dirDesde','dirHasta'].forEach(id=>$(id).addEventListener('change',renderDireccion));
+$('dirReset').onclick=()=>{['dirCar','dirMod','dirDesde','dirHasta'].forEach(id=>$(id).value='');renderDireccion()};
 $("loginBtn").onclick=login;$("refreshBtn").onclick=loadAllData;$("csvBtn").onclick=downloadCSV;$("logoutBtn").onclick=logout;
 
 ["accDesde","accHasta","accPerfil","accModulo"].forEach(id=>$(id).addEventListener("change",renderAccessDashboard));
