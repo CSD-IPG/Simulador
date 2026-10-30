@@ -216,7 +216,7 @@ function nav(){document.getElementById('nav').innerHTML=menu.map(([id,n])=>`<but
 `;document.querySelectorAll('#nav button[data-view]').forEach(b=>b.onclick=()=>show(b.dataset.view));}
 function show(id){if(id==='challenges')renderChallenges();document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===id));if(id==='report')renderReport()}
 function prod(sku){return state.products.find(p=>p.sku===sku)}
-function log(type,msg,points=0,error=false){state.logs.unshift({time:new Date().toISOString(),display:new Date().toLocaleString('es-CL'),elapsed:elapsedSeconds(),type,msg,points,error});state.logs=state.logs.slice(0,200)}
+function log(type,msg,points=0,error=false){window.csdRecordProcess?.(type,Number(points)||0);state.logs.unshift({time:new Date().toISOString(),display:new Date().toLocaleString('es-CL'),elapsed:elapsedSeconds(),type,msg,points,error});state.logs=state.logs.slice(0,200)}
 function statusBadge(s){let c=s==='Despachado'||s==='Recibida'||s==='Empacado'?'ok':s==='Error'?'bad':'';return `<span class="badge ${c}">${esc(s)}</span>`}
 function updateHeader(){document.getElementById('headerMeta').innerHTML=`<b>${esc(state.meta.name)}</b><br>${esc(state.meta.section)} · ${esc(state.meta.activity)} · <span id="liveTimer">${formatDuration(elapsedSeconds())}</span>`}
 function completion(){const recv=state.purchaseOrders.filter(x=>x.status==='Recibida').length;const ship=state.orders.filter(x=>x.status==='Despachado').length;const total=state.purchaseOrders.length+state.orders.length;return Math.round((recv+ship)/total*100)}
@@ -496,5 +496,7 @@ btn.addEventListener('click',enter,true);
 emailInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!window.__csdIdentOk){e.preventDefault();e.stopImmediatePropagation();btn.click()}},true);
 })();
 </script>
+<script>window.CSD_SUPABASE_PUBLISHABLE_KEY=IPG_TRACE_ANON;</script>
+<script defer src="../csd-impulsa/telemetria-proceso.js" data-module="wms"></script>
 </body>
 </html>
