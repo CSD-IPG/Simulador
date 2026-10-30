@@ -39,8 +39,10 @@
   const sidKey='csd_perfil_sid_'+module;
   let sid=sessionStorage.getItem(sidKey);
   if(!sid){sid=crypto.randomUUID?crypto.randomUUID():'csd-'+Date.now()+'-'+Math.random().toString(36).slice(2);sessionStorage.setItem(sidKey,sid)}
-  if(typeof IPG_AUTH_URL==='undefined'||typeof IPG_AUTH_ANON==='undefined')return;
-  try{const r=await fetch(IPG_AUTH_URL+'/rest/v1/rpc/registrar_perfil_participacion_csd',{method:'POST',keepalive:true,headers:{'Content-Type':'application/json',apikey:IPG_AUTH_ANON,Authorization:'Bearer '+IPG_AUTH_ANON},body:JSON.stringify({p_email:email,p_modulo:module,p_session_id:sid,p_perfil:perfil})});if(!r.ok)console.warn('No se registró perfil CSD:',r.status)}catch(e){console.warn('Sin conexión de perfil CSD')}
+  const url=typeof IPG_AUTH_URL!=='undefined'?IPG_AUTH_URL:typeof SUPABASE_URL!=='undefined'?SUPABASE_URL:null;
+  const key=typeof IPG_AUTH_ANON!=='undefined'?IPG_AUTH_ANON:typeof SUPABASE_ANON_KEY!=='undefined'?SUPABASE_ANON_KEY:typeof ANON_KEY!=='undefined'?ANON_KEY:null;
+  if(!url||!key)return;
+  try{const r=await fetch(url+'/rest/v1/rpc/registrar_perfil_participacion_csd',{method:'POST',keepalive:true,headers:{'Content-Type':'application/json',apikey:key,Authorization:'Bearer '+key},body:JSON.stringify({p_email:email,p_modulo:module,p_session_id:sid,p_perfil:perfil})});if(!r.ok)console.warn('No se registró perfil CSD:',r.status)}catch(e){console.warn('Sin conexión de perfil CSD')}
  }
  document.addEventListener('DOMContentLoaded',()=>{ensureProfile();apply();document.addEventListener('change',store,true);document.addEventListener('click',e=>{if(e.target?.closest?.('#ipgAuthLogin'))registrarPerfil()},true);document.addEventListener('input',e=>{if(e.target&&e.target.id==='ipgAuthEmail')store()},true)});
 })();
