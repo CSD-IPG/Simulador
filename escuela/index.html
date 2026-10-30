@@ -126,7 +126,7 @@
 <div class="kpi"><b id="trUnidades">—</b><small>Unidades documentadas</small></div>
 <div class="kpi"><b id="trVerificados">—</b><small>RA oficiales cotejados</small></div>
 </div>
-<div class="tablewrap"><table style="min-width:780px"><thead><tr><th>Recurso</th><th>Unidad</th><th>Descripción de aprendizaje encontrada</th><th>Validación curricular</th><th>Evidencia por unidad</th></tr></thead><tbody id="trBody"><tr><td colspan="4">Cargando matriz…</td></tr></tbody></table></div>
+<div class="tablewrap"><table style="min-width:780px"><thead><tr><th>Recurso</th><th>Unidad</th><th>Descripción de aprendizaje encontrada</th><th>Validación curricular</th><th>Evidencia por unidad</th><th>Orientación de seguimiento</th></tr></thead><tbody id="trBody"><tr><td colspan="6">Cargando matriz…</td></tr></tbody></table></div>
 <p class="sub" id="trStatus" role="status">Esperando matriz curricular.</p>
 </div>
 <p class="notice" id="dirNota" role="status">Los valores dependerán de las evidencias disponibles y del período consultado. No se identifican estudiantes en este resumen.</p>
@@ -812,42 +812,51 @@ async function loadTrace(){
 }
 function traceResourceKey(id){
  const aliases={
- 'nivelacion-matematica':['nivelacion matematica','nivelación matemática'],
- 'matematica-financiera':['matematica financiera','matemática financiera'],
+ 'nivelacion-matematica':['nivelacion matematica'],
+ 'matematica-financiera':['matematica financiera'],
  'contabilidad-costos':['contabilidad de costos'],
- 'bases-proyectos':['bases para proyectos','bases para la formulacion y evaluacion de proyectos','bases para la formulación y evaluación de proyectos'],
- 'politicas-publicas':['politicas publicas','políticas públicas'],
+ 'bases-proyectos':['bases para proyectos','bases para la formulacion y evaluacion de proyectos'],
+ 'politicas-publicas':['politicas publicas'],
  'estado-financiero':['estado financiero','estados financieros'],
- 'gestion-tributaria':['gestion tributaria','gestión tributaria'],
- 'segmentacion':['segmentacion','segmentación'],
+ 'gestion-tributaria':['gestion tributaria'],
+ 'segmentacion':['segmentacion'],
  'plan-negocios':['plan de negocios','plan negocios']
  };
- const clean=s=>String(s||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
- return (aliases[id]||[]).map(clean);
+ return (aliases[id]||[]).map(traceClean);
 }
+function traceClean(s){return String(s||'').normalize('NFD').replace(/\\p{M}/gu,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim()}
 function renderTrace(){
  if(!TRACE_CATALOG)return;
  const car=$('trCarrera').value,mod=$('trModulo').value;
  const resources=TRACE_CATALOG.recursos.filter(r=>(!car||(r.carreras||[]).includes(car)||(r.carreras||[]).includes('Transversal'))&&(!mod||r.id===mod));
  const ids=new Set(resources.map(r=>r.id)),units=TRACE_CATALOG.unidades.filter(u=>ids.has(u.id));
  const names=new Map(resources.map(r=>[r.id,r.nombre]));
- // La carrera procede de selección de catálogo, no de una matrícula verificada.
- // Por tanto, no se le asignan las evaluaciones declarativas disponibles.
- // No reutilizar datos entre sesiones después de cerrar sesión.
  const evidence=car?[]:(TOKEN?unitEvidenceRows():[]);
- const clean=s=>String(s||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
  $('trRecursos').textContent=resources.length;
  $('trUnidades').textContent=units.length;
  $('trVerificados').textContent=units.filter(u=>u.validado===true).length;
  $('trBody').innerHTML=units.length?units.map(u=>{
   const aliases=traceResourceKey(u.id);
-  const matching=evidence.filter(e=>e.unit===Number(u.unidad)&&aliases.includes(clean(e.mod)));
+  const matching=evidence.filter(e=>e.unit===Number(u.unidad)&&aliases.includes(traceClean(e.mod)));
   const evaluated=matching.filter(e=>e.test&&e.score!==null&&Number.isFinite(Number(e.score)));
   const enabled=matching.filter(e=>e.enabledExplicit).length;
-  const summary=car?'No atribuible a carrera':!aliases.length?'Sin equivalencia de módulo confirmada':matching.length<5?'Evidencia insuficiente (<5 registros)':evaluated.length?'Participantes declarados con actividad: '+matching.length+' · Con test puntuado: '+evaluated.length+' · Habilitaciones explícitas: '+enabled:'Registros por unidad: '+matching.length+' · Sin test puntuado';
-  return '<tr><td>'+esc(names.get(u.id)||u.id)+'</td><td>'+esc(u.titulo||('Unidad '+u.unidad))+'</td><td>'+esc(u.resultado||'Sin texto')+'</td><td>'+(u.validado?'RA cotejado':'Pendiente cotejo con programa')+'</td><td>'+esc(summary)+'</td></tr>';
- }).join(''):'<tr><td colspan="5">Sin unidades documentadas para estos filtros. El recurso puede seguir siendo pertinente, pero requiere desglose.</td></tr>';
- $('trStatus').textContent=car?'La selección de carrera muestra cobertura curricular propuesta. Los resultados no se atribuyen a una carrera sin matrícula verificada.':'El conteo consolida registros por correo declarado, módulo y unidad; no equivale a estudiantes únicos verificados. Resultados no homologables a calificaciones oficiales.';
+  const summary=car?'No atribuible a carrera':!aliases.length?'Sin equivalencia de módulo confirmada':matching.length<5?'Evidencia insuficiente (<5 identificadores declarados)':evaluated.length?'Identificadores con actividad: '+matching.length+' · Con test puntuado: '+evaluated.length+' · Habilitaciones explícitas: '+enabled:'Identificadores con actividad: '+matching.length+' · Sin test puntuado';
+  let priority='Sin evidencia suficiente para orientar una intervención';
+  if(car)priority='Requiere vínculo de matrícula verificada';
+  else if(!aliases.length)priority='Pendiente equivalencia de nombre de módulo';
+  else if(matching.length>=5){
+   if(evaluated.length<5)priority='Revisar cobertura de evaluación: menos de 5 registros con test';
+   else{
+    const valid=evaluated.map(x=>Number(x.score)).filter(v=>v>=0&&v<=100);
+    if(valid.length>=5){
+      const mean=valid.reduce((a,b)=>a+b,0)/valid.length;
+      priority='Puntaje observado: '+mean.toFixed(1)+'/100 (mejor intento registrado) · '+(mean<70?'Revisar actividades y criterios de apoyo':'Seguimiento periódico');
+    }else priority='Revisar escala de puntajes antes de comparar';
+   }
+  }
+  return '<tr><td>'+esc(names.get(u.id)||u.id)+'</td><td>'+esc(u.titulo||('Unidad '+u.unidad))+'</td><td>'+esc(u.resultado||'Sin texto')+'</td><td>'+(u.validado?'RA cotejado':'Pendiente cotejo con programa')+'</td><td>'+esc(summary)+'</td><td>'+esc(priority)+'</td></tr>';
+ }).join(''):'<tr><td colspan="6">Sin unidades documentadas para estos filtros. El recurso puede seguir siendo pertinente, pero requiere desglose.</td></tr>';
+ $('trStatus').textContent=car?'Cobertura curricular propuesta por carrera; sin atribución de evaluaciones hasta validar matrícula.':'Puntajes descriptivos de mejor intento, solo si hay al menos cinco identificadores declarados con test en escala 0–100. El umbral de revisión 70 es orientativo, no acreditación del RA ni diagnóstico individual.';
 }
 $('trCarrera').addEventListener('change',renderTrace);
 $('trModulo').addEventListener('change',renderTrace);
