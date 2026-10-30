@@ -1,5 +1,5 @@
 {
-  "version": "0.3.0",
+  "version": "0.4.0",
   "fecha": "2026-10-30",
   "estado": "auditoria_curricular_en_desarrollo",
   "criterio": "RA oficiales solo después de cotejo textual con programa original; se conserva redacción del módulo como evidencia de diseño, no como transcripción del RA oficial.",
@@ -555,5 +555,124 @@
       "ra_oficial_verificado": false,
       "estado": "texto_modulo_verificado_pendiente_cotejo_programa"
     }
-  ]
+  ],
+  "auditoria_unidades_adicionales": [
+    {
+      "modulo_id": "estado-financiero",
+      "unidades": [
+        {
+          "unidad": 1,
+          "titulo": "Ratios financieros",
+          "descripcion_de_modulo": "Liquidez, rentabilidad, endeudamiento y eficiencia",
+          "ra_oficial_verificado": false,
+          "fuente_codigo": "estado-financiero/index.html",
+          "estado": "unidad_documentada_pendiente_cotejo_RA_oficial"
+        },
+        {
+          "unidad": 2,
+          "titulo": "Estados financieros y aplicación de ratios",
+          "descripcion_de_modulo": "Estado de situación, resultados y análisis DuPont",
+          "ra_oficial_verificado": false,
+          "fuente_codigo": "estado-financiero/index.html",
+          "estado": "unidad_documentada_pendiente_cotejo_RA_oficial"
+        },
+        {
+          "unidad": 3,
+          "titulo": "Diseño de informes de análisis financiero",
+          "descripcion_de_modulo": "Metodología, evidencias, hallazgos y recomendaciones",
+          "ra_oficial_verificado": false,
+          "fuente_codigo": "estado-financiero/index.html",
+          "estado": "unidad_documentada_pendiente_cotejo_RA_oficial"
+        }
+      ]
+    },
+    {
+      "modulo_id": "plan-negocios",
+      "unidades": [
+        {
+          "unidad": 1,
+          "titulo": "Definición del negocio",
+          "descripcion_de_modulo": "16 horas del programa. Estudio de mercado, identificación de necesidades, rol del cliente y propuesta de valor. Resultado: reconoce la importancia de definir el negocio antes de diseñar el plan comercial.",
+          "ra_oficial_verificado": false,
+          "fuente_codigo": "plan-negocios/index.html",
+          "estado": "unidad_documentada_pendiente_cotejo_RA_oficial"
+        },
+        {
+          "unidad": 2,
+          "titulo": "Modelo de negocio",
+          "descripcion_de_modulo": "20 horas del programa. Business Model Canvas, emprendimiento, innovación, público objetivo, viabilidad comercial y producto mínimo viable. Resultado: desarrolla un modelo de negocio coherente y evaluable.",
+          "ra_oficial_verificado": false,
+          "fuente_codigo": "plan-negocios/index.html",
+          "estado": "unidad_documentada_pendiente_cotejo_RA_oficial"
+        },
+        {
+          "unidad": 3,
+          "titulo": "Plan de negocio",
+          "descripcion_de_modulo": "18 horas del programa. Integración de definición del negocio, modelo, estrategia comercial, factibilidad y presentación ante audiencia simulada. Resultado: elabora y defiende un plan de negocio sustentado.",
+          "ra_oficial_verificado": false,
+          "fuente_codigo": "plan-negocios/index.html",
+          "estado": "unidad_documentada_pendiente_cotejo_RA_oficial"
+        }
+      ]
+    },
+    {
+      "modulo_id": "gestion-tributaria",
+      "unidades": [
+        {
+          "unidad": 1,
+          "titulo": "Fundamentos de la Tributación y Regímenes de Renta",
+          "descripcion_de_modulo": "Sistema tributario chileno, categorías de renta, regímenes tributarios, renta líquida imponible, créditos y exenciones. Resultado: describe fundamentos y regímenes considerando su impacto organizacional.",
+          "ra_oficial_verificado": false,
+          "fuente_codigo": "gestion-tributaria/index.html",
+          "estado": "unidad_documentada_pendiente_cotejo_RA_oficial"
+        },
+        {
+          "unidad": 2,
+          "titulo": "Aplicación de Registros Tributarios y Créditos Fiscales",
+          "descripcion_de_modulo": "Registros históricos FUT, FUNT, FUF y FUR; transición a registros actuales; retiros, créditos, inversión extranjera e impuestos diferidos. Resultado: aplica conceptos de renta en registros y créditos.",
+          "ra_oficial_verificado": false,
+          "fuente_codigo": "gestion-tributaria/index.html",
+          "estado": "unidad_documentada_pendiente_cotejo_RA_oficial"
+        },
+        {
+          "unidad": 3,
+          "titulo": "Planificación Tributaria y Cumplimiento Normativo",
+          "descripcion_de_modulo": "Planificación tributaria lícita, riesgos, normativa anti-elusión, inversión extranjera, auditoría y fiscalización del SII. Resultado: evalúa planificación y cumplimiento con fundamento normativo.",
+          "ra_oficial_verificado": false,
+          "fuente_codigo": "gestion-tributaria/index.html",
+          "estado": "unidad_documentada_pendiente_cotejo_RA_oficial"
+        }
+      ]
+    },
+    {
+      "modulo_id": "segmentacion",
+      "unidades": [
+        {
+          "unidad": 1,
+          "titulo": "La segmentación",
+          "descripcion_de_modulo": "16 horas. Segmentación de mercados; variables demográficas, geográficas, psicográficas y conductuales; etapas y objetivos medibles. Resultado: identifica etapas de segmentación para un plan de marketing.",
+          "ra_oficial_verificado": false,
+          "fuente_codigo": "segmentacion/index.html",
+          "estado": "unidad_documentada_pendiente_cotejo_RA_oficial"
+        },
+        {
+          "unidad": 2,
+          "titulo": "Enfoques de la segmentación de mercado",
+          "descripcion_de_modulo": "20 horas. Marketing masivo, por segmentos, de nichos y personalizado; estrategia, plataformas digitales y segmentación publicitaria. Resultado: distingue enfoques y justifica su selección.",
+          "ra_oficial_verificado": false,
+          "fuente_codigo": "segmentacion/index.html",
+          "estado": "unidad_documentada_pendiente_cotejo_RA_oficial"
+        },
+        {
+          "unidad": 3,
+          "titulo": "Diseño de un plan de segmentación",
+          "descripcion_de_modulo": "18 horas. Instrumentos, recolección de información, análisis de segmentos, perfiles y ventajas competitivas. Resultado: elabora un plan de segmentación aplicado.",
+          "ra_oficial_verificado": false,
+          "fuente_codigo": "segmentacion/index.html",
+          "estado": "unidad_documentada_pendiente_cotejo_RA_oficial"
+        }
+      ]
+    }
+  ],
+  "observacion": "Los cuatro módulos utilizan estructura U con tres unidades, casos guiados y tests. Las descripciones son textos del código; no equivalen aún a transcripción certificada del programa."
 }
