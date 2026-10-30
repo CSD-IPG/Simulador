@@ -32,5 +32,15 @@
   wrap.append(label,select);container.appendChild(wrap);
   select.addEventListener('change',()=>{const old=read(),email=findValue('email');if(!validEmail(email))return;sessionStorage.setItem(KEY,JSON.stringify({...old,email:email.toLowerCase(),perfil:select.value}))});
  }
- document.addEventListener('DOMContentLoaded',()=>{ensureProfile();apply();document.addEventListener('change',store,true);document.addEventListener('input',e=>{if(e.target&&e.target.id==='ipgAuthEmail')store()},true)});
+ async function registrarPerfil(){
+  const email=findValue('email').toLowerCase(),perfil=findValue('perfil');
+  if(!validEmail(email)||!['estudiante','docente','colaborador','equipo_academico'].includes(perfil))return;
+  const module=location.pathname.split('/').filter(Boolean).slice(-1)[0]||'recurso';
+  const sidKey='csd_perfil_sid_'+module;
+  let sid=sessionStorage.getItem(sidKey);
+  if(!sid){sid=crypto.randomUUID?crypto.randomUUID():'csd-'+Date.now()+'-'+Math.random().toString(36).slice(2);sessionStorage.setItem(sidKey,sid)}
+  if(typeof IPG_AUTH_URL==='undefined'||typeof IPG_AUTH_ANON==='undefined')return;
+  try{const r=await fetch(IPG_AUTH_URL+'/rest/v1/rpc/registrar_perfil_participacion_csd',{method:'POST',keepalive:true,headers:{'Content-Type':'application/json',apikey:IPG_AUTH_ANON,Authorization:'Bearer '+IPG_AUTH_ANON},body:JSON.stringify({p_email:email,p_modulo:module,p_session_id:sid,p_perfil:perfil})});if(!r.ok)console.warn('No se registró perfil CSD:',r.status)}catch(e){console.warn('Sin conexión de perfil CSD')}
+ }
+ document.addEventListener('DOMContentLoaded',()=>{ensureProfile();apply();document.addEventListener('change',store,true);document.addEventListener('click',e=>{if(e.target?.closest?.('#ipgAuthLogin'))registrarPerfil()},true);document.addEventListener('input',e=>{if(e.target&&e.target.id==='ipgAuthEmail')store()},true)});
 })();
