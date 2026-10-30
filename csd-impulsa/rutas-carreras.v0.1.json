@@ -1,0 +1,232 @@
+{
+  "version": "0.1.0",
+  "fecha": "2026-10-30",
+  "estado": "borrador_pendiente_validacion_curricular",
+  "fuentes": [
+    "Supabase: public.catalogo_carreras_csd",
+    "GitHub: catalogo-recursos.json"
+  ],
+  "enfoque": "Resultados de aprendizaje, conocimientos, habilidades y actitudes",
+  "nota": "No modificar planes de estudio ni inferir avance individual. Las recomendaciones son tentativas; validar asignaturas, RA y etapa de estudios.",
+  "ruta_nivelacion": {
+    "publico": "Primer ciclo y estudiantes que requieran apoyo",
+    "recursos_existentes": [
+      "nivelacion-matematica"
+    ],
+    "desarrollos_pendientes": [
+      "diagnostico_inicial",
+      "habilidades_digitales",
+      "comunicacion_academica"
+    ]
+  },
+  "recursos_transversales": [
+    "nivelacion-matematica",
+    "repositorio",
+    "formacion-humana",
+    "convivencia-buen-trato"
+  ],
+  "carreras": [
+    {
+      "codigo": "EGNM-01",
+      "nombre": "Administración Pública",
+      "recursos_sugeridos": [
+        "politicas-publicas"
+      ],
+      "validacion": "pendiente",
+      "nota": "Afinidad disciplinar preliminar"
+    },
+    {
+      "codigo": "EGNM-02",
+      "nombre": "Contador Auditor",
+      "recursos_sugeridos": [
+        "fundamentos-contables",
+        "estado-financiero",
+        "gestion-tributaria"
+      ],
+      "validacion": "pendiente",
+      "nota": "Afinidad disciplinar preliminar"
+    },
+    {
+      "codigo": "EGNM-03",
+      "nombre": "Ingeniería en Administración de Empresas",
+      "recursos_sugeridos": [
+        "bases-proyectos",
+        "finanzas"
+      ],
+      "validacion": "pendiente",
+      "nota": "Afinidad disciplinar preliminar"
+    },
+    {
+      "codigo": "EGNM-04",
+      "nombre": "Ingeniería en Gestión Logística Portuaria, Plan de Continuidad",
+      "recursos_sugeridos": [
+        "portsim",
+        "wms"
+      ],
+      "validacion": "pendiente",
+      "nota": "Afinidad disciplinar preliminar"
+    },
+    {
+      "codigo": "EGNM-05",
+      "nombre": "Ingeniería en Gestión Logística Profesional",
+      "recursos_sugeridos": [
+        "wms"
+      ],
+      "validacion": "pendiente",
+      "nota": "Afinidad disciplinar preliminar"
+    },
+    {
+      "codigo": "EGNM-06",
+      "nombre": "Ingeniería en Marketing Digital",
+      "recursos_sugeridos": [
+        "marketing",
+        "segmentacion",
+        "plan-negocios"
+      ],
+      "validacion": "pendiente",
+      "nota": "Afinidad disciplinar preliminar"
+    },
+    {
+      "codigo": "EGNM-07",
+      "nombre": "TNS en Administración de Empresas",
+      "recursos_sugeridos": [
+        "bases-proyectos",
+        "finanzas"
+      ],
+      "validacion": "pendiente",
+      "nota": "Afinidad disciplinar preliminar"
+    },
+    {
+      "codigo": "EGNM-08",
+      "nombre": "TNS en Administración de Recursos Humanos",
+      "recursos_sugeridos": [
+        "rrhh"
+      ],
+      "validacion": "pendiente",
+      "nota": "Afinidad disciplinar preliminar"
+    },
+    {
+      "codigo": "EGNM-09",
+      "nombre": "TNS en Administración Pública",
+      "recursos_sugeridos": [
+        "politicas-publicas"
+      ],
+      "validacion": "pendiente",
+      "nota": "Afinidad disciplinar preliminar"
+    },
+    {
+      "codigo": "EGNM-10",
+      "nombre": "TNS en Comercio Exterior, Mención Comercio Electrónico",
+      "recursos_sugeridos": [
+        "comex",
+        "wms"
+      ],
+      "validacion": "pendiente",
+      "nota": "Afinidad disciplinar preliminar"
+    },
+    {
+      "codigo": "EGNM-11",
+      "nombre": "TNS en Contabilidad General",
+      "recursos_sugeridos": [
+        "fundamentos-contables",
+        "estado-financiero"
+      ],
+      "validacion": "pendiente",
+      "nota": "Afinidad disciplinar preliminar"
+    },
+    {
+      "codigo": "EGNM-12",
+      "nombre": "TNS en Gestión Comercial y Ventas",
+      "recursos_sugeridos": [
+        "marketing",
+        "segmentacion"
+      ],
+      "validacion": "pendiente",
+      "nota": "Afinidad disciplinar preliminar"
+    },
+    {
+      "codigo": "EGNM-13",
+      "nombre": "TNS en Gestión Logística",
+      "recursos_sugeridos": [
+        "wms"
+      ],
+      "validacion": "pendiente",
+      "nota": "Afinidad disciplinar preliminar"
+    },
+    {
+      "codigo": "EGNM-14",
+      "nombre": "TNS en Maquinaria Naval",
+      "recursos_sugeridos": [],
+      "validacion": "pendiente",
+      "nota": "Sin recurso disciplinar específico validado"
+    },
+    {
+      "codigo": "EGNM-15",
+      "nombre": "TNS en Marketing Digital",
+      "recursos_sugeridos": [
+        "marketing",
+        "segmentacion",
+        "plan-negocios"
+      ],
+      "validacion": "pendiente",
+      "nota": "Afinidad disciplinar preliminar"
+    },
+    {
+      "codigo": "EGNM-16",
+      "nombre": "TNS en Operaciones Portuarias",
+      "recursos_sugeridos": [
+        "portsim"
+      ],
+      "validacion": "pendiente",
+      "nota": "Afinidad disciplinar preliminar"
+    },
+    {
+      "codigo": "EGNM-17",
+      "nombre": "TNS en Transporte Marítimo",
+      "recursos_sugeridos": [
+        "portsim"
+      ],
+      "validacion": "pendiente",
+      "nota": "Afinidad disciplinar preliminar"
+    },
+    {
+      "codigo": "EGNM-18",
+      "nombre": "Ingeniería en Administración de Empresas, Plan de Continuidad",
+      "recursos_sugeridos": [
+        "bases-proyectos",
+        "finanzas"
+      ],
+      "validacion": "pendiente",
+      "nota": "Afinidad disciplinar preliminar"
+    },
+    {
+      "codigo": "EGNM-19",
+      "nombre": "Ingeniería en Marketing Digital, Plan de Continuidad",
+      "recursos_sugeridos": [
+        "marketing",
+        "segmentacion"
+      ],
+      "validacion": "pendiente",
+      "nota": "Afinidad disciplinar preliminar"
+    },
+    {
+      "codigo": "EGNM-20",
+      "nombre": "Contador Auditor, Plan de Continuidad",
+      "recursos_sugeridos": [
+        "fundamentos-contables",
+        "gestion-tributaria"
+      ],
+      "validacion": "pendiente",
+      "nota": "Afinidad disciplinar preliminar"
+    },
+    {
+      "codigo": "EGNM-21",
+      "nombre": "Administración Pública, Plan de Continuidad",
+      "recursos_sugeridos": [
+        "politicas-publicas"
+      ],
+      "validacion": "pendiente",
+      "nota": "Afinidad disciplinar preliminar"
+    }
+  ]
+}
