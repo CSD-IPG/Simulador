@@ -1,0 +1,318 @@
+{
+  "version": 1,
+  "updated": "2026-10-30",
+  "resources": [
+    {
+      "name": "NIVELACIÓN MATEMÁTICA",
+      "url": "nivelacion-matematica/",
+      "description": "Refuerzo previo a MAT1001ONL con 9 guías paso a paso, test de salida por unidad y acceso institucional por correo.",
+      "icon": "➗",
+      "id": "nivelacion-matematica",
+      "type": "refuerzo",
+      "areas": [
+        "Transversal"
+      ],
+      "careers": [
+        "Transversal"
+      ],
+      "featured": false
+    },
+    {
+      "name": "IPG WMS",
+      "url": "wms/",
+      "description": "Operación de almacenamiento, inventario, ubicaciones, picking y control de procesos logísticos.",
+      "icon": "📦",
+      "id": "wms",
+      "type": "simulador",
+      "areas": [
+        "Logística y Comercio Exterior"
+      ],
+      "careers": [
+        "TNS en Gestión Logística",
+        "Ingeniería en Gestión Logística Profesional"
+      ],
+      "featured": true
+    },
+    {
+      "name": "IPG COMEX",
+      "url": "comex/",
+      "description": "Simulación aplicada de operaciones de comercio exterior, documentación y toma de decisiones.",
+      "icon": "🌎",
+      "id": "comex",
+      "type": "simulador",
+      "areas": [
+        "Logística y Comercio Exterior"
+      ],
+      "careers": [
+        "TNS en Comercio Exterior, Mención Comercio Electrónico"
+      ],
+      "featured": false
+    },
+    {
+      "name": "IPG PORTSIM",
+      "url": "portsim/",
+      "description": "Procesos y decisiones vinculadas a operaciones portuarias y coordinación logística.",
+      "icon": "⚓",
+      "id": "portsim",
+      "type": "simulador",
+      "areas": [
+        "Marítima y Portuaria",
+        "Logística y Comercio Exterior"
+      ],
+      "careers": [
+        "TNS en Operaciones Portuarias",
+        "Ingeniería en Gestión Logística Portuaria, Plan de Continuidad"
+      ],
+      "featured": false
+    },
+    {
+      "name": "IPG FIN-SIM",
+      "url": "finanzas/",
+      "description": "Aplicación de decisiones financieras, indicadores y análisis de resultados empresariales.",
+      "icon": "💰",
+      "id": "finanzas",
+      "type": "simulador",
+      "areas": [
+        "Administración y Negocios",
+        "Contabilidad, Auditoría y Finanzas"
+      ],
+      "careers": [
+        "Transversal"
+      ],
+      "featured": false
+    },
+    {
+      "name": "IPG PEOPLE",
+      "url": "rrhh/",
+      "description": "Simulación de procesos de gestión de personas y decisiones asociadas al área de Recursos Humanos.",
+      "icon": "👥",
+      "id": "rrhh",
+      "type": "simulador",
+      "areas": [
+        "Gestión de Personas"
+      ],
+      "careers": [
+        "TNS en Administración de Recursos Humanos"
+      ],
+      "featured": false
+    },
+    {
+      "name": "IPG MARKETING",
+      "url": "marketing/",
+      "description": "CRM, leads, funnel, campañas, CAC/CPA, conversión, ROAS y analítica digital.",
+      "icon": "📣",
+      "id": "marketing",
+      "type": "simulador",
+      "areas": [
+        "Marketing y Gestión Comercial"
+      ],
+      "careers": [
+        "TNS en Marketing Digital",
+        "Ingeniería en Marketing Digital"
+      ],
+      "featured": false
+    },
+    {
+      "name": "MATEMÁTICA FINANCIERA",
+      "url": "matematica-financiera/",
+      "description": "Guías por unidad, ejercicios paso a paso, test de salida y registro institucional en Supabase.",
+      "icon": "🧮",
+      "id": "matematica-financiera",
+      "type": "refuerzo",
+      "areas": [
+        "Contabilidad, Auditoría y Finanzas",
+        "Transversal"
+      ],
+      "careers": [
+        "Transversal"
+      ],
+      "featured": false
+    },
+    {
+      "name": "SEGMENTACIÓN",
+      "url": "segmentacion/",
+      "description": "Reforzamiento en 3 unidades con 12 casos guiados, segmentación digital y tests habilitantes. Para TNS en Marketing Digital e Ingeniería en Marketing Digital.",
+      "icon": "🎯",
+      "id": "segmentacion",
+      "type": "refuerzo",
+      "areas": [
+        "Marketing y Gestión Comercial"
+      ],
+      "careers": [
+        "TNS en Marketing Digital",
+        "Ingeniería en Marketing Digital"
+      ],
+      "featured": true
+    },
+    {
+      "name": "PLAN DE NEGOCIOS",
+      "url": "plan-negocios/",
+      "description": "Laboratorio práctico de 3 unidades, 12 casos guiados de emprendimiento digital y 3 tests habilitantes. Para TNS en Marketing Digital e Ingeniería en Marketing Digital.",
+      "icon": "🚀",
+      "id": "plan-negocios",
+      "type": "refuerzo",
+      "areas": [
+        "Marketing y Gestión Comercial",
+        "Administración y Negocios"
+      ],
+      "careers": [
+        "TNS en Marketing Digital",
+        "Ingeniería en Marketing Digital"
+      ],
+      "featured": true
+    },
+    {
+      "name": "GESTIÓN TRIBUTARIA",
+      "url": "gestion-tributaria/",
+      "description": "Reforzamiento de 3 unidades, 12 casos resueltos paso a paso y tests de salida habilitantes. Para Contador Auditor y Contador Auditor, Plan de Continuidad.",
+      "icon": "⚖️",
+      "id": "gestion-tributaria",
+      "type": "refuerzo",
+      "areas": [
+        "Contabilidad, Auditoría y Finanzas"
+      ],
+      "careers": [
+        "Contador Auditor",
+        "Contador Auditor, Plan de Continuidad"
+      ],
+      "featured": false
+    },
+    {
+      "name": "ESTADO FINANCIERO",
+      "url": "estado-financiero/",
+      "description": "Reforzamiento en tres unidades, doce casos resueltos y tres tests de salida habilitantes. Para Contador Auditor y TNS en Contabilidad General.",
+      "icon": "📈",
+      "id": "estado-financiero",
+      "type": "refuerzo",
+      "areas": [
+        "Contabilidad, Auditoría y Finanzas"
+      ],
+      "careers": [
+        "Contador Auditor",
+        "TNS en Contabilidad General"
+      ],
+      "featured": true
+    },
+    {
+      "name": "CONTABILIDAD DE COSTOS",
+      "url": "contabilidad-costos/",
+      "description": "9 guías aplicadas, desarrollo paso a paso, test de salida por unidad y contexto contable-tributario chileno.",
+      "icon": "🧾",
+      "id": "contabilidad-costos",
+      "type": "refuerzo",
+      "areas": [
+        "Contabilidad, Auditoría y Finanzas"
+      ],
+      "careers": [
+        "Transversal"
+      ],
+      "featured": false
+    },
+    {
+      "name": "IPG BASES PARA PROYECTOS",
+      "url": "bases-proyectos/",
+      "description": "9 casos aplicados, desarrollo guiado, test de salida por unidad y registro institucional.",
+      "icon": "📋",
+      "id": "bases-proyectos",
+      "type": "refuerzo",
+      "areas": [
+        "Administración y Negocios"
+      ],
+      "careers": [
+        "Transversal"
+      ],
+      "featured": false
+    },
+    {
+      "name": "IPG SIMULADOR INTEGRADO",
+      "url": "integrado/",
+      "description": "Marketing → COMEX → Puerto → WMS → Finanzas → Personas en una sola operación empresarial encadenada.",
+      "icon": "🔗",
+      "id": "integrado",
+      "type": "simulador",
+      "areas": [
+        "Transversal"
+      ],
+      "careers": [
+        "Transversal"
+      ],
+      "featured": false
+    },
+    {
+      "name": "REPOSITORIO ACADÉMICO",
+      "url": "repositorio/",
+      "description": "Guías de ejercicios, casos aplicados, ejemplos de evaluaciones, rúbricas, talleres, instrumentos ENT y recursos docentes de la Escuela.",
+      "icon": "📚",
+      "id": "repositorio",
+      "type": "repositorio",
+      "areas": [
+        "Transversal"
+      ],
+      "careers": [
+        "Transversal"
+      ],
+      "featured": false
+    },
+    {
+      "name": "ESCUELA DE GESTIÓN – FORMACIÓN HUMANA Y EMPLEABILIDAD",
+      "url": "formacion-humana/",
+      "description": "Fortalece tus valores personales y profesionales mediante lecturas, situaciones laborales, ejercicios interactivos y evaluaciones por unidad.",
+      "icon": "🧭",
+      "id": "formacion-humana",
+      "type": "refuerzo",
+      "areas": [
+        "Transversal"
+      ],
+      "careers": [
+        "Transversal"
+      ],
+      "featured": false
+    },
+    {
+      "name": "POLÍTICAS PÚBLICAS – REFORZAMIENTO",
+      "url": "politicas-publicas/",
+      "description": "Aprendizaje aplicado de políticas públicas en Chile: formulación, implementación, evaluación y mejora mediante guías, casos y test por unidad.",
+      "icon": "🏛️",
+      "id": "politicas-publicas",
+      "type": "refuerzo",
+      "areas": [
+        "Administración Pública"
+      ],
+      "careers": [
+        "Administración Pública",
+        "TNS en Administración Pública"
+      ],
+      "featured": false
+    },
+    {
+      "name": "CONVIVENCIA HUMANA, BIENESTAR EMOCIONAL Y CULTURA DEL BUEN TRATO",
+      "url": "convivencia-buen-trato/",
+      "description": "Fortalece el respeto, la empatía, el autocuidado y las relaciones saludables en la vida personal, laboral y comunitaria mediante casos y actividades interactivas.",
+      "icon": "🤝",
+      "id": "convivencia-buen-trato",
+      "type": "refuerzo",
+      "areas": [
+        "Transversal"
+      ],
+      "careers": [
+        "Transversal"
+      ],
+      "featured": false
+    },
+    {
+      "name": "FUNDAMENTOS CONTABLES Y FINANCIEROS – REFORZAMIENTO",
+      "url": "fundamentos-contables/",
+      "description": "Refuerza la ecuación contable, partida doble, registros, estados financieros y aplicaciones comerciales mediante ejercicios guiados y evaluaciones por unidad. Preparación para Contabilidad de Costos.",
+      "icon": "📒",
+      "id": "fundamentos-contables",
+      "type": "refuerzo",
+      "areas": [
+        "Contabilidad, Auditoría y Finanzas"
+      ],
+      "careers": [
+        "Transversal"
+      ],
+      "featured": false
+    }
+  ]
+}
