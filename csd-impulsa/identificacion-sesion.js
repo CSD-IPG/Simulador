@@ -7,6 +7,7 @@
  const get=id=>document.getElementById(id);
  const findValue=key=>{for(const id of fields[key]){const el=get(id);if(el&&el.value&&el.value.trim())return el.value.trim()}return ''};
  const store=()=>{const old=read(),email=findValue('email');if(!validEmail(email))return;const data={email:email.toLowerCase()};
+ if(old.email&&old.email!==data.email){sessionStorage.setItem(KEY,JSON.stringify(data));return}
  for(const key of ['perfil','nombre','carrera','seccion']){const value=findValue(key);if(value)data[key]=value.slice(0,160)}
  // RUT no se almacena ni se propaga entre recursos; se solicita según necesidad.
  sessionStorage.setItem(KEY,JSON.stringify(data));
