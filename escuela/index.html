@@ -127,7 +127,7 @@
 <div class="kpi"><b id="trVerificados">—</b><small>RA oficiales cotejados</small></div>
 </div>
 <div class="tablewrap"><table style="min-width:780px"><thead><tr><th>Recurso</th><th>Unidad</th><th>Descripción de aprendizaje encontrada</th><th>Validación curricular</th><th>Evidencia por unidad</th><th>Orientación de seguimiento</th></tr></thead><tbody id="trBody"><tr><td colspan="6">Cargando matriz…</td></tr></tbody></table></div>
-<p class="sub" id="trStatus" role="status">Esperando matriz curricular.</p>
+<p class="sub" id="trStatus" role="status">Esperando matriz curricular.</p><div class="repo-panel" style="margin-top:12px"><h3>Procesos y actividades de simulación</h3><p class="sub">Procesos identificados en el código de siete simuladores. Los puntajes y errores generales no se atribuyen automáticamente a cada etapa.</p><div class="tablewrap"><table><thead><tr><th>Simulador</th><th>Proceso observado</th><th>Vinculación con RA</th><th>Evidencia de desempeño</th></tr></thead><tbody id="trProcesos"><tr><td colspan="4">Cargando procesos…</td></tr></tbody></table></div><p id="trProcesosNota" class="sub"></p></div>
 </div>
 <p class="notice" id="dirNota" role="status">Los valores dependerán de las evidencias disponibles y del período consultado. No se identifican estudiantes en este resumen.</p>
 </section>
@@ -368,7 +368,7 @@ function downloadCSV(){
  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"text/csv;charset=utf-8"}));a.download="Reporte_Centro_Simulacion_IPG.csv";a.click();
 }
 function showDash(){$("loginView").classList.add("hidden");$("dashView").classList.remove("hidden")}
-function logout(){sessionStorage.removeItem("csd_token");TOKEN="";DATA=[];FILTERED=[];ACCESS_DATA=[];ACCESS_PART=[];REPO_REPORT=[];IDENTIFICACIONES=[];if($("idFilas"))$("idFilas").innerHTML="";if($("idEstado"))$("idEstado").textContent="Sin cargar";$("password").value="";$("email").value="";$("loginMsg").textContent="";TRACE_CATALOG=null;TRACE_CRITERIA=null;CSD_REF_ROWS=[];if($("trBody"))$("trBody").replaceChildren();$("dashView").classList.add("hidden");$("loginView").classList.remove("hidden")}
+function logout(){sessionStorage.removeItem("csd_token");TOKEN="";DATA=[];FILTERED=[];ACCESS_DATA=[];ACCESS_PART=[];REPO_REPORT=[];IDENTIFICACIONES=[];if($("idFilas"))$("idFilas").innerHTML="";if($("idEstado"))$("idEstado").textContent="Sin cargar";$("password").value="";$("email").value="";$("loginMsg").textContent="";TRACE_CATALOG=null;TRACE_CRITERIA=null;TRACE_PROCESSES=null;CSD_REF_ROWS=[];if($("trBody"))$("trBody").replaceChildren();$("dashView").classList.add("hidden");$("loginView").classList.remove("hidden")}
 
 
 function repoFilteredRows(){
@@ -798,6 +798,7 @@ function renderDireccion(){
 
 let TRACE_CATALOG=null;
 let TRACE_CRITERIA=null;
+let TRACE_PROCESSES=null;
 async function loadTrace(){
  try{
  const res=await fetch('../csd-impulsa/trazabilidad-publica.json',{cache:'no-store'});
@@ -806,6 +807,7 @@ async function loadTrace(){
  if(!Array.isArray(data.recursos)||!Array.isArray(data.unidades))throw Error('Matriz incompleta');
  TRACE_CATALOG=data;
  try{const cr=await fetch('../csd-impulsa/criterios-habilitacion.json',{cache:'no-store'});TRACE_CRITERIA=cr.ok?await cr.json():null}catch(_){TRACE_CRITERIA=null}
+ try{const pr=await fetch('../csd-impulsa/procesos-simuladores.json',{cache:'no-store'});TRACE_PROCESSES=pr.ok?await pr.json():null}catch(_){TRACE_PROCESSES=null}
  const cars=[...new Set(data.recursos.flatMap(r=>r.carreras||[]))].filter(x=>x!=='Transversal').sort((a,b)=>a.localeCompare(b,'es'));
  $('trCarrera').replaceChildren(new Option('Todas las carreras',''),...cars.map(x=>new Option(x,x)));
  $('trModulo').replaceChildren(new Option('Todos los recursos',''),...data.recursos.map(r=>new Option(r.nombre,r.id)));
@@ -865,6 +867,9 @@ function renderTrace(){
   $('trBody').innerHTML+=simWithoutUnit.map(r=>'<tr><td>'+esc(r.nombre)+'</td><td>Operación integrada</td><td>Simulación de procesos y decisiones; pendiente desglose curricular por actividad</td><td>Pendiente cotejo de RA</td><td>Registros de sesiones, avance, puntaje y errores en tablero operativo</td><td>Sin umbral comparable con test de unidad</td></tr>').join('');
  }
  if(!$('trBody').innerHTML)$('trBody').innerHTML='<tr><td colspan="6">Sin unidades ni simuladores documentados para estos filtros.</td></tr>';
+ const processes=(TRACE_PROCESSES?.simuladores||[]).filter(x=>ids.has(x.id));
+ $('trProcesos').innerHTML=processes.length?processes.flatMap(x=>x.actividades.map(a=>'<tr><td>'+esc(names.get(x.id)||x.id)+'</td><td>'+esc(a.nombre)+'</td><td>Pendiente cotejo con programa</td><td>Indicadores generales disponibles; evento individual aún no validado en base de datos</td></tr>')).join(''):'<tr><td colspan="4">Sin procesos de simulación para los recursos seleccionados.</td></tr>';
+ $('trProcesosNota').textContent='Inventario de procesos observados en código. No indica resultados por etapa ni evaluaciones oficiales.';
  $('trStatus').textContent=car?'Cobertura curricular propuesta por carrera; sin atribución de evaluaciones hasta validar matrícula.':'Puntajes descriptivos de mejor intento, solo si hay al menos cinco identificadores declarados con test en escala 0–100. Los criterios se obtienen del código del módulo y no acreditan el RA ni diagnostican individualmente.';
 }
 $('trCarrera').addEventListener('change',renderTrace);
