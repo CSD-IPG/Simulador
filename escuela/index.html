@@ -106,7 +106,7 @@
 <div class="kpi"><b id="dirEvaluaciones">—</b><small>Evaluaciones registradas</small></div>
 <div class="kpi"><b id="dirPromedio">—</b><small>Puntaje medio de evaluaciones (solo registros con puntaje)</small></div>
 </div>
-<div class="repo-panel" style="margin:12px 0"><h3>Participación por perfil declarado</h3><p class="sub">Fuente: perfil seleccionado en formularios de identificación, cuando existe. Sin identificación declarada o con perfiles contradictorios se muestra sin clasificar.</p><div id="dirPerfilResumen">Esperando datos de acceso…</div></div>
+<div class="repo-panel" style="margin:12px 0"><h3>Participación por perfil declarado</h3><p class="sub">Fuente: perfil seleccionado en formularios de identificación o participación, cuando existe. Sin identificación declarada o con perfiles contradictorios se muestra sin clasificar.</p><div id="dirPerfilResumen">Esperando datos de acceso…</div></div>
 <div class="repo-panels">
 <div class="repo-panel"><h3>Módulos más utilizados</h3><div id="dirTop">Esperando datos…</div></div>
 <div class="repo-panel"><h3>Áreas para revisar apoyo académico</h3><div id="dirApoyo">Esperando datos…</div></div>
@@ -314,6 +314,7 @@ const ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 let TOKEN="";
 let DATA=[],FILTERED=[],REPO_REPORT=[],ACCESS_DATA=[],ACCESS_PART=[];
 let IDENTIFICACIONES=[];
+let PERFILES_PARTICIPACION=[];
 const $=id=>document.getElementById(id);
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 function fmtSec(n){n=Number(n)||0;let h=Math.floor(n/3600),m=Math.floor((n%3600)/60);return h?`${h}h ${m}m`:`${m} min`}
@@ -754,11 +755,18 @@ document.querySelectorAll('[data-viz]').forEach(b=>b.onclick=()=>{VIZ_CATEGORY=b
 ['vizDesde','vizHasta','vizModulo','vizEmail'].forEach(id=>$(id).addEventListener(id==='vizEmail'?'input':'change',renderViz));
 
 // Resumen ejecutivo agregado. No publica datos personales ni infiere aprobación de una asignatura.
+async function loadPerfilesParticipacion(){
+ try{
+ const r=await fetch(SUPABASE_URL+'/rest/v1/rpc/reporte_perfiles_participacion_csd',{method:'POST',headers:{apikey:ANON_KEY,Authorization:'Bearer '+TOKEN,'Content-Type':'application/json'},body:'{}'});
+ if(!r.ok)throw Error('No fue posible recuperar perfiles de participación ('+r.status+')');
+ PERFILES_PARTICIPACION=await r.json();
+ }catch(e){console.warn(e);PERFILES_PARTICIPACION=[]}
+}
 function perfilesAccesoCsd(){
  const map=new Map();
  // La función registrar_acceso_csd infiere tipo_usuario del dominio; NO es un perfil declarado.
  // Solo reporte_identificaciones_csd expone un perfil seleccionado en formulario.
- (Array.isArray(IDENTIFICACIONES)?IDENTIFICACIONES:[]).forEach(r=>{
+ [...(Array.isArray(IDENTIFICACIONES)?IDENTIFICACIONES:[]),...(Array.isArray(PERFILES_PARTICIPACION)?PERFILES_PARTICIPACION:[])].forEach(r=>{
   const email=String(r.email||'').trim().toLowerCase(),perfil=String(r.perfil||'').trim().toLowerCase();
   const normalized=perfil==='equipo académico'?'equipo_academico':perfil;
   if(!email||!['estudiante','docente','colaborador','equipo_academico'].includes(normalized))return;
@@ -822,7 +830,7 @@ function renderDireccion(){
   const flag=g.total<5?'Muestra reducida':g.finished===0?'Revisar finalizaciones':'Seguimiento habitual';
   return '<tr><td>'+esc(g.carrera)+'</td><td>'+esc(g.modulo)+'</td><td>'+g.total+'</td><td>'+g.finished+'</td><td>'+g.scores.length+'</td><td>'+(avg===null?'No publicable (<5)':' '+avg.toFixed(1))+'</td><td>'+esc(flag)+'</td></tr>';
  }).join(''):'<tr><td colspan="7">No hay sesiones registradas para estos filtros.</td></tr>';
- $('dirNota').textContent='El filtro usa perfiles declarados en identificaciones_csd y relacionados por correo cuando hay una correspondencia inequívoca; no verifica identidad ni matrícula. Registros sin vínculo o con perfiles contradictorios permanecen sin clasificar. Los puntajes no acreditan resultados de aprendizaje.';
+ $('dirNota').textContent='El filtro usa perfiles declarados en identificaciones_csd y perfiles_participacion_csd, relacionados por correo cuando hay una correspondencia inequívoca; no verifica identidad ni matrícula. Registros sin vínculo o con perfiles contradictorios permanecen sin clasificar. Los puntajes no acreditan resultados de aprendizaje.';
 }
 
 let TRACE_CATALOG=null;
@@ -935,6 +943,7 @@ async function loadAllData(){
   await loadData();
   await loadAccessDashboard();
   await loadIdentificaciones();
+  await loadPerfilesParticipacion();
   await loadRepositorioDashboard();
   await loadTraceEvents();
   renderUnits();renderIntegrated();renderViz();renderDireccion();await loadTrace();await loadSecuredProcessSummary();
