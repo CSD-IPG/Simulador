@@ -869,7 +869,7 @@ function renderTrace(){
  }
  if(!$('trBody').innerHTML)$('trBody').innerHTML='<tr><td colspan="6">Sin unidades ni simuladores documentados para estos filtros.</td></tr>';
  const processes=(TRACE_PROCESSES?.simuladores||[]).filter(x=>ids.has(x.id));
- const cleanEvent=x=>String(x||'').normalize('NFD').replace(/\\p{M}/gu,'').toLowerCase().trim();
+ const cleanEvent=x=>String(x||'').normalize('NFD').replace(/\p{M}/gu,'').toLowerCase().trim();
  const eventHits=(process,event)=>{
   if(!event||!process)return 0;
   return TRACE_EVENTS.filter(r=>traceClean(r.simulador).includes(traceClean(process))&&cleanEvent(r.evento)===cleanEvent(event)).length;
