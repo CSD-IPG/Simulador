@@ -1,0 +1,426 @@
+{
+  "version": "0.1",
+  "estado": "procesos_observados_codigo_no_RA_oficiales",
+  "simuladores": [
+    {
+      "id": "wms",
+      "fuente": "wms/index.html",
+      "actividades": [
+        {
+          "id": "wms-p1",
+          "nombre": "Recepción",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "wms-p2",
+          "nombre": "Acta recepción",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "wms-p3",
+          "nombre": "Picking",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "wms-p4",
+          "nombre": "Packing",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "wms-p5",
+          "nombre": "Despacho",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "wms-p6",
+          "nombre": "Contingencia",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "wms-p7",
+          "nombre": "Cierre",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        }
+      ],
+      "indicadores_generales": [
+        "avance",
+        "puntaje",
+        "errores"
+      ],
+      "advertencia": "Los eventos pueden formar parte del estado local del simulador y no estar almacenados por actividad en Supabase."
+    },
+    {
+      "id": "comex",
+      "fuente": "comex/index.html",
+      "actividades": [
+        {
+          "id": "comex-p1",
+          "nombre": "Configuración de la operación",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "comex-p2",
+          "nombre": "Control documental",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "comex-p3",
+          "nombre": "Booking y embarque",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "comex-p4",
+          "nombre": "Costeo de importación",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "comex-p5",
+          "nombre": "Aduanas",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "comex-p6",
+          "nombre": "Contingencias",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        }
+      ],
+      "indicadores_generales": [
+        "avance",
+        "puntaje",
+        "errores"
+      ],
+      "advertencia": "Los eventos pueden formar parte del estado local del simulador y no estar almacenados por actividad en Supabase."
+    },
+    {
+      "id": "portsim",
+      "fuente": "portsim/index.html",
+      "actividades": [
+        {
+          "id": "portsim-p1",
+          "nombre": "GATE",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "portsim-p2",
+          "nombre": "YARD",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "portsim-p3",
+          "nombre": "VESSEL",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "portsim-p4",
+          "nombre": "RETIRO",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "portsim-p5",
+          "nombre": "CONTINGENCIA",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        }
+      ],
+      "indicadores_generales": [
+        "avance",
+        "puntaje",
+        "errores"
+      ],
+      "advertencia": "Los eventos pueden formar parte del estado local del simulador y no estar almacenados por actividad en Supabase."
+    },
+    {
+      "id": "finanzas",
+      "fuente": "finanzas/index.html",
+      "actividades": [
+        {
+          "id": "finanzas-p1",
+          "nombre": "PRESUPUESTO",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "finanzas-p2",
+          "nombre": "RESULTADOS",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "finanzas-p3",
+          "nombre": "CAJA",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "finanzas-p4",
+          "nombre": "FORECAST",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "finanzas-p5",
+          "nombre": "KPI",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "finanzas-p6",
+          "nombre": "CONTINGENCIA",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        }
+      ],
+      "indicadores_generales": [
+        "avance",
+        "puntaje",
+        "errores"
+      ],
+      "advertencia": "Los eventos pueden formar parte del estado local del simulador y no estar almacenados por actividad en Supabase."
+    },
+    {
+      "id": "rrhh",
+      "fuente": "rrhh/index.html",
+      "actividades": [
+        {
+          "id": "rrhh-p1",
+          "nombre": "FICHA",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "rrhh-p2",
+          "nombre": "ASISTENCIA",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "rrhh-p3",
+          "nombre": "REMUNERACIÓN",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "rrhh-p4",
+          "nombre": "DESEMPEÑO",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "rrhh-p5",
+          "nombre": "ANALYTICS",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "rrhh-p6",
+          "nombre": "CONTINGENCIA",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        }
+      ],
+      "indicadores_generales": [
+        "avance",
+        "puntaje",
+        "errores"
+      ],
+      "advertencia": "Los eventos pueden formar parte del estado local del simulador y no estar almacenados por actividad en Supabase."
+    },
+    {
+      "id": "marketing",
+      "fuente": "marketing/index.html",
+      "actividades": [
+        {
+          "id": "marketing-p1",
+          "nombre": "CRM",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "marketing-p2",
+          "nombre": "FUNNEL",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "marketing-p3",
+          "nombre": "CAMPAÑA",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "marketing-p4",
+          "nombre": "ANALYTICS",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "marketing-p5",
+          "nombre": "CONTINGENCIA",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        }
+      ],
+      "indicadores_generales": [
+        "avance",
+        "puntaje",
+        "errores"
+      ],
+      "advertencia": "Los eventos pueden formar parte del estado local del simulador y no estar almacenados por actividad en Supabase."
+    },
+    {
+      "id": "integrado",
+      "fuente": "integrado/index.html",
+      "actividades": [
+        {
+          "id": "integrado-p1",
+          "nombre": "MARKETING",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "integrado-p2",
+          "nombre": "COMEX",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "integrado-p3",
+          "nombre": "PUERTO",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "integrado-p4",
+          "nombre": "WMS",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "integrado-p5",
+          "nombre": "FINANZAS",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "integrado-p6",
+          "nombre": "PERSONAS",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        },
+        {
+          "id": "integrado-p7",
+          "nombre": "INTEGRACIÓN",
+          "indicador": "evento o etapa de simulación",
+          "resultado_aprendizaje_oficial": null,
+          "estado_cotejo": "pendiente",
+          "evento_en_trazabilidad_individual_confirmado": false
+        }
+      ],
+      "indicadores_generales": [
+        "avance",
+        "puntaje",
+        "errores"
+      ],
+      "advertencia": "Los eventos pueden formar parte del estado local del simulador y no estar almacenados por actividad en Supabase."
+    }
+  ]
+}
