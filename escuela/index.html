@@ -109,6 +109,11 @@
 <div class="repo-panel"><h3>Módulos más utilizados</h3><div id="dirTop">Esperando datos…</div></div>
 <div class="repo-panel"><h3>Áreas para revisar apoyo académico</h3><div id="dirApoyo">Esperando datos…</div></div>
 </div>
+<div class="repo-panel" style="margin-top:14px">
+<h3>Cobertura por carrera y módulo</h3>
+<p class="sub">Sesiones y finalizaciones registradas. Los puntajes proceden solo de sesiones con un valor numérico explícito; no equivalen al logro oficial de resultados de aprendizaje. Los grupos pequeños se presentan sin promedios.</p>
+<div class="tablewrap"><table style="min-width:750px"><thead><tr><th>Carrera declarada</th><th>Módulo</th><th>Sesiones</th><th>Finalizadas</th><th>Sesiones con puntaje</th><th>Puntaje medio registrado</th><th>Revisión sugerida</th></tr></thead><tbody id="dirCobertura"><tr><td colspan="7">Esperando datos…</td></tr></tbody></table></div>
+</div>
 <p class="notice" id="dirNota" role="status">Los valores dependerán de las evidencias disponibles y del período consultado. No se identifican estudiantes en este resumen.</p>
 </section>
 <div class="cards">
@@ -758,6 +763,21 @@ function renderDireccion(){
  const groups=new Map();valid.forEach(r=>{const k=moduleName(r);if(!k)return;const scores=groups.get(k)||[];scores.push(Number(r.puntaje));groups.set(k,scores)});
  const orderedResults=[...groups.entries()].filter(([,a])=>a.length>=5).map(([name,a])=>({name,n:a.length,avg:a.reduce((u,v)=>u+v,0)/a.length})).sort((a,b)=>a.avg-b.avg);
  $('dirApoyo').innerHTML=car?'<p class="sub">No se atribuyen resultados de reforzamiento a una carrera sin una vinculación de identidad y matrícula verificada. Consulte los módulos en la vista general.</p>':orderedResults.length?'<p class="sub">Promedios descriptivos de módulos con cinco o más evaluaciones; menor puntaje primero. No es una clasificación institucional de logro.</p>'+orderedResults.slice(0,8).map(x=>'<div class="barrow"><span>'+esc(x.name)+'</span><div class="bar"><span style="width:'+Math.max(0,Math.min(100,x.avg))+'%"></span></div><strong>'+x.avg.toFixed(1)+'</strong></div>').join(''):'<p class="sub">Sin evidencia suficiente para comparar resultados de evaluación.</p>';
+ const coverage=new Map();
+ filtered.forEach(x=>{
+  const carrera=String(x.carrera||'').trim()||'Sin carrera declarada',modulo=moduleName(x)||'Sin módulo declarado',key=carrera+'\\u0000'+modulo;
+  let g=coverage.get(key);if(!g){g={carrera,modulo,total:0,finished:0,scores:[]};coverage.set(key,g)}
+  g.total++;
+  if(String(x.estado||'').toLowerCase().startsWith('finalizado'))g.finished++;
+  if(x.puntaje!==null&&x.puntaje!==undefined&&x.puntaje!==''&&Number.isFinite(Number(x.puntaje)))g.scores.push(Number(x.puntaje));
+ });
+ const cover=[...coverage.values()].sort((a,b)=>b.total-a.total||a.carrera.localeCompare(b.carrera,'es'));
+ $('dirCobertura').innerHTML=cover.length?cover.slice(0,100).map(g=>{
+  const enough=g.scores.length>=5;
+  const avg=enough?g.scores.reduce((s,n)=>s+n,0)/g.scores.length:null;
+  const flag=g.total<5?'Muestra reducida':g.finished===0?'Revisar finalizaciones':'Seguimiento habitual';
+  return '<tr><td>'+esc(g.carrera)+'</td><td>'+esc(g.modulo)+'</td><td>'+g.total+'</td><td>'+g.finished+'</td><td>'+g.scores.length+'</td><td>'+(avg===null?'No publicable (<5)':' '+avg.toFixed(1))+'</td><td>'+esc(flag)+'</td></tr>';
+ }).join(''):'<tr><td colspan="7">No hay sesiones registradas para estos filtros.</td></tr>';
  $('dirNota').textContent='Sesiones según carrera declarada, módulo y fechas disponibles. Evaluaciones de reforzamiento sin carrera verificada: solo se muestran en la vista general. Los puntajes no acreditan resultados de aprendizaje ni permiten inferir riesgo individual.';
 }
 
