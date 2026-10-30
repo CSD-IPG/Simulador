@@ -1,5 +1,5 @@
 {
-  "version": "0.1",
+  "version": "0.2",
   "estado": "procesos_observados_codigo_no_RA_oficiales",
   "simuladores": [
     {
@@ -12,7 +12,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "Recepción",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "wms-p2",
@@ -20,7 +22,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "Acta recepción",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "wms-p3",
@@ -28,7 +32,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "Picking",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "wms-p4",
@@ -36,7 +42,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "Packing",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "wms-p5",
@@ -44,7 +52,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "Despacho",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "wms-p6",
@@ -52,7 +62,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "Contingencia",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "wms-p7",
@@ -60,7 +72,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "Cierre",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         }
       ],
       "indicadores_generales": [
@@ -68,7 +82,13 @@
         "puntaje",
         "errores"
       ],
-      "advertencia": "Los eventos pueden formar parte del estado local del simulador y no estar almacenados por actividad en Supabase."
+      "advertencia": "Los eventos pueden formar parte del estado local del simulador y no estar almacenados por actividad en Supabase.",
+      "telemetria": {
+        "registro_local_procesos": true,
+        "envio_por_etapa_confirmado": false,
+        "destino_actual": "participaciones (resumen de sesión)",
+        "requiere": "vincular registro por etapa en almacenamiento autorizado y vincular actividad con RA oficial"
+      }
     },
     {
       "id": "comex",
@@ -80,7 +100,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": null,
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "comex-p2",
@@ -88,7 +110,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": null,
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "comex-p3",
@@ -96,7 +120,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": null,
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "comex-p4",
@@ -104,7 +130,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": null,
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "comex-p5",
@@ -112,7 +140,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": null,
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "comex-p6",
@@ -120,7 +150,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": null,
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         }
       ],
       "indicadores_generales": [
@@ -128,7 +160,13 @@
         "puntaje",
         "errores"
       ],
-      "advertencia": "Los eventos pueden formar parte del estado local del simulador y no estar almacenados por actividad en Supabase."
+      "advertencia": "Los eventos pueden formar parte del estado local del simulador y no estar almacenados por actividad en Supabase.",
+      "telemetria": {
+        "registro_local_procesos": false,
+        "envio_por_etapa_confirmado": false,
+        "destino_actual": "participaciones (resumen de sesión)",
+        "requiere": "vincular registro por etapa en almacenamiento autorizado y vincular actividad con RA oficial"
+      }
     },
     {
       "id": "portsim",
@@ -140,7 +178,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "GATE",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "portsim-p2",
@@ -148,7 +188,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "YARD",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "portsim-p3",
@@ -156,7 +198,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "VESSEL",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "portsim-p4",
@@ -164,7 +208,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "RETIRO",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "portsim-p5",
@@ -172,7 +218,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "CONTINGENCIA",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         }
       ],
       "indicadores_generales": [
@@ -180,7 +228,13 @@
         "puntaje",
         "errores"
       ],
-      "advertencia": "Los eventos pueden formar parte del estado local del simulador y no estar almacenados por actividad en Supabase."
+      "advertencia": "Los eventos pueden formar parte del estado local del simulador y no estar almacenados por actividad en Supabase.",
+      "telemetria": {
+        "registro_local_procesos": true,
+        "envio_por_etapa_confirmado": false,
+        "destino_actual": "participaciones (resumen de sesión)",
+        "requiere": "vincular registro por etapa en almacenamiento autorizado y vincular actividad con RA oficial"
+      }
     },
     {
       "id": "finanzas",
@@ -192,7 +246,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "PRESUPUESTO",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "finanzas-p2",
@@ -200,7 +256,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "RESULTADOS",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "finanzas-p3",
@@ -208,7 +266,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "CAJA",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "finanzas-p4",
@@ -216,7 +276,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "FORECAST",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "finanzas-p5",
@@ -224,7 +286,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "KPI",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "finanzas-p6",
@@ -232,7 +296,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "CONTINGENCIA",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         }
       ],
       "indicadores_generales": [
@@ -240,7 +306,13 @@
         "puntaje",
         "errores"
       ],
-      "advertencia": "Los eventos pueden formar parte del estado local del simulador y no estar almacenados por actividad en Supabase."
+      "advertencia": "Los eventos pueden formar parte del estado local del simulador y no estar almacenados por actividad en Supabase.",
+      "telemetria": {
+        "registro_local_procesos": true,
+        "envio_por_etapa_confirmado": false,
+        "destino_actual": "participaciones (resumen de sesión)",
+        "requiere": "vincular registro por etapa en almacenamiento autorizado y vincular actividad con RA oficial"
+      }
     },
     {
       "id": "rrhh",
@@ -252,7 +324,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "FICHA",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "rrhh-p2",
@@ -260,7 +334,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "ASISTENCIA",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "rrhh-p3",
@@ -268,7 +344,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "REMUNERACIÓN",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "rrhh-p4",
@@ -276,7 +354,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "DESEMPEÑO",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "rrhh-p5",
@@ -284,7 +364,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "ANALYTICS",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "rrhh-p6",
@@ -292,7 +374,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "CONTINGENCIA",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         }
       ],
       "indicadores_generales": [
@@ -300,7 +384,13 @@
         "puntaje",
         "errores"
       ],
-      "advertencia": "Los eventos pueden formar parte del estado local del simulador y no estar almacenados por actividad en Supabase."
+      "advertencia": "Los eventos pueden formar parte del estado local del simulador y no estar almacenados por actividad en Supabase.",
+      "telemetria": {
+        "registro_local_procesos": true,
+        "envio_por_etapa_confirmado": false,
+        "destino_actual": "participaciones (resumen de sesión)",
+        "requiere": "vincular registro por etapa en almacenamiento autorizado y vincular actividad con RA oficial"
+      }
     },
     {
       "id": "marketing",
@@ -312,7 +402,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "CRM",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "marketing-p2",
@@ -320,7 +412,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "FUNNEL",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "marketing-p3",
@@ -328,7 +422,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "CAMPAÑA",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "marketing-p4",
@@ -336,7 +432,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "ANALYTICS",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "marketing-p5",
@@ -344,7 +442,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "CONTINGENCIA",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         }
       ],
       "indicadores_generales": [
@@ -352,7 +452,13 @@
         "puntaje",
         "errores"
       ],
-      "advertencia": "Los eventos pueden formar parte del estado local del simulador y no estar almacenados por actividad en Supabase."
+      "advertencia": "Los eventos pueden formar parte del estado local del simulador y no estar almacenados por actividad en Supabase.",
+      "telemetria": {
+        "registro_local_procesos": true,
+        "envio_por_etapa_confirmado": false,
+        "destino_actual": "participaciones (resumen de sesión)",
+        "requiere": "vincular registro por etapa en almacenamiento autorizado y vincular actividad con RA oficial"
+      }
     },
     {
       "id": "integrado",
@@ -364,7 +470,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "MARKETING",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "integrado-p2",
@@ -372,7 +480,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "COMEX",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "integrado-p3",
@@ -380,7 +490,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "PUERTO",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "integrado-p4",
@@ -388,7 +500,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "WMS",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "integrado-p5",
@@ -396,7 +510,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "FINANZAS",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "integrado-p6",
@@ -404,7 +520,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "PERSONAS",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         },
         {
           "id": "integrado-p7",
@@ -412,7 +530,9 @@
           "indicador": "evento o etapa de simulación",
           "resultado_aprendizaje_oficial": null,
           "estado_cotejo": "pendiente",
-          "evento_en_trazabilidad_individual_confirmado": false
+          "evento_en_trazabilidad_individual_confirmado": false,
+          "evento_local_observado": "INTEGRACIÓN",
+          "evidencia_por_etapa_en_servidor": "no_verificada"
         }
       ],
       "indicadores_generales": [
@@ -420,7 +540,13 @@
         "puntaje",
         "errores"
       ],
-      "advertencia": "Los eventos pueden formar parte del estado local del simulador y no estar almacenados por actividad en Supabase."
+      "advertencia": "Los eventos pueden formar parte del estado local del simulador y no estar almacenados por actividad en Supabase.",
+      "telemetria": {
+        "registro_local_procesos": true,
+        "envio_por_etapa_confirmado": false,
+        "destino_actual": "participaciones (resumen de sesión)",
+        "requiere": "vincular registro por etapa en almacenamiento autorizado y vincular actividad con RA oficial"
+      }
     }
   ]
 }
