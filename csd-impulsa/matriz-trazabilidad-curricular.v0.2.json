@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0",
+  "version": "0.3.0",
   "fecha": "2026-10-30",
   "estado": "auditoria_curricular_en_desarrollo",
   "criterio": "RA oficiales solo después de cotejo textual con programa original; se conserva redacción del módulo como evidencia de diseño, no como transcripción del RA oficial.",
@@ -416,6 +416,144 @@
     "No vincular identidad declarativa a matrícula verificada",
     "No mostrar promedios de grupos pequeños",
     "Distinguir RA textual del módulo del RA oficial del programa",
-    "Permitir relaciones muchos-a-muchos por carrera, asignatura y módulo"
+    "Permitir relaciones muchos-a-muchos por carrera, asignatura y módulo",
+    "No equiparar textos RA incluidos en el código a resultados oficiales hasta cotejo documental."
+  ],
+  "auditoria_unidades": [
+    {
+      "modulo_id": "bases-proyectos",
+      "unidad": 1,
+      "resultado_declarado_en_modulo": "Comprende los fundamentos para la realización de proyectos, aplicando herramientas básicas para la formulación inicial y la gestión eficiente de recursos.",
+      "fuente_codigo": "bases-proyectos/index.html",
+      "evidencia_actividad": "El módulo contiene actividades o tests; falta vincular identificadores de evento específicos",
+      "ra_oficial_verificado": false,
+      "estado": "texto_modulo_verificado_pendiente_cotejo_programa"
+    },
+    {
+      "modulo_id": "bases-proyectos",
+      "unidad": 2,
+      "resultado_declarado_en_modulo": "Analiza la viabilidad económica y financiera de proyectos mediante flujos de caja, VAN, TIR, sensibilidad, riesgo y fuentes de financiamiento.",
+      "fuente_codigo": "bases-proyectos/index.html",
+      "evidencia_actividad": "El módulo contiene actividades o tests; falta vincular identificadores de evento específicos",
+      "ra_oficial_verificado": false,
+      "estado": "texto_modulo_verificado_pendiente_cotejo_programa"
+    },
+    {
+      "modulo_id": "bases-proyectos",
+      "unidad": 3,
+      "resultado_declarado_en_modulo": "Implementa técnicas de planificación, ejecución y control mediante metodologías, indicadores, presupuesto, gestión de riesgos y cierre.",
+      "fuente_codigo": "bases-proyectos/index.html",
+      "evidencia_actividad": "El módulo contiene actividades o tests; falta vincular identificadores de evento específicos",
+      "ra_oficial_verificado": false,
+      "estado": "texto_modulo_verificado_pendiente_cotejo_programa"
+    },
+    {
+      "modulo_id": "matematica-financiera",
+      "unidad": 1,
+      "resultado_declarado_en_modulo": "Resuelve ejercicios y situaciones problemáticas que involucran tasas de interés, interés simple y compuesto.",
+      "fuente_codigo": "matematica-financiera/index.html",
+      "evidencia_actividad": "El módulo contiene actividades o tests; falta vincular identificadores de evento específicos",
+      "ra_oficial_verificado": false,
+      "estado": "texto_modulo_verificado_pendiente_cotejo_programa"
+    },
+    {
+      "modulo_id": "matematica-financiera",
+      "unidad": 2,
+      "resultado_declarado_en_modulo": "Analiza métodos y resultados de anualidades, amortización y depreciación.",
+      "fuente_codigo": "matematica-financiera/index.html",
+      "evidencia_actividad": "El módulo contiene actividades o tests; falta vincular identificadores de evento específicos",
+      "ra_oficial_verificado": false,
+      "estado": "texto_modulo_verificado_pendiente_cotejo_programa"
+    },
+    {
+      "modulo_id": "matematica-financiera",
+      "unidad": 3,
+      "resultado_declarado_en_modulo": "Analiza resultados obtenidos mediante VAN y TIR.",
+      "fuente_codigo": "matematica-financiera/index.html",
+      "evidencia_actividad": "El módulo contiene actividades o tests; falta vincular identificadores de evento específicos",
+      "ra_oficial_verificado": false,
+      "estado": "texto_modulo_verificado_pendiente_cotejo_programa"
+    },
+    {
+      "modulo_id": "politicas-publicas",
+      "unidad": 1,
+      "resultado_declarado_en_modulo": "Reconoce las fases iniciales del proceso de las políticas públicas, utilizando herramientas básicas para identificar actores y su impacto en la formulación.",
+      "fuente_codigo": "politicas-publicas/index.html",
+      "evidencia_actividad": "El módulo contiene actividades o tests; falta vincular identificadores de evento específicos",
+      "ra_oficial_verificado": false,
+      "estado": "texto_modulo_verificado_pendiente_cotejo_programa"
+    },
+    {
+      "modulo_id": "politicas-publicas",
+      "unidad": 2,
+      "resultado_declarado_en_modulo": "Aplica herramientas para la implementación y evaluación de políticas públicas, considerando actores, recursos e indicadores.",
+      "fuente_codigo": "politicas-publicas/index.html",
+      "evidencia_actividad": "El módulo contiene actividades o tests; falta vincular identificadores de evento específicos",
+      "ra_oficial_verificado": false,
+      "estado": "texto_modulo_verificado_pendiente_cotejo_programa"
+    },
+    {
+      "modulo_id": "politicas-publicas",
+      "unidad": 3,
+      "resultado_declarado_en_modulo": "Evalúa críticamente políticas públicas mediante comparación de modelos y herramientas avanzadas, proponiendo mejoras basadas en evidencia.",
+      "fuente_codigo": "politicas-publicas/index.html",
+      "evidencia_actividad": "El módulo contiene actividades o tests; falta vincular identificadores de evento específicos",
+      "ra_oficial_verificado": false,
+      "estado": "texto_modulo_verificado_pendiente_cotejo_programa"
+    },
+    {
+      "modulo_id": "contabilidad-costos",
+      "unidad": 1,
+      "resultado_declarado_en_modulo": "Distingue la contabilidad de costos y sus métodos como parte fundamental de las herramientas de control contable.",
+      "fuente_codigo": "contabilidad-costos/index.html",
+      "evidencia_actividad": "El módulo contiene actividades o tests; falta vincular identificadores de evento específicos",
+      "ra_oficial_verificado": false,
+      "estado": "texto_modulo_verificado_pendiente_cotejo_programa"
+    },
+    {
+      "modulo_id": "contabilidad-costos",
+      "unidad": 2,
+      "resultado_declarado_en_modulo": "Evalúa los distintos sistemas de costos asociándolos a la práctica profesional.",
+      "fuente_codigo": "contabilidad-costos/index.html",
+      "evidencia_actividad": "El módulo contiene actividades o tests; falta vincular identificadores de evento específicos",
+      "ra_oficial_verificado": false,
+      "estado": "texto_modulo_verificado_pendiente_cotejo_programa"
+    },
+    {
+      "modulo_id": "contabilidad-costos",
+      "unidad": 3,
+      "resultado_declarado_en_modulo": "Explica las nuevas tendencias de costos aplicadas al área contable, asociándolas a la práctica profesional.",
+      "fuente_codigo": "contabilidad-costos/index.html",
+      "evidencia_actividad": "El módulo contiene actividades o tests; falta vincular identificadores de evento específicos",
+      "ra_oficial_verificado": false,
+      "estado": "texto_modulo_verificado_pendiente_cotejo_programa"
+    },
+    {
+      "modulo_id": "nivelacion-matematica",
+      "unidad": 1,
+      "resultado_declarado_en_modulo": "Fortalece el manejo de números enteros, decimales, fracciones, porcentajes y prioridad de operaciones como base para el trabajo con números reales.",
+      "fuente_codigo": "nivelacion-matematica/index.html",
+      "evidencia_actividad": "El módulo contiene actividades o tests; falta vincular identificadores de evento específicos",
+      "ra_oficial_verificado": false,
+      "estado": "texto_modulo_verificado_pendiente_cotejo_programa"
+    },
+    {
+      "modulo_id": "nivelacion-matematica",
+      "unidad": 2,
+      "resultado_declarado_en_modulo": "Aplica razones, proporciones y expresiones algebraicas sencillas como preparación para ecuaciones, variaciones y modelación.",
+      "fuente_codigo": "nivelacion-matematica/index.html",
+      "evidencia_actividad": "El módulo contiene actividades o tests; falta vincular identificadores de evento específicos",
+      "ra_oficial_verificado": false,
+      "estado": "texto_modulo_verificado_pendiente_cotejo_programa"
+    },
+    {
+      "modulo_id": "nivelacion-matematica",
+      "unidad": 3,
+      "resultado_declarado_en_modulo": "Resuelve ecuaciones elementales e interpreta tablas, pares ordenados y relaciones lineales simples como preparación para sistemas y funciones.",
+      "fuente_codigo": "nivelacion-matematica/index.html",
+      "evidencia_actividad": "El módulo contiene actividades o tests; falta vincular identificadores de evento específicos",
+      "ra_oficial_verificado": false,
+      "estado": "texto_modulo_verificado_pendiente_cotejo_programa"
+    }
   ]
 }
