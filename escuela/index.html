@@ -94,7 +94,7 @@
 <p class="sub">Síntesis institucional con registros disponibles. El uso no equivale a logro de aprendizaje; los resultados se muestran por separado y las alertas indican dónde revisar posibles necesidades de apoyo, no diagnósticos individuales.</p>
 <div class="filters" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))" aria-label="Filtros del seguimiento ejecutivo">
 <div class="f"><label for="dirCar">Carrera</label><select id="dirCar"><option value="">Todas las carreras</option></select></div>
-<div class="f"><label for="dirPerfil">Perfil de seguimiento</label><select id="dirPerfil"><option value="estudiante">Estudiantes (correo alumnos)</option><option value="docente">Docentes (correo docentes)</option><option value="colaborador">Colaboradores / equipo IPG</option><option value="sin_clasificar">Sin perfil verificable</option><option value="todos">Todos (uso general)</option></select></div>
+<div class="f"><label for="dirPerfil">Perfil de seguimiento</label><select id="dirPerfil"><option value="estudiante">Estudiantes (correo alumnos)</option><option value="docente">Docentes (correo docentes)</option><option value="colaborador">Colaboradores</option><option value="equipo_academico">Equipo académico</option><option value="sin_clasificar">Sin perfil verificable</option><option value="todos">Todos (uso general)</option></select></div>
 <div class="f"><label for="dirMod">Módulo</label><select id="dirMod"><option value="">Todos los módulos</option></select></div>
 <div class="f"><label for="dirDesde">Desde</label><input type="date" id="dirDesde"></div>
 <div class="f"><label for="dirHasta">Hasta</label><input type="date" id="dirHasta"></div>
@@ -106,6 +106,7 @@
 <div class="kpi"><b id="dirEvaluaciones">—</b><small>Evaluaciones registradas</small></div>
 <div class="kpi"><b id="dirPromedio">—</b><small>Puntaje medio de evaluaciones (solo registros con puntaje)</small></div>
 </div>
+<div class="repo-panel" style="margin:12px 0"><h3>Participación por perfil declarado</h3><p class="sub">Fuente: registros de acceso por correo institucional; no es una certificación de identidad. Los usuarios con perfiles contradictorios se mantienen separados.</p><div id="dirPerfilResumen">Esperando datos de acceso…</div></div>
 <div class="repo-panels">
 <div class="repo-panel"><h3>Módulos más utilizados</h3><div id="dirTop">Esperando datos…</div></div>
 <div class="repo-panel"><h3>Áreas para revisar apoyo académico</h3><div id="dirApoyo">Esperando datos…</div></div>
@@ -753,17 +754,26 @@ document.querySelectorAll('[data-viz]').forEach(b=>b.onclick=()=>{VIZ_CATEGORY=b
 ['vizDesde','vizHasta','vizModulo','vizEmail'].forEach(id=>$(id).addEventListener(id==='vizEmail'?'input':'change',renderViz));
 
 // Resumen ejecutivo agregado. No publica datos personales ni infiere aprobación de una asignatura.
-function perfilCsdDeclarado(x){
+function perfilesAccesoCsd(){
+ const map=new Map();
+ (Array.isArray(ACCESS_DATA)?ACCESS_DATA:[]).forEach(r=>{
+  const email=String(r.email||'').trim().toLowerCase(),perfil=String(r.tipo_usuario||'').trim().toLowerCase();
+  if(!email||!['estudiante','docente','colaborador','equipo_academico'].includes(perfil))return;
+  if(!map.has(email))map.set(email,new Set());
+  map.get(email).add(perfil);
+ });
+ return map;
+}
+function perfilPorAccesoCsd(x,map){
  const email=String(x.email_institucional||x.email_declarado||x.email||'').trim().toLowerCase();
- if(/^[^\s@]+@alumnos\.ipg\.cl$/.test(email))return 'estudiante';
- if(/^[^\s@]+@docentes\.ipg\.cl$/.test(email))return 'docente';
- if(/^[^\s@]+@ipg\.cl$/.test(email))return 'colaborador';
- return 'sin_clasificar';
+ const found=map.get(email);
+ return found&&found.size===1?[...found][0]:'sin_clasificar';
 }
 function renderDireccion(){
  const sessions=Array.isArray(DATA)?DATA:[];
  const ref=Array.isArray(CSD_REF_ROWS)?CSD_REF_ROWS:[];
  const $car=$('dirCar'),$mod=$('dirMod');
+ const perfiles=perfilesAccesoCsd();
  const moduleName=x=>String(x.simulador||x.modulo||'').trim();
  const allModules=[...new Set([...sessions.map(moduleName),...ref.map(moduleName)].filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
  const allCareers=[...new Set(sessions.map(x=>String(x.carrera||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
@@ -772,10 +782,18 @@ function renderDireccion(){
  const car=$car.value,mod=$mod.value,from=$('dirDesde').value,to=$('dirHasta').value,perfil=$('dirPerfil').value;
  const day=x=>{const d=new Date(x);return Number.isNaN(d.getTime())?'':d.toISOString().slice(0,10)};
  const inPeriod=x=>{const d=day(x);return !!d&&(!from||d>=from)&&(!to||d<=to)};
- const filtered=sessions.filter(x=>(perfil==='todos'||perfilCsdDeclarado(x)===perfil)&&(!car||x.carrera===car)&&(!mod||moduleName(x)===mod)&&inPeriod(x.fecha_inicio||x.fecha||x.ultima_actividad));
+ const filtered=sessions.filter(x=>(perfil==='todos'||perfilPorAccesoCsd(x,perfiles)===perfil)&&(!car||x.carrera===car)&&(!mod||moduleName(x)===mod)&&inPeriod(x.fecha_inicio||x.fecha||x.ultima_actividad));
  // Los resultados de reforzamiento no contienen carrera verificada: no se atribuyen a carreras.
  const refBase=car?[]:ref.filter(x=>(perfil==='todos'||perfilCsdDeclarado(x)===perfil)&&(!mod||moduleName(x)===mod)&&inPeriod(x.fecha));
  const valid=refBase.filter(r=>r.puntaje!==null&&r.puntaje!==undefined&&r.puntaje!==''&&Number.isFinite(Number(r.puntaje))&&/evaluac|test|salida/i.test(String(r.evento||'')));
+ const perfilesNombres={estudiante:'Estudiantes',docente:'Docentes',colaborador:'Colaboradores',equipo_academico:'Equipo académico'};
+ const conteos=new Map(),conflictos=new Set();
+ for(const [email,values] of perfiles){
+  if(values.size!==1){conflictos.add(email);continue}
+  const p=[...values][0];conteos.set(p,(conteos.get(p)||0)+1);
+ }
+ const resumen=Object.entries(perfilesNombres).map(([p,label])=>'<div class="barrow"><span>'+label+'</span><strong>'+String(conteos.get(p)||0)+'</strong></div>').join('');
+ $('dirPerfilResumen').innerHTML=resumen+'<p class="sub">Correos con perfiles contradictorios: '+conflictos.size+'. Correos sin perfil explícito: no clasificados. Conteos de correos declarados distintos, no personas verificadas.</p>';
  const modCount=new Map();filtered.forEach(r=>{const k=moduleName(r);if(k)modCount.set(k,(modCount.get(k)||0)+1)});
  const ordered=[...modCount.entries()].sort((a,b)=>b[1]-a[1]);
  $('dirSesiones').textContent=String(filtered.length);
@@ -801,7 +819,7 @@ function renderDireccion(){
   const flag=g.total<5?'Muestra reducida':g.finished===0?'Revisar finalizaciones':'Seguimiento habitual';
   return '<tr><td>'+esc(g.carrera)+'</td><td>'+esc(g.modulo)+'</td><td>'+g.total+'</td><td>'+g.finished+'</td><td>'+g.scores.length+'</td><td>'+(avg===null?'No publicable (<5)':' '+avg.toFixed(1))+'</td><td>'+esc(flag)+'</td></tr>';
  }).join(''):'<tr><td colspan="7">No hay sesiones registradas para estos filtros.</td></tr>';
- $('dirNota').textContent='Filtro de perfil inferido solo por dominio de correo declarado, no por identidad verificada. @ipg.cl puede incluir docentes o equipos académicos. Los registros sin correo quedan separados. Los puntajes no acreditan resultados de aprendizaje.';
+ $('dirNota').textContent='El filtro usa el perfil explícitamente declarado en accesos_csd, relacionado por correo; no verifica identidad ni matrícula. Registros sin vínculo o con perfiles contradictorios permanecen sin clasificar. Los puntajes no acreditan resultados de aprendizaje.';
 }
 
 let TRACE_CATALOG=null;
