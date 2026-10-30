@@ -880,6 +880,16 @@ function renderTrace(){
 }
 $('trCarrera').addEventListener('change',renderTrace);
 $('trModulo').addEventListener('change',renderTrace);
+async function loadSecuredProcessSummary(){
+ if(!TOKEN||!$('trProcesosNota'))return;
+ try{
+  const u=SUPABASE_URL+'/rest/v1/eventos_proceso_csd?select=modulo_id,proceso_id,tipo_evento,fecha&order=fecha.desc&limit=1000';
+  const r=await fetch(u,{headers:{apikey:ANON_KEY,Authorization:'Bearer '+TOKEN}});
+  if(!r.ok)throw Error('HTTP '+r.status);
+  const rows=await r.json(),total=Array.isArray(rows)?rows.length:0;
+  $('trProcesosNota').textContent='Eventos por proceso con autenticación verificada: '+total+' registros consultados (máximo 1.000). Las actividades sin registros no implican inactividad académica.';
+ }catch(e){$('trProcesosNota').textContent='Registro protegido de procesos: consulta no disponible ('+e.message+').';}
+}
 async function loadTraceEvents(){
  TRACE_EVENTS=[];
  if(!TOKEN)return;
@@ -898,7 +908,7 @@ async function loadAllData(){
   await loadIdentificaciones();
   await loadRepositorioDashboard();
   await loadTraceEvents();
-  renderUnits();renderIntegrated();renderViz();renderDireccion();await loadTrace();
+  renderUnits();renderIntegrated();renderViz();renderDireccion();await loadTrace();await loadSecuredProcessSummary();
 }
 
 ['dirCar','dirMod','dirDesde','dirHasta'].forEach(id=>$(id).addEventListener('change',renderDireccion));
