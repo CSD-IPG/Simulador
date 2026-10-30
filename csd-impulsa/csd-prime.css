@@ -35,3 +35,37 @@ body[data-csd-prime="marketing"],body[data-csd-prime="segmentacion"],body[data-c
 .ipg-auth-grid label,.ipg-auth-box label,.ipg-auth-card label{color:#dbe9f8!important}
 button:disabled{opacity:.6;cursor:not-allowed;transform:none!important}
 ::selection{background:#41aac0;color:#071426}
+
+/* Corrección específica: módulos de reforzamiento con estructura section/case/q */
+body[data-csd-prime] main>section,
+body[data-csd-prime] #app>section,
+body[data-csd-prime] #gate,
+body[data-csd-prime] #lesson,
+body[data-csd-prime] #test,
+body[data-csd-prime] .case,
+body[data-csd-prime] .q,
+body[data-csd-prime] .note{
+ background:linear-gradient(145deg,#193550,#10243d)!important;
+ color:#eef7ff!important;border:1px solid #54759170!important;
+ box-shadow:0 12px 32px #020b193b;border-radius:13px;
+}
+body[data-csd-prime] main h2,
+body[data-csd-prime] main h3,
+body[data-csd-prime] main p,
+body[data-csd-prime] main label,
+body[data-csd-prime] main summary,
+body[data-csd-prime] #who,
+body[data-csd-prime] #progress,
+body[data-csd-prime] #msg{color:#e7f2ff!important}
+body[data-csd-prime] .error{background:#48283a!important;color:#ffe3e9!important;border-color:#cc7686!important}
+body[data-csd-prime] .success{background:#153e3b!important;color:#c1fce6!important;border-color:#52b6a1!important}
+body[data-csd-prime] .note{background:#163650!important;color:#e6f4ff!important}
+body[data-csd-prime] #nav button{background:#214b6d!important;color:#effaff!important;border:1px solid #5887a7!important}
+body[data-csd-prime] #nav button:hover{background:#2c6b94!important}
+body[data-csd-prime] a{color:#7beaf6!important;text-decoration-color:#7beaf680}
+body[data-csd-prime] input[type=checkbox],body[data-csd-prime] input[type=radio]{accent-color:#56dbda}
+@media print{
+ body[data-csd-prime],body[data-csd-prime] main>section,body[data-csd-prime] #app>section,
+ body[data-csd-prime] .case,body[data-csd-prime] .q{background:#fff!important;color:#111!important;box-shadow:none!important}
+ body[data-csd-prime] main p,body[data-csd-prime] main h2,body[data-csd-prime] main label{color:#111!important}
+}
