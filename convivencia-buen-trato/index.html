@@ -38,4 +38,4 @@ btn.addEventListener('click',enter,true);
 emailInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!window.__csdIdentOk){e.preventDefault();e.stopImmediatePropagation();btn.click()}},true);
 })();
 </script>
-<script defer src="../csd-impulsa/identificacion-sesion.js"></script></body></html>
+<script defer src="../csd-impulsa/identificacion-sesion.js"></script><script>window.CSDBadgeSource=()=>({module:"Convivencia y Buen Trato",icon:"people",entries:DATA.units.map((u,i)=>({id:'u'+(i+1),title:'Unidad '+(i+1),score:state['quiz'+i]?.score*10,threshold:70,passed:state['quiz'+i]?.score>=7}))});</script><script defer src="../csd-impulsa/insignias.js?v=1"></script></body></html>
