@@ -366,6 +366,48 @@
         "Ingeniería en Administración de Empresas, Plan de Continuidad"
       ],
       "featured": false
+    },
+    {
+      "id": "refuerzo-matematica",
+      "name": "MATEMÁTICA APLICADA · REFORZAMIENTO",
+      "icon": "∑",
+      "url": "refuerzo-matematica/",
+      "description": "Reforzamiento académico de tres unidades con ejercitación y test de salida por unidad.",
+      "type": "refuerzo",
+      "areas": [
+        "Transversal"
+      ],
+      "careers": [
+        "Transversal"
+      ]
+    },
+    {
+      "id": "refuerzo-tecnologias",
+      "name": "TECNOLOGÍAS DE LA INFORMACIÓN · REFORZAMIENTO",
+      "icon": "▣",
+      "url": "refuerzo-tecnologias/",
+      "description": "Reforzamiento académico de tres unidades con ejercitación y test de salida por unidad.",
+      "type": "refuerzo",
+      "areas": [
+        "Transversal"
+      ],
+      "careers": [
+        "Transversal"
+      ]
+    },
+    {
+      "id": "refuerzo-lectura",
+      "name": "COMPRENSIÓN LECTORA · REFORZAMIENTO",
+      "icon": "≋",
+      "url": "refuerzo-lectura/",
+      "description": "Reforzamiento académico de tres unidades con ejercitación y test de salida por unidad.",
+      "type": "refuerzo",
+      "areas": [
+        "Transversal"
+      ],
+      "careers": [
+        "Transversal"
+      ]
     }
   ],
   "careers": [
