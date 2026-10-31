@@ -1,6 +1,6 @@
 # CSD Impulsa: validación del pilotaje (31 de octubre de 2026)
 
-Estado: implementación publicada, pendiente de comprobación visual final dentro del Dashboard con una sesión autorizada de Dirección. No declarar cierre hasta completar ese paso.
+Estado: implementación publicada y validada de extremo a extremo en el sitio y en el Dashboard con una sesión real autorizada de Dirección.
 
 ## Cambios
 
@@ -24,13 +24,15 @@ Estado: implementación publicada, pendiente de comprobación visual final dentr
 4. Segundo intento del mismo correo concurrente0: ambos intentos conservados; reporte devuelve 1/2 y 2/2.
 5. Origen ajeno: HTTP 403. Solicitud inválida: HTTP 400. Usuario autenticado sin rol escuela: SQLSTATE 42501, No autorizado.
 6. Privilegios comprobados: anon no puede leer/escribir tabla ni ejecutar reporte/receptor RPC. authenticated tampoco tiene lectura directa de tabla.
-7. Reporte RPC probado dentro de transacción con el contexto de un perfil escuela activo, sin modificar perfiles, cuentas ni permisos. Esto prueba el servidor; no sustituye la comprobación visual pendiente con inicio de sesión real.
+7. Reporte RPC probado dentro de transacción con el contexto de un perfil escuela activo, sin modificar perfiles, cuentas ni permisos. Además se completó el inicio de sesión real mediante el formulario seguro del navegador y la comprobación visual del mismo reporte.
 8. Descarga real de PDF desde botón del sitio: archivo PDF 1.4, A4, 1 página, válido para Poppler; texto y render revisados. Incluye correo ficticio, intento y tres dimensiones.
 9. Word Nivelación 1: test ejecutado, 100%, retroalimentación visible. Matemática Nivelación 1: ingreso sin RUT, inicio de estudio y test 5/5, 100%. Nivelación 2: acceso disponible sin formulario de autenticación.
 10. Sintaxis JavaScript y diff sin errores. GitHub Pages: despliegues completados correctamente.
 
 Los datos de prueba están identificados por `prueba.csd.ficticia` y no corresponden a personas reales. No se eliminaron registros históricos.
 
-## Paso pendiente para el cierre
+## Comprobación final completada
 
-Ingresar al Dashboard con un usuario escuela autorizado, filtrar el correo ficticio del punto 1 y comprobar las tres dimensiones, diagnóstico, salida y evolución. Verificar también el participante concurrente0 con dos intentos y los filtros. No crear cuentas administrativas de prueba ni debilitar permisos para realizar esta comprobación.
+Se ingresó con un usuario autorizado real. El Dashboard mostró el intento realizado desde el sitio publicado, sus tres dimensiones, diagnóstico 60/70/80%, salida 100/100/100%, evolución +40/+30/+20 pp y dos actividades declaradas. Se verificaron los filtros por correo, carrera, Matemática y fechas (31 de octubre de 2026), y el participante concurrente0 con intentos 1/2 y 2/2. Evidencia visual revisada, exclusivamente con datos ficticios.
+
+El Dashboard conserva la sesión solo en la pestaña al recargar y vuelve a comprobar el rol escuela activo antes de mostrar datos. Cerrar sesión elimina el token local y los resultados de Impulsa de la vista. No se crearon cuentas administrativas ni se alteraron perfiles para las pruebas.
