@@ -141,6 +141,7 @@ async function syncCentral(evento,estado){
  try{const r=await fetch(SUPABASE_URL+'/rest/v1/rpc/registrar_resultado_csd_v2',{method:'POST',headers:{'Content-Type':'application/json',apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+SUPABASE_ANON_KEY},body:JSON.stringify({p_event_id:crypto.randomUUID(),p_email:email,p_modulo:'Nivelación Matemática',p_sesion:s.sessionId,p_evento:evento,p_unidad:null,p_puntaje:currentAverageScore(),p_intento:currentAttempts(),p_avance:currentOverall()})});if(!r.ok)throw Error('HTTP '+r.status);s.lastSync=new Date().toLocaleString('es-CL');if(box)box.textContent='Registro enviado sin identificador de sesión: '+s.lastSync;return true}catch(e){if(box)box.textContent='Registro pendiente; puedes continuar con las actividades.';return false}
 }
 let s=(()=>{try{return JSON.parse(localStorage.getItem(KEY))||init()}catch(e){return init()}})();
+s.studentId=""; // El pilotaje no conserva identificadores personales previos.
 const $=id=>document.getElementById(id),fmt=x=>{x=Math.max(0,x||0);let h=Math.floor(x/3600),m=Math.floor((x%3600)/60),q=x%60;return h?`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(q).padStart(2,"0")}`:`${String(m).padStart(2,"0")}:${String(q).padStart(2,"0")}`},elapsed=()=>s.started?s.elapsed+Math.floor((Date.now()-s.start)/1000):s.elapsed;
 function save(){localStorage.setItem(KEY,JSON.stringify(s));renderStats()}
 function log(type,msg){s.logs.unshift({ts:new Date().toLocaleString("es-CL"),type,msg});save()}
