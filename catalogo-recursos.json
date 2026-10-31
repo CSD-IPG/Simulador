@@ -5,7 +5,7 @@
     {
       "name": "CSD IMPULSA · RUTA DE INICIO",
       "url": "impulsa/",
-      "description": "Programa piloto de acompañamiento al ingreso: diagnóstico, nivelación en matemática, tecnología y comprensión lectora, evaluación de salida e informe personal.",
+      "description": "Ruta de inicio que reúne el diagnóstico integral y Nivelación 1 de Matemática, Tecnologías de la Información y Comprensión Lectora, con evaluación de salida e informe personal.",
       "icon": "✦",
       "id": "impulsa",
       "type": "refuerzo",
@@ -19,7 +19,7 @@
     {
       "name": "NIVELACIÓN MATEMÁTICA 1 · RUTA DIAGNÓSTICA",
       "url": "nivelacion-matematica/",
-      "description": "Primero inicia la ruta diagnóstica CSD Impulsa. Refuerzo previo a MAT1001ONL con 9 guías paso a paso, test de salida por unidad y acceso institucional por correo.",
+      "description": "Nivelación de matemática básica con 9 guías paso a paso y test de salida por unidad. Disponible dentro de la ruta de inicio CSD Impulsa.",
       "icon": "➗",
       "id": "nivelacion-matematica",
       "type": "refuerzo",
@@ -33,7 +33,9 @@
         "Ingeniería en Administración de Empresas, Plan de Continuidad"
       ],
       "featured": false,
-      "prerequisite": "impulsa-start"
+      "prerequisite": "impulsa-start",
+      "visibility": "impulsa",
+      "parent": "impulsa"
     },
     {
       "id": "refuerzo-tecnologias",
@@ -49,7 +51,9 @@
         "Transversal"
       ],
       "prerequisite": "impulsa-start",
-      "featured": false
+      "featured": false,
+      "visibility": "impulsa",
+      "parent": "impulsa"
     },
     {
       "id": "refuerzo-lectura",
@@ -65,7 +69,9 @@
         "Transversal"
       ],
       "prerequisite": "impulsa-start",
-      "featured": false
+      "featured": false,
+      "visibility": "impulsa",
+      "parent": "impulsa"
     },
     {
       "name": "IPG WMS",
