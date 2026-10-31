@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-10-30",
+  "updated": "2026-10-31",
   "resources": [
     {
       "name": "CSD IMPULSA · RUTA DE INICIO",
@@ -19,7 +19,7 @@
     {
       "name": "NIVELACIÓN MATEMÁTICA 1 · RUTA DIAGNÓSTICA",
       "url": "nivelacion-matematica/",
-      "description": "Requiere diagnóstico previo CSD Impulsa. Refuerzo previo a MAT1001ONL con 9 guías paso a paso, test de salida por unidad y acceso institucional por correo.",
+      "description": "Primero inicia la ruta diagnóstica CSD Impulsa. Refuerzo previo a MAT1001ONL con 9 guías paso a paso, test de salida por unidad y acceso institucional por correo.",
       "icon": "➗",
       "id": "nivelacion-matematica",
       "type": "refuerzo",
@@ -32,6 +32,39 @@
         "TNS en Administración de Empresas",
         "Ingeniería en Administración de Empresas, Plan de Continuidad"
       ],
+      "featured": false,
+      "prerequisite": "impulsa-start"
+    },
+    {
+      "id": "refuerzo-tecnologias",
+      "name": "NIVELACIÓN TECNOLOGÍA 1 · RUTA DIAGNÓSTICA",
+      "icon": "▣",
+      "url": "refuerzo-tecnologias/",
+      "description": "Primero inicia la ruta diagnóstica CSD Impulsa. Reforzamiento nivel usuario de Word, Excel y PowerPoint en tres unidades, con ejercitación y test por unidad.",
+      "type": "refuerzo",
+      "areas": [
+        "Transversal"
+      ],
+      "careers": [
+        "Transversal"
+      ],
+      "prerequisite": "impulsa-start",
+      "featured": false
+    },
+    {
+      "id": "refuerzo-lectura",
+      "name": "NIVELACIÓN COMPRENSIÓN LECTORA 1 · RUTA DIAGNÓSTICA",
+      "icon": "≋",
+      "url": "refuerzo-lectura/",
+      "description": "Primero inicia la ruta diagnóstica CSD Impulsa. Reforzamiento académico de tres unidades con ejercitación y test de salida por unidad.",
+      "type": "refuerzo",
+      "areas": [
+        "Transversal"
+      ],
+      "careers": [
+        "Transversal"
+      ],
+      "prerequisite": "impulsa-start",
       "featured": false
     },
     {
@@ -366,34 +399,6 @@
         "Ingeniería en Administración de Empresas, Plan de Continuidad"
       ],
       "featured": false
-    },
-    {
-      "id": "refuerzo-tecnologias",
-      "name": "NIVELACIÓN TECNOLOGÍA 1 · OFFICE BÁSICO",
-      "icon": "▣",
-      "url": "refuerzo-tecnologias/",
-      "description": "Requiere diagnóstico previo CSD Impulsa. Reforzamiento nivel usuario de Word, Excel y PowerPoint en tres unidades, con ejercitación y test por unidad.",
-      "type": "refuerzo",
-      "areas": [
-        "Transversal"
-      ],
-      "careers": [
-        "Transversal"
-      ]
-    },
-    {
-      "id": "refuerzo-lectura",
-      "name": "NIVELACIÓN COMPRENSIÓN LECTORA 1",
-      "icon": "≋",
-      "url": "refuerzo-lectura/",
-      "description": "Requiere diagnóstico previo CSD Impulsa. Reforzamiento académico de tres unidades con ejercitación y test de salida por unidad.",
-      "type": "refuerzo",
-      "areas": [
-        "Transversal"
-      ],
-      "careers": [
-        "Transversal"
-      ]
     },
     {
       "id": "nivelacion-matematica-2",
