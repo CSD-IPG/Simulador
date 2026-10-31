@@ -996,8 +996,9 @@ $("repoUsuariosCsv").onclick=downloadRepositorioUsuarios;
 $("repoEmailSearch").addEventListener("input",renderRepoUsers);
 
 ["fSim","fCar","fSec","fDoc","fEst"].forEach(id=>$(id).addEventListener("change",applyFilters));$("fSearch").addEventListener("input",applyFilters);
-// Acceso explícito en cada apertura; no restaurar sesiones previas automáticamente.
-sessionStorage.removeItem("csd_token");
+// Reutilizar solo la sesión de esta pestaña tras verificar nuevamente el rol activo.
+async function restoreDashboardSession(){const token=sessionStorage.getItem('csd_token');if(!token)return;try{const r=await fetch(SUPABASE_URL+'/rest/v1/rpc/es_usuario_escuela',{method:'POST',headers:{apikey:ANON_KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'},body:'{}'});if(!r.ok||await r.json()!==true)throw Error('Sesión no autorizada');TOKEN=token;showDash();await loadAllData()}catch{sessionStorage.removeItem('csd_token');TOKEN=''}}
+window.addEventListener('load',restoreDashboardSession,{once:true});
 
 let CSD_REF_ROWS=[];
 function csdRefFiltered(){const m=$('refMod').value,e=$('refEmail').value.trim().toLowerCase();return CSD_REF_ROWS.filter(x=>(!m||x.modulo===m)&&(!e||String(x.email_declarado||'').toLowerCase().includes(e)))}
