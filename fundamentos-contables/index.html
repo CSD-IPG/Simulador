@@ -25,4 +25,4 @@ if(typeof gradeOriginal==='function')window.grade=function(...args){const unit=c
 window.addEventListener('online',()=>void flush());window.addEventListener('focus',()=>void flush());setInterval(()=>void flush(),60000);
 })();
 </script>
-<script defer src="../csd-impulsa/identificacion-sesion.js"></script></body></html>
+<script defer src="../csd-impulsa/identificacion-sesion.js"></script><script>window.CSDBadgeSource=()=>({module:"Fundamentos Contables",icon:"chart",entries:DATA.units.map((u,i)=>({id:'u'+(i+1),title:'Unidad '+(i+1),score:state.quizzes[i]?.score*10,threshold:70,passed:state.quizzes[i]?.score>=7}))});</script><script defer src="../csd-impulsa/insignias.js?v=1"></script></body></html>
