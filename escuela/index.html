@@ -960,9 +960,10 @@ function renderImpulsa(){
  const foot=document.createElement('p');foot.className='sub';foot.textContent='*Cambio respecto del intento anterior recibido en la consulta. Un diagnóstico pendiente de salida conserva su ruta inicial. Actividades autodeclaradas; no acreditan resultados de aprendizaje.';individual.append(foot)
 }
 async function loadImpulsaStats(){await loadImpulsaIndividual()}
+function impulsaChileBoundary(date,next=false){const day=new Date(date+'T12:00:00Z');if(next)day.setUTCDate(day.getUTCDate()+1);const iso=day.toISOString().slice(0,10);const part=new Intl.DateTimeFormat('en',{timeZone:'America/Santiago',timeZoneName:'longOffset'}).formatToParts(day).find(p=>p.type==='timeZoneName').value;return iso+'T00:00:00'+part.replace('GMT','')}
 async function loadImpulsaIndividual(){
  IMPULSA_ROWS=[];renderImpulsa();if(!TOKEN)return;$('impStatus').textContent='Consultando registros protegidos…';
- try{const request={p_desde:$('impFrom').value?$('impFrom').value+'T00:00:00-03:00':null,p_hasta:$('impTo').value?new Date(new Date($('impTo').value+'T00:00:00-03:00').getTime()+86400000).toISOString():null};const collected=[];
+ try{const request={p_desde:$('impFrom').value?impulsaChileBoundary($('impFrom').value):null,p_hasta:$('impTo').value?impulsaChileBoundary($('impTo').value,true):null};const collected=[];
  for(let offset=0;;offset+=1000){const response=await fetch(SUPABASE_URL+'/rest/v1/rpc/reporte_impulsa_v2',{method:'POST',headers:{apikey:ANON_KEY,Authorization:'Bearer '+TOKEN,'Content-Type':'application/json','Range-Unit':'items',Range:offset+'-'+(offset+999)},body:JSON.stringify(request)});if(!response.ok)throw Error('Acceso restringido o consulta no disponible (HTTP '+response.status+')');const page=await response.json();if(!Array.isArray(page))throw Error('Respuesta no válida');collected.push(...page);if(page.length<1000)break}
  IMPULSA_ROWS=collected;fill($('impCareer'),[...new Set(collected.map(r=>r.carrera))].sort(),'Todas');renderImpulsa();$('impStatus').textContent='Actualizado: '+new Date().toLocaleString('es-CL')+' · '+collected.length+' resultados por dimensión. Fechas de Chile; cada intento conserva su diagnóstico y salida.';
  }catch(e){IMPULSA_ROWS=[];renderImpulsa();$('impStatus').textContent=e.message}
