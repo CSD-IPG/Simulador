@@ -64,15 +64,40 @@ function queueStage(stage){const answer=stage==='diagnostico'?state.diagnostic:s
 async function flushQueue(){if(syncing)return;syncing=true;try{let events=pending();while(events.length){syncNotice('Sincronizando registro con Dirección…');const response=await fetch('https://uegxxazgqvjjqnmpodln.supabase.co/functions/v1/registrar-impulsa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(events[0]),signal:AbortSignal.timeout(15000)});const data=await response.json();if(!response.ok||!data.ok)throw Error(data.error||'HTTP '+response.status);const sent=events[0].eventId;events=pending().filter(x=>x.eventId!==sent);sessionStorage.setItem(pendingKey,JSON.stringify(events))}syncNotice('✓ Registro sincronizado con Dirección. Cada nueva ruta conserva un intento independiente.')}catch(e){syncNotice('Pendiente de sincronización: '+e.message+'. Se reintentará automáticamente; conserva esta pestaña abierta.')}finally{syncing=false}}
 window.addEventListener('online',flushQueue);setInterval(()=>{if(pending().length)flushQueue()},30000);
 function downloadReportPDF(){
- const lines=['CSD IMPULSA - INFORME PERSONAL','Escuela de Gestión, Negocios y Marítima','Piloto de preparación académica inicial','',
- 'Correo declarado: '+state.email,'Perfil: '+state.perfil,'Carrera: '+state.career,'Fecha de inicio: '+new Date(state.startedAt).toLocaleString('es-CL'),'Intento: '+state.attemptId,''];
- dims.forEach(d=>{const a=state.diagnostic.result[d.id],b=state.exit.result[d.id];lines.push(d.title,'Diagnóstico: '+a.correct+'/'+a.total+' ('+pct(a)+'%) - '+level(pct(a))[0],'Salida: '+b.correct+'/'+b.total+' ('+pct(b)+'%) - '+level(pct(b))[0],'Evolución: '+(pct(b)-pct(a))+' puntos porcentuales','')});
- lines.push('Tramos: hasta 60% requiere; 61-79% sugiere; 80-100% no necesita reforzamiento.','Resultados formativos de un instrumento piloto, sin acreditación de aprendizajes.','Correo declarado, sin verificación de identidad. No se recopila RUT.');
- const wrapped=lines.flatMap(line=>{const words=line.split(' ').flatMap(word=>word.match(/.{1,85}/g)||['']),out=[];let row='';for(const word of words){if((row+' '+word).length>92){out.push(row);row=word}else row+=(row?' ':'')+word}out.push(row);return out});
- const literal=text=>'('+text.replace(/[\\()]/g,c=>'\\'+c).replace(/[^\x20-\x7e]/g,c=>'\\'+(c.charCodeAt(0)<=255?c.charCodeAt(0):63).toString(8).padStart(3,'0'))+')';
- const content='BT /F1 10 Tf 14 TL 45 795 Td '+wrapped.map((line,i)=>(i?'T* ':'')+literal(line)+' Tj').join('\n')+' ET';
- const objects=['<< /Type /Catalog /Pages 2 0 R >>','<< /Type /Pages /Kids [3 0 R] /Count 1 >>','<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>','<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>','<< /Length '+content.length+' >>\nstream\n'+content+'\nendstream'];
- let pdf='%PDF-1.4\n',offsets=[0];objects.forEach((object,i)=>{offsets.push(pdf.length);pdf+=(i+1)+' 0 obj\n'+object+'\nendobj\n'});const start=pdf.length;pdf+='xref\n0 6\n0000000000 65535 f \n'+offsets.slice(1).map(n=>String(n).padStart(10,'0')+' 00000 n \n').join('')+'trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n'+start+'\n%%EOF';
+ // PDF vectorial A4: funciona sin red y no depende de capturas de pantalla.
+ const W=595,H=842,navy=[.035,.09,.17],blue=[.08,.22,.36],muted=[.35,.43,.51],cyan=[.10,.69,.75],light=[.94,.97,.99],white=[1,1,1];
+ const literal=text=>'('+String(text).replace(/[\\()]/g,c=>'\\'+c).replace(/[^\x20-\x7e]/g,c=>'\\'+(c.charCodeAt(0)<=255?c.charCodeAt(0):63).toString(8).padStart(3,'0'))+')';
+ let ops=[],pages=[],y=0;
+ const color=c=>c.join(' ');
+ function rect(x,top,w,h,c){ops.push(color(c)+' rg '+x+' '+(H-top-h)+' '+w+' '+h+' re f')}
+ function text(value,x,top,size=10,bold=false,c=navy){ops.push('BT /'+(bold?'F2':'F1')+' '+size+' Tf '+color(c)+' rg 1 0 0 1 '+x+' '+(H-top-size)+' Tm '+literal(value)+' Tj ET')}
+ function wrap(value,width,size=10){const max=Math.max(12,Math.floor(width/(size*.56))),words=String(value).split(/\s+/).flatMap(w=>w.match(new RegExp('.{1,'+max+'}','g'))||['']),lines=[];let line='';for(const word of words){if((line+' '+word).trim().length>max&&line){lines.push(line);line=word}else line+=(line?' ':'')+word}if(line)lines.push(line);return lines}
+ function paragraph(value,x,top,width,size=10,c=muted,bold=false){const lines=wrap(value,width,size);lines.forEach((line,i)=>text(line,x,top+i*(size+4),size,bold,c));return lines.length*(size+4)}
+ function footer(){rect(36,795,523,1,[.81,.87,.91]);text('CSD Impulsa | Escuela de Gestión, Negocios y Marítima',36,805,8,false,muted);text('Página '+(pages.length+1),508,805,8,false,muted)}
+ function newPage(first=false){if(ops.length){footer();pages.push(ops.join('\n'));ops=[]}rect(0,0,W,H,white);rect(0,0,W,first?126:69,navy);rect(0,first?126:69,W,4,cyan);text('CSD IMPULSA',36,first?24:19,first?24:18,true,white);if(first){text('INFORME DE PARTICIPACIÓN Y PROGRESO',36,59,12,true,[.42,.89,.91]);text('Escuela de Gestión, Negocios y Marítima',36,84,11,false,white);text('Ruta de preparación académica inicial',36,103,9,false,[.72,.82,.90]);y=148}else{text('Ruta de preparación académica inicial',36,44,9,false,[.72,.82,.90]);y=92}}
+ function ensure(height){if(y+height>778)newPage()}
+ newPage(true);
+ text('TU RECORRIDO',36,y,10,true,blue);y+=21;
+ const fields=[['CORREO DECLARADO',state.email],['PERFIL',({estudiante:'Estudiante',docente:'Docente',colaborador:'Colaborador',equipo_academico:'Equipo académico'})[state.perfil]||state.perfil],['CARRERA',state.career],['FECHA DE INICIO',new Date(state.startedAt).toLocaleString('es-CL',{timeZone:'America/Santiago'})]];
+ for(const [label,value] of fields){const lines=wrap(value,390,9);ensure(Math.max(18,lines.length*13)+5);text(label,36,y,8,true,muted);lines.forEach((line,i)=>text(line,165,y+i*13,9));y+=Math.max(18,lines.length*13)+3}
+ y+=8;ensure(36);text('RESULTADOS POR DIMENSIÓN',36,y,10,true,blue);y+=22;
+ const labels={m:'Matemática',t:'Tecnologías de la Información',l:'Comprensión lectora'};
+ dims.forEach(d=>{ensure(107);const a=state.diagnostic.result[d.id],b=state.exit.result[d.id],p=pct(a),q=pct(b),delta=q-p;rect(36,y,523,98,light);rect(36,y,4,98,cyan);text(labels[d.id]||d.title,51,y+10,12,true);text((delta>0?'+':'')+delta+' pp',480,y+10,11,true,delta<0?[.65,.24,.15]:[.03,.43,.45]);
+ const barX=146,barW=262;
+ for(const [row,label,score,result,fill] of [[0,'Diagnóstico',p,a,[.39,.49,.66]],[1,'Salida',q,b,cyan]]){const top=y+35+row*20;text(label,51,top-1,9,false,muted);rect(barX,top+3,barW,7,[.83,.89,.93]);if(score>0)rect(barX,top+3,barW*score/100,7,fill);text(score+'%  ('+result.correct+'/'+result.total+')',424,top-2,10,true)}
+ text('Ruta inicial: '+level(p)[0],51,y+79,8,false,muted);y+=107});
+ ensure(122);y+=4;text('CÓMO CONTINUAR',36,y,10,true,blue);y+=20;
+ const pending=dims.filter(d=>pct(state.exit.result[d.id])<80);
+ const guidance=pending.length?pending.map(d=>(labels[d.id]||d.title)+': '+(pct(state.exit.result[d.id])<=60?'realiza el reforzamiento y vuelve a evaluar tu progreso.':'practica los contenidos pendientes con los recursos de nivelación.')):['Alcanzaste al menos 80% en las tres dimensiones. No necesitas reforzamiento; puedes continuar con los recursos de tu carrera.'];
+ for(const line of guidance){const height=wrap(line,493,9).length*13+8;ensure(height+8);rect(36,y,523,height,[.91,.97,.97]);paragraph(line,48,y+5,493,9,blue);y+=height+5}
+ ensure(95);y+=6;text('TRAMOS DE ORIENTACIÓN',36,y,8,true,muted);y+=15;text('Hasta 60%: requiere | 61-79%: sugiere | 80-100%: no necesita reforzamiento.',36,y,8,false,muted);y+=16;
+ y+=paragraph('Instrumento piloto de uso formativo. Este informe no certifica resultados de aprendizaje. Correo declarado, sin verificación de identidad. No se recopila RUT.',36,y,523,8,muted);
+ ensure(22);text('ID del intento: '+state.attemptId,36,y+3,7,false,muted);
+ footer();pages.push(ops.join('\n'));
+ const objects=['<< /Type /Catalog /Pages 2 0 R >>','', '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>','<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>'];
+ const pageIds=[];for(const content of pages){const pageId=objects.length+1,streamId=pageId+1;pageIds.push(pageId);objects.push('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents '+streamId+' 0 R >>','<< /Length '+content.length+' >>\nstream\n'+content+'\nendstream')}
+ objects[1]='<< /Type /Pages /Kids ['+pageIds.map(id=>id+' 0 R').join(' ')+'] /Count '+pageIds.length+' >>';
+ let pdf='%PDF-1.4\n',offsets=[0];objects.forEach((object,i)=>{offsets.push(pdf.length);pdf+=(i+1)+' 0 obj\n'+object+'\nendobj\n'});const start=pdf.length;pdf+='xref\n0 '+(objects.length+1)+'\n0000000000 65535 f \n'+offsets.slice(1).map(n=>String(n).padStart(10,'0')+' 00000 n \n').join('')+'trailer\n<< /Size '+(objects.length+1)+' /Root 1 0 R >>\nstartxref\n'+start+'\n%%EOF';
  const url=URL.createObjectURL(new Blob([pdf],{type:'application/pdf'})),link=document.createElement('a');link.href=url;link.download='CSD_Impulsa_'+state.attemptId+'.pdf';link.click();setTimeout(()=>URL.revokeObjectURL(url),2000)
 }
 $('reportPDF').onclick=downloadReportPDF;
