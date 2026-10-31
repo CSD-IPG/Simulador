@@ -1,17 +1,14 @@
-/* Ruta CSD Impulsa: comprobación de diagnóstico en este navegador.
-   No verifica identidad ni constituye control de autorización del servidor. */
+/* Prerrequisito pedagógico local, sin autenticación ni comprobación de identidad.
+   Nivelación 1 exige iniciar la ruta; Nivelación 2 no carga este control. */
 (()=>{'use strict';
-const KEY='csd_impulsa_diagnostico_habilitacion_v1';
-function gate(){
- const saved=(()=>{try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch{return null}})();
- const valid=saved&&saved.version===1&&saved.completed===true&&Number.isFinite(saved.timestamp)&&Date.now()-saved.timestamp<90*24*3600*1000&&saved.timestamp<=Date.now();
- if(valid)return;
- const style=document.createElement('style');style.textContent='#rutaGate{position:fixed;inset:0;z-index:2147483646;display:grid;place-items:center;padding:22px;background:#06152af5;color:#f3faff;font:16px system-ui;overflow:auto}#rutaGate article{max-width:590px;background:linear-gradient(130deg,#153e58,#11243e);border:1px solid #6090a6;border-radius:20px;padding:30px;box-shadow:0 20px 70px #0009}#rutaGate h2{color:#fff;font-size:27px}#rutaGate p{color:#d1e5f3;line-height:1.6}#rutaGate a{display:inline-block;padding:13px 20px;border-radius:10px;background:#69dce7;color:#07273a;font-weight:800;text-decoration:none}';
- document.head.append(style);
- const dialog=document.createElement('div');dialog.id='rutaGate';dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');
- const box=document.createElement('article'),title=document.createElement('h2'),info=document.createElement('p'),link=document.createElement('a');
- title.textContent='Diagnóstico inicial requerido';info.textContent='Este módulo corresponde a la Ruta de Inicio de CSD Impulsa. Para acceder debes haber completado el diagnóstico integral en este navegador. Los módulos de nivelación 2 están disponibles para uso independiente.';link.href='../impulsa/';link.textContent='Ir al diagnóstico CSD Impulsa →';
- box.append(title,info,link);dialog.append(box);document.body.append(dialog);
-}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',gate);else gate();
+ const KEY='csd_impulsa_ruta_iniciada_v2',catalog=document.currentScript?.dataset.mode==='catalog';
+ const allowed=['nivelacion-matematica','refuerzo-tecnologias','refuerzo-lectura'];
+ function valid(){try{const v=JSON.parse(localStorage.getItem(KEY)||'null');return !!(v&&v.version===2&&v.started===true&&typeof v.attemptId==='string'&&/^[0-9a-f-]{36}$/i.test(v.attemptId)&&/^[^\s@]+@(?:alumnos\.ipg\.cl|docentes\.ipg\.cl|ipg\.cl)$/i.test(v.email)&&Number.isFinite(v.timestamp)&&v.timestamp<=Date.now()&&Date.now()-v.timestamp<24*3600000)}catch{return false}}
+ window.CSDImpulsaRoute={isStarted:valid,key:KEY};if(catalog)return;
+ if(!allowed.includes(location.pathname.split('/').filter(Boolean).filter(x=>x!=='index.html').pop()))return;
+ const css=document.createElement('style');css.textContent='html.csd-route-required body>*:not(#rutaGate):not(script):not(style){display:none!important}#rutaGate{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;padding:22px;background:#06152a;color:#f3faff;font:16px system-ui;overflow:auto}#rutaGate article{max-width:590px;background:linear-gradient(130deg,#153e58,#11243e);border:1px solid #6090a6;border-radius:20px;padding:30px;box-shadow:0 20px 70px #0009}#rutaGate h2{color:#fff;font-size:27px}#rutaGate p{color:#d1e5f3;line-height:1.6}#rutaGate a{display:inline-block;padding:13px 20px;border-radius:10px;background:#69dce7;color:#07273a;font-weight:800;text-decoration:none}#rutaGate a:focus-visible{outline:3px solid #ffcc77;outline-offset:4px}';document.head.append(css);
+ function update(){const blocked=!valid();document.documentElement.classList.toggle('csd-route-required',blocked);if(!document.body)return;if(!blocked){document.getElementById('rutaGate')?.remove();return}if(document.getElementById('rutaGate'))return;
+  const dialog=document.createElement('div');dialog.id='rutaGate';dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-labelledby','rutaGateTitle');const box=document.createElement('article'),title=document.createElement('h2'),info=document.createElement('p'),link=document.createElement('a');title.id='rutaGateTitle';title.textContent='Primero inicia tu ruta diagnóstica';info.textContent='Matemática 1, Tecnología 1 y Comprensión Lectora 1 forman parte de CSD Impulsa. Declara tus datos e inicia la ruta antes de utilizar estos tres módulos. Nivelación 2 mantiene su acceso libre.';link.href='../impulsa/';link.textContent='Iniciar ruta CSD Impulsa →';box.append(title,info,link);dialog.append(box);document.body.append(dialog);link.focus()
+ }
+ update();document.addEventListener('DOMContentLoaded',update);window.addEventListener('pageshow',update);window.addEventListener('focus',update);window.addEventListener('storage',e=>{if(e.key===KEY||e.key===null)update()});
 })();
