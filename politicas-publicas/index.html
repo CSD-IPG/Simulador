@@ -36,4 +36,4 @@ function finish(){if(!authenticated)return;state.finished=new Date().toISOString
  
 })();
 </script>
-<script defer src="../csd-impulsa/identificacion-sesion.js"></script></body></html>
+<script defer src="../csd-impulsa/identificacion-sesion.js"></script><script>window.CSDBadgeSource=()=>({module:"Políticas Públicas",icon:"book",entries:DATA.map((u,i)=>({id:'u'+(i+1),title:'Unidad '+(i+1),score:state.scores[i],threshold:70,passed:state.scores[i]>=70}))});</script><script defer src="../csd-impulsa/insignias.js?v=1"></script></body></html>
