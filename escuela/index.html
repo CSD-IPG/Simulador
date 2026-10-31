@@ -796,7 +796,7 @@ function renderDireccion(){
  const inPeriod=x=>{const d=day(x);return !!d&&(!from||d>=from)&&(!to||d<=to)};
  const filtered=sessions.filter(x=>(perfil==='todos'||perfilPorAccesoCsd(x,perfiles)===perfil)&&(!car||x.carrera===car)&&(!mod||moduleName(x)===mod)&&inPeriod(x.fecha_inicio||x.fecha||x.ultima_actividad));
  // Los resultados de reforzamiento no contienen carrera verificada: no se atribuyen a carreras.
- const refBase=car?[]:ref.filter(x=>(perfil==='todos'||perfilCsdDeclarado(x)===perfil)&&(!mod||moduleName(x)===mod)&&inPeriod(x.fecha));
+ const refBase=car?[]:ref.filter(x=>(perfil==='todos'||perfilPorAccesoCsd(x,perfiles)===perfil)&&(!mod||moduleName(x)===mod)&&inPeriod(x.fecha));
  const valid=refBase.filter(r=>r.puntaje!==null&&r.puntaje!==undefined&&r.puntaje!==''&&Number.isFinite(Number(r.puntaje))&&/evaluac|test|salida/i.test(String(r.evento||'')));
  const perfilesNombres={estudiante:'Estudiantes',docente:'Docentes',colaborador:'Colaboradores',equipo_academico:'Equipo académico'};
  const conteos=new Map(),conflictos=new Set();
