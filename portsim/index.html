@@ -34,6 +34,13 @@ body.ipg-auth-ok #ipgAuthGate{display:none!important}
 #ipgAuthMsg{margin-top:12px;padding:10px 12px;border-radius:9px;background:#f7fafc;color:#425466;font-size:13px}
 #ipgAuthMsg.err{background:#fff3f3;color:#9b2c2c}
 #ipgAuthMsg.ok{background:#eefaf4;color:#176b45}
+/* Paleta explícita para campos nativos, también con el sistema en modo oscuro. */
+:root{color-scheme:light}
+.ipg-auth-grid input,.ipg-auth-grid select,.ipg-auth-grid textarea,.f input,.f select,.f textarea{background:#fff;color:#1d2a3a}
+.ipg-auth-grid input::placeholder,.f input::placeholder,.f textarea::placeholder{color:#526579;opacity:1}
+.ipg-auth-grid option,.f option{background:#fff;color:#1d2a3a}
+.hero h1,.hero .st,.hero .badge{color:#fff}
+footer{color:#526579}
 </style><link rel="stylesheet" href="../csd-impulsa/csd-prime.css"><script>document.addEventListener("DOMContentLoaded",()=>document.body.dataset.csdPrime="portsim")</script></head><body><div id="ipgAuthGate">
 <div class="ipg-auth-card">
 <div class="ipg-auth-brand">IPG · CENTRO DE SIMULACIÓN DIGITAL</div>
@@ -252,4 +259,4 @@ document.getElementById("ipgAuthEmail")?.addEventListener("keydown",e=>{if(e.key
 })();
 </script><script>window.CSD_SUPABASE_PUBLISHABLE_KEY=IPG_TRACE_ANON;</script>
 <script defer src="../csd-impulsa/telemetria-proceso.js" data-module="portsim"></script>
-<script defer src="../csd-impulsa/identificacion-sesion.js"></script><script defer src="operacion-core.js?v=2"></script><script defer src="operacion.js?v=2"></script></body></html>
+<script defer src="../csd-impulsa/identificacion-sesion.js"></script><script defer src="operacion-core.js?v=2"></script><script defer src="operacion.js?v=3-contraste"></script></body></html>
