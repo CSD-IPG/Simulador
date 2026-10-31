@@ -1,0 +1,37 @@
+/* Dashboard Escuela · tema ejecutivo de alto contraste.
+   Independiente del modo oscuro de los simuladores. */
+:root{color-scheme:light;--n:#102b4b;--c:#0a9dae;--t:#08768a;--bg:#eaf1f8;--tx:#14273d;--m:#475c72;--ln:#cedae7;--ok:#156c49;--bad:#a02e3e}
+body{background:linear-gradient(150deg,#e7f0fa,#f2f7fc 55%,#e9f2f8)!important;color:#14273d!important}
+.top{background:#0d253f!important;border-bottom:1px solid #2b5574!important;box-shadow:0 4px 28px #102b4b25}
+.top .brand strong,.top .brand small,.top .nav a{color:#f4f8ff!important}
+.top .brand small{color:#b9d6e8!important}
+.hero{background:linear-gradient(115deg,#102b4b,#125a7b 74%,#0c7184)!important;color:#fff!important;box-shadow:0 16px 38px #102d4a25}
+.hero h1,.hero p{color:#fff!important}
+.login,.panel,.filters,.kpi,.repo-panel,.repo-kpi,.viz-card{background:#ffffff!important;color:#172e46!important;border:1px solid #cbd8e6!important;box-shadow:0 8px 22px #12365310!important}
+.login h2,.panel h2,.panel h3,.repo-panel h3,.repo-section h2,.viz-card h3,.kpi b,.repo-kpi b,.viz-kpis strong{color:#142f4e!important}
+.sub,.repo-panel .sub,.viz-muted,.kpi small,.repo-kpi small,.repo-panel small,.panel small{color:#496176!important}
+.f label,label{color:#29455f!important}
+input,select,textarea{background:#fff!important;color:#172d46!important;border:1px solid #839eb7!important}
+input::placeholder,textarea::placeholder{color:#697d91!important}
+select option{background:#fff!important;color:#172d46!important}
+table,table td,.repo-table td{background:#fff!important;color:#19334a!important;border-color:#d7e2eb!important}
+table th,.repo-table th,thead,th{background:#e4edf6!important;color:#17344f!important;border-color:#cadbe7!important}
+table tbody tr:nth-child(even) td,.repo-table tbody tr:nth-child(even) td{background:#f4f8fc!important}
+table tbody tr:hover td{background:#eaf4fb!important}
+.notice,.info{background:#e3f4f7!important;color:#24536b!important;border-color:#a4d5df!important}
+.notice.bad{background:#fff0f1!important;color:#852b38!important;border-color:#e8b8c2!important}
+.btn.light,.light{background:#e5eef7!important;color:#173950!important}
+.btn.pri,.pri{background:#123d63!important;color:#fff!important}
+.btn.teal,.teal{background:#087e89!important;color:#fff!important}
+.pill{background:#dcecf8!important;color:#173b56!important;border-color:#b4ccdb!important}
+.ok{background:#d9f3e6!important;color:#166444!important}
+.wa{background:#fff1ce!important;color:#795100!important}
+.badp{background:#ffe1e4!important;color:#8c2e3c!important}
+.viz-tab{background:#e9f1f8!important;color:#163b58!important;border:1px solid #afc4d8!important}
+.viz-tab[aria-pressed="true"]{background:#124d70!important;color:#fff!important}
+.viz-kpis span{background:#e9f1f8!important;color:#19344f!important}
+.viz-bar,.barrow,.chart,.repo-panel p,.repo-panel span,.panel p{color:#1e3853!important}
+.bar,.repo-bar,.viz-track{background:#dbe8f3!important}
+.bar span,.repo-bar>span,.viz-fill{background:#078c9d!important}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #b67b0a!important;outline-offset:2px}
+@media print{body{background:#fff!important}.top,.actions{box-shadow:none!important}}
