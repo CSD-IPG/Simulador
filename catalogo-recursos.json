@@ -3,6 +3,20 @@
   "updated": "2026-10-30",
   "resources": [
     {
+      "name": "CSD IMPULSA · RUTA DE INICIO",
+      "url": "impulsa/",
+      "description": "Programa piloto de acompañamiento al ingreso: diagnóstico, nivelación en matemática, tecnología y comprensión lectora, evaluación de salida e informe personal.",
+      "icon": "✦",
+      "id": "impulsa",
+      "type": "refuerzo",
+      "areas": [
+        "Transversal"
+      ],
+      "careers": [
+        "Transversal"
+      ]
+    },
+    {
       "name": "NIVELACIÓN MATEMÁTICA",
       "url": "nivelacion-matematica/",
       "description": "Refuerzo previo a MAT1001ONL con 9 guías paso a paso, test de salida por unidad y acceso institucional por correo.",
