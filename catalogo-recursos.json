@@ -17,9 +17,9 @@
       ]
     },
     {
-      "name": "NIVELACIÓN MATEMÁTICA",
+      "name": "NIVELACIÓN MATEMÁTICA 1 · RUTA DIAGNÓSTICA",
       "url": "nivelacion-matematica/",
-      "description": "Refuerzo previo a MAT1001ONL con 9 guías paso a paso, test de salida por unidad y acceso institucional por correo.",
+      "description": "Requiere diagnóstico previo CSD Impulsa. Refuerzo previo a MAT1001ONL con 9 guías paso a paso, test de salida por unidad y acceso institucional por correo.",
       "icon": "➗",
       "id": "nivelacion-matematica",
       "type": "refuerzo",
@@ -369,10 +369,10 @@
     },
     {
       "id": "refuerzo-tecnologias",
-      "name": "OFFICE BÁSICO Y HERRAMIENTAS DIGITALES",
+      "name": "NIVELACIÓN TECNOLOGÍA 1 · OFFICE BÁSICO",
       "icon": "▣",
       "url": "refuerzo-tecnologias/",
-      "description": "Reforzamiento nivel usuario de Word, Excel y PowerPoint en tres unidades, con ejercitación y test por unidad.",
+      "description": "Requiere diagnóstico previo CSD Impulsa. Reforzamiento nivel usuario de Word, Excel y PowerPoint en tres unidades, con ejercitación y test por unidad.",
       "type": "refuerzo",
       "areas": [
         "Transversal"
@@ -383,10 +383,10 @@
     },
     {
       "id": "refuerzo-lectura",
-      "name": "COMPRENSIÓN LECTORA · REFORZAMIENTO",
+      "name": "NIVELACIÓN COMPRENSIÓN LECTORA 1",
       "icon": "≋",
       "url": "refuerzo-lectura/",
-      "description": "Reforzamiento académico de tres unidades con ejercitación y test de salida por unidad.",
+      "description": "Requiere diagnóstico previo CSD Impulsa. Reforzamiento académico de tres unidades con ejercitación y test de salida por unidad.",
       "type": "refuerzo",
       "areas": [
         "Transversal"
@@ -401,6 +401,34 @@
       "icon": "∑",
       "url": "nivelacion-matematica-2/",
       "description": "Nivelación matemática complementaria, de acceso independiente del diagnóstico inicial: porcentajes compuestos, ecuaciones, costos y análisis de datos; tres unidades con tests de salida.",
+      "type": "refuerzo",
+      "areas": [
+        "Transversal"
+      ],
+      "careers": [
+        "Transversal"
+      ]
+    },
+    {
+      "id": "refuerzo-tecnologias-2",
+      "url": "refuerzo-tecnologias-2/",
+      "name": "NIVELACIÓN TECNOLOGÍA 2 · ACCESO LIBRE",
+      "description": "Reforzamiento de acceso independiente al diagnóstico: tres unidades y test de salida por unidad.",
+      "icon": "✦",
+      "type": "refuerzo",
+      "areas": [
+        "Transversal"
+      ],
+      "careers": [
+        "Transversal"
+      ]
+    },
+    {
+      "id": "refuerzo-lectura-2",
+      "url": "refuerzo-lectura-2/",
+      "name": "NIVELACIÓN COMPRENSIÓN LECTORA 2 · ACCESO LIBRE",
+      "description": "Reforzamiento de acceso independiente al diagnóstico: tres unidades y test de salida por unidad.",
+      "icon": "✦",
       "type": "refuerzo",
       "areas": [
         "Transversal"
