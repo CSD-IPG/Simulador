@@ -368,25 +368,11 @@
       "featured": false
     },
     {
-      "id": "refuerzo-matematica",
-      "name": "MATEMÁTICA APLICADA · REFORZAMIENTO",
-      "icon": "∑",
-      "url": "refuerzo-matematica/",
-      "description": "Reforzamiento académico de tres unidades con ejercitación y test de salida por unidad.",
-      "type": "refuerzo",
-      "areas": [
-        "Transversal"
-      ],
-      "careers": [
-        "Transversal"
-      ]
-    },
-    {
       "id": "refuerzo-tecnologias",
-      "name": "TECNOLOGÍAS DE LA INFORMACIÓN · REFORZAMIENTO",
+      "name": "OFFICE BÁSICO Y HERRAMIENTAS DIGITALES",
       "icon": "▣",
       "url": "refuerzo-tecnologias/",
-      "description": "Reforzamiento académico de tres unidades con ejercitación y test de salida por unidad.",
+      "description": "Reforzamiento nivel usuario de Word, Excel y PowerPoint en tres unidades, con ejercitación y test por unidad.",
       "type": "refuerzo",
       "areas": [
         "Transversal"
@@ -401,6 +387,20 @@
       "icon": "≋",
       "url": "refuerzo-lectura/",
       "description": "Reforzamiento académico de tres unidades con ejercitación y test de salida por unidad.",
+      "type": "refuerzo",
+      "areas": [
+        "Transversal"
+      ],
+      "careers": [
+        "Transversal"
+      ]
+    },
+    {
+      "id": "nivelacion-matematica-2",
+      "name": "NIVELACIÓN MATEMÁTICA 2 · PROFUNDIZACIÓN",
+      "icon": "∑",
+      "url": "nivelacion-matematica-2/",
+      "description": "Nivelación matemática complementaria, de acceso independiente del diagnóstico inicial: porcentajes compuestos, ecuaciones, costos y análisis de datos; tres unidades con tests de salida.",
       "type": "refuerzo",
       "areas": [
         "Transversal"
