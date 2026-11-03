@@ -384,8 +384,8 @@ function ipgGrant(email){
   document.body.classList.add("ipg-auth-ok");
 }
 function ipgRutValido(value){
- const x=String(value||"").replace(/[.\s-]/g,"").toUpperCase();
- if(!/^\d{7,8}[\dK]$/.test(x))return false;
+ const x=String(value||"").replace(/[.\s‐‑‒–—-]/g,"").toUpperCase();
+ if(!/^\d{6,8}[\dK]$/.test(x))return false;
  let sum=0,m=2;for(let i=x.length-2;i>=0;i--){sum+=Number(x[i])*m;m=m===7?2:m+1}
  const dv=11-sum%11;return x.slice(-1)===(dv===11?"0":dv===10?"K":String(dv));
 }
@@ -409,7 +409,8 @@ async function ipgLoginEmail(){
  const perfil=document.getElementById("csdPerfil").value,nombre=document.getElementById("csdNombre").value.trim(),rut=document.getElementById("csdRut").value.trim(),carrera=document.getElementById("csdCarrera").value,email=document.getElementById("ipgAuthEmail").value.trim().toLowerCase(),required=perfil!=="colaborador";
  if(!ipgInstitutional(email))return ipgAuthMsg("Ingresa un correo institucional IPG válido.","err");
  if(nombre.length<3)return ipgAuthMsg("Ingresa tu nombre completo.","err");
- if(required&&!ipgRutValido(rut))return ipgAuthMsg("Ingresa un RUT válido, con dígito verificador.","err");
+ if(required&&!rut)return ipgAuthMsg("Falta ingresar el RUT. Puedes escribirlo con o sin puntos y guion.","err");
+ if(required&&!ipgRutValido(rut))return ipgAuthMsg("El RUT ingresado no supera la validación del dígito verificador. Revísalo; se aceptan 6 a 8 dígitos antes del verificador.","err");
  if(required&&!carrera)return ipgAuthMsg("Selecciona tu carrera.","err");
  ipgIngresoEnCurso=true;const btn=document.getElementById("ipgAuthLogin");btn.disabled=true;ipgAuthMsg("Registrando identificación institucional…");
  try{
