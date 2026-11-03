@@ -1,0 +1,37 @@
+name: CSD - Pruebas reales de navegador
+on:
+  push:
+    paths:
+      - 'qa/csd-smoke.mjs'
+      - '.github/workflows/csd-smoke.yml'
+      - 'catalogo-recursos.json'
+      - 'csd-impulsa/trazabilidad-nivelaciones.js'
+      - 'refuerzo-tecnologias/**'
+      - 'refuerzo-lectura/**'
+      - 'nivelacion-matematica-2/**'
+      - 'refuerzo-tecnologias-2/**'
+      - 'refuerzo-lectura-2/**'
+  workflow_dispatch:
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar Playwright y Chromium
+        run: |
+          npm install --no-save playwright@1.57.0
+          npx playwright install --with-deps chromium
+      - name: Probar rutas y tests de nivelación en navegador real
+        run: node qa/csd-smoke.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: csd-pruebas-navegador
+          path: qa-results/report.json
+          retention-days: 30
