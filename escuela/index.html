@@ -209,6 +209,23 @@
   </div>
 </div>
 
+<section class="panel" id="nivelacionesRecientes" aria-labelledby="nivelacionesTitle">
+<h2 id="nivelacionesTitle">Nivelaciones 1 y 2 · Resultados institucionales de test</h2>
+<p class="sub">Seguimiento individual de cinco paneles de Matemática, Tecnología y Comprensión Lectora. Identificación declarada mediante correo IPG; el acceso de la Dirección permanece autenticado. Cada nuevo intento se conserva y no sustituye evaluaciones anteriores.</p>
+<div class="repo-report-tools">
+<div class="f"><label for="nivelModulo">Módulo</label><select id="nivelModulo"><option value="">Los cinco módulos</option><option>Office básico · Nivelación 1</option><option>Comprensión lectora · Nivelación 1</option><option>Matemática · Nivelación 2</option><option>Office aplicado · Nivelación 2</option><option>Comprensión lectora · Nivelación 2</option></select></div>
+<div class="f"><label for="nivelCorreo">Correo institucional</label><input id="nivelCorreo" type="search" placeholder="Filtrar participación"></div>
+<button id="nivelCSV" type="button" class="btn pri">Descargar CSV de nivelaciones</button>
+</div>
+<div class="cards">
+<div class="kpi"><b id="nivelPersonas">—</b><small>Correos distintos</small></div>
+<div class="kpi"><b id="nivelEvaluaciones">—</b><small>Evaluaciones registradas</small></div>
+<div class="kpi"><b id="nivelPromedio">—</b><small>Puntaje medio</small></div>
+<div class="kpi"><b id="nivelLogros">—</b><small>Evaluaciones ≥ 80 %</small></div>
+</div>
+<p class="sub" id="nivelEstado">Esperando resultados del registro institucional.</p>
+<div class="table-scroll"><table><thead><tr><th>Fecha</th><th>Correo declarado</th><th>Módulo</th><th>Unidad</th><th>Puntaje</th><th>Intento</th><th>Avance</th></tr></thead><tbody id="nivelTbody"><tr><td colspan="7">Sin registros recibidos.</td></tr></tbody></table></div>
+</section>
 <section class="panel" id="avanceUnidades">
 <h2>Módulos de reforzamiento · Seguimiento académico por unidad y test de salida</h2>
 <p class="sub">Incluye módulos de reforzamiento anteriores y nuevos en una misma vista. Detalle por correo declarado y módulo. La habilitación al 100% se confirma únicamente cuando existe evidencia explícita; un puntaje alto no equivale a habilitación.</p>
@@ -1003,7 +1020,25 @@ window.addEventListener('load',restoreDashboardSession,{once:true});
 let CSD_REF_ROWS=[];
 function csdRefFiltered(){const m=$('refMod').value,e=$('refEmail').value.trim().toLowerCase();return CSD_REF_ROWS.filter(x=>(!m||x.modulo===m)&&(!e||String(x.email_declarado||'').toLowerCase().includes(e)))}
 function csdRefRender(){const a=csdRefFiltered(),q=a.filter(x=>x.evento==='evaluacion'),u=new Set(a.map(x=>x.email_declarado));$('refUsers').textContent=u.size;const av=q.map(x=>Number(x.avance)).filter(Number.isFinite);$('refProgress').textContent=av.length?Math.max(...av)+'%':'—';$('refTests').textContent=q.length;$('refAvg').textContent=q.length?(q.reduce((t,x)=>t+Number(x.puntaje||0),0)/q.length).toFixed(1)+'%':'—';$('refPass').textContent=q.filter(x=>Number(x.puntaje)>=70).length;$('refBody').innerHTML=a.slice(0,400).map(x=>'<tr><td>'+esc(x.fecha||'')+'</td><td>'+esc(x.email_declarado||'')+'</td><td>'+esc(x.modulo||'')+'</td><td>'+esc(x.evento||'')+'</td><td>'+esc(x.unidad??'')+'</td><td>'+esc(x.puntaje??'')+'</td><td>'+esc(x.intento??'')+'</td><td>'+esc(x.avance??'')+'</td></tr>').join('')||'<tr><td colspan="8">Sin registros para los filtros seleccionados.</td></tr>'}
-async function loadCsdRef(){if(!TOKEN)return;const el=$('refStatus');el.textContent='Consultando resultados...';try{const r=await fetch(SUPABASE_URL+'/rest/v1/rpc/reporte_resultados_reforzamiento_csd',{method:'POST',headers:{'apikey':ANON_KEY,'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json'},body:'{}'});if(!r.ok){const detail=await r.text();throw Error('HTTP '+r.status+' · '+detail.slice(0,260))};const a=await r.json();if(!Array.isArray(a))throw Error('Respuesta no válida');CSD_REF_ROWS=a;el.textContent=a.length+' registros recibidos. Identidad declarada, no verificada. El detalle muestra hasta 400 filas; el CSV exporta los registros recibidos.';csdRefRender();renderUnits();if(ACCESS_DATA.length)renderAccessDashboard()}catch(e){el.textContent='No fue posible cargar resultados: '+e.message;CSD_REF_ROWS=[];csdRefRender()}}
+const NIVELACIONES_MODULOS=new Set(['Office básico · Nivelación 1','Comprensión lectora · Nivelación 1','Matemática · Nivelación 2','Office aplicado · Nivelación 2','Comprensión lectora · Nivelación 2']);
+function nivelacionesFiltered(){
+ const module=$('nivelModulo')?.value||'',email=($('nivelCorreo')?.value||'').trim().toLowerCase();
+ return CSD_REF_ROWS.filter(r=>r.evento==='evaluacion'&&NIVELACIONES_MODULOS.has(r.modulo)&&(!module||r.modulo===module)&&(!email||String(r.email_declarado||'').toLowerCase().includes(email)));
+}
+function renderNivelaciones(){
+ const rows=nivelacionesFiltered(),unique=new Set(rows.map(x=>x.email_declarado));
+ $('nivelPersonas').textContent=unique.size;
+ $('nivelEvaluaciones').textContent=rows.length;
+ const points=rows.map(x=>Number(x.puntaje)).filter(Number.isFinite);
+ $('nivelPromedio').textContent=points.length?(points.reduce((a,b)=>a+b,0)/points.length).toFixed(1)+'%':'—';
+ $('nivelLogros').textContent=points.filter(x=>x>=80).length;
+ $('nivelEstado').textContent=rows.length?rows.length+' evaluación(es) disponibles. Los resultados reflejan correos declarados y no certifican identidad.':'No hay resultados sincronizados para los filtros actuales.';
+ $('nivelTbody').innerHTML=rows.slice(0,500).map(r=>'<tr><td>'+esc(dateCL(r.fecha))+'</td><td>'+esc(r.email_declarado)+'</td><td>'+esc(r.modulo)+'</td><td>'+esc(r.unidad)+'</td><td>'+esc(r.puntaje)+'%</td><td>'+esc(r.intento)+'</td><td>'+esc(r.avance)+'%</td></tr>').join('')||'<tr><td colspan="7">Sin resultados sincronizados.</td></tr>';
+}
+$('nivelModulo').addEventListener('change',renderNivelaciones);
+$('nivelCorreo').addEventListener('input',renderNivelaciones);
+$('nivelCSV').onclick=()=>{const cols=['fecha','email_declarado','modulo','sesion','evento','unidad','puntaje','intento','avance'];csvDownload([cols,...nivelacionesFiltered().map(r=>cols.map(c=>r[c]))],'CSD_IPG_nivelaciones_1_y_2.csv')};
+async function loadCsdRef(){if(!TOKEN)return;const el=$('refStatus');el.textContent='Consultando resultados...';try{const r=await fetch(SUPABASE_URL+'/rest/v1/rpc/reporte_resultados_reforzamiento_csd',{method:'POST',headers:{'apikey':ANON_KEY,'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json'},body:'{}'});if(!r.ok){const detail=await r.text();throw Error('HTTP '+r.status+' · '+detail.slice(0,260))};const a=await r.json();if(!Array.isArray(a))throw Error('Respuesta no válida');CSD_REF_ROWS=a;renderNivelaciones();el.textContent=a.length+' registros recibidos. Identidad declarada, no verificada. El detalle muestra hasta 400 filas; el CSV exporta los registros recibidos.';csdRefRender();renderUnits();if(ACCESS_DATA.length)renderAccessDashboard()}catch(e){el.textContent='No fue posible cargar resultados: '+e.message;CSD_REF_ROWS=[];renderNivelaciones();csdRefRender()}}
 $('refMod').addEventListener('change',csdRefRender);$('refEmail').addEventListener('input',csdRefRender);$('refCsv').onclick=()=>{const cols=['fecha','email_declarado','modulo','sesion','evento','unidad','puntaje','intento','avance','identidad_verificada'];csvDownload([cols,...csdRefFiltered().map(x=>cols.map(c=>x[c]))],'CSD_IPG_resultados_reforzamiento.csv')};
 
 // Reporte de unidades: separa evaluación, avance acumulado y habilitación verificada.
