@@ -393,7 +393,7 @@ function ipgGrant(email){
   email=(email||"").trim().toLowerCase();
   window.IPG_INSTITUTIONAL_EMAIL=email;
   document.body.classList.add("ipg-auth-ok");
-  window.CSDMatfinStart?.({nombre:document.getElementById("csdNombre").value.trim(),rut:document.getElementById("csdRut").value.trim(),carrera:document.getElementById("csdCarrera").selectedOptions[0]?.textContent||"",perfil:document.getElementById("csdPerfil").value}).catch(e=>console.error("Inicio del módulo:",e));
+  window.CSDMatfinStart?.({nombre:document.getElementById("csdNombre").value.trim(),rut:document.getElementById("csdRut").value.trim(),carrera:document.getElementById("csdPerfil").value==="estudiante"?(document.getElementById("csdCarrera").selectedOptions[0]?.textContent||""):"",perfil:document.getElementById("csdPerfil").value}).catch(e=>console.error("Inicio del módulo:",e));
 }
 function ipgRutValido(value){
  const x=String(value||"").replace(/[.\s‐‑‒–—-]/g,"").toUpperCase();
@@ -404,7 +404,7 @@ function ipgRutValido(value){
 function ipgActualizarCampos(){
  const required=document.getElementById("csdPerfil").value!=="colaborador";
  document.getElementById("csdRutWrap").hidden=!required;
- document.getElementById("csdCarreraWrap").hidden=!required;
+ document.getElementById("csdCarreraWrap").hidden=document.getElementById("csdPerfil").value!=="estudiante";
 }
 async function ipgCargarCarreras(){
  const el=document.getElementById("csdCarrera");
@@ -423,11 +423,11 @@ async function ipgLoginEmail(){
  if(nombre.length<3)return ipgAuthMsg("Ingresa tu nombre completo.","err");
  if(required&&!rut)return ipgAuthMsg("Falta ingresar el RUT. Puedes escribirlo con o sin puntos y guion.","err");
  // El RUT se registra como dato declarado; la cifra verificadora no bloquea el acceso al reforzamiento.
- if(required&&!carrera)return ipgAuthMsg("Selecciona tu carrera.","err");
+ if(perfil==="estudiante"&&!carrera)return ipgAuthMsg("Selecciona tu carrera.","err");
  ipgIngresoEnCurso=true;const btn=document.getElementById("ipgAuthLogin");btn.disabled=true;ipgAuthMsg("Registrando identificación institucional…");
  try{
   const sid=ipgAccessSid();
-  const r=await fetch(IPG_AUTH_URL+"/rest/v1/rpc/registrar_identificacion_csd",{method:"POST",headers:{"Content-Type":"application/json",apikey:IPG_AUTH_ANON,Authorization:"Bearer "+IPG_AUTH_ANON},body:JSON.stringify({p_email:email,p_nombre:nombre,p_rut:required?rut:null,p_carrera_codigo:required?carrera:null,p_perfil:perfil,p_modulo:IPG_ACCESS_MODULE,p_session_id:sid})});
+  const r=await fetch(IPG_AUTH_URL+"/rest/v1/rpc/registrar_identificacion_csd",{method:"POST",headers:{"Content-Type":"application/json",apikey:IPG_AUTH_ANON,Authorization:"Bearer "+IPG_AUTH_ANON},body:JSON.stringify({p_email:email,p_nombre:nombre,p_rut:required?rut:null,p_carrera_codigo:perfil==="estudiante"?carrera:null,p_perfil:perfil,p_modulo:IPG_ACCESS_MODULE,p_session_id:sid})});
   if(!r.ok||await r.json()!==true)throw Error("Registro rechazado");
   sessionStorage.setItem("csd_ok_"+IPG_ACCESS_MODULE.replace(/[^a-z0-9]+/gi,"_").toLowerCase(),"1");
   ipgGrant(email);ipgAuthMsg("Ingreso registrado correctamente.","ok");
