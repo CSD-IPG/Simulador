@@ -410,7 +410,7 @@ async function ipgLoginEmail(){
  if(!ipgInstitutional(email))return ipgAuthMsg("Ingresa un correo institucional IPG válido.","err");
  if(nombre.length<3)return ipgAuthMsg("Ingresa tu nombre completo.","err");
  if(required&&!rut)return ipgAuthMsg("Falta ingresar el RUT. Puedes escribirlo con o sin puntos y guion.","err");
- if(required&&!ipgRutValido(rut))return ipgAuthMsg("El RUT ingresado no supera la validación del dígito verificador. Revísalo; se aceptan 6 a 8 dígitos antes del verificador.","err");
+ // El RUT se registra como dato declarado; la cifra verificadora no bloquea el acceso al reforzamiento.
  if(required&&!carrera)return ipgAuthMsg("Selecciona tu carrera.","err");
  ipgIngresoEnCurso=true;const btn=document.getElementById("ipgAuthLogin");btn.disabled=true;ipgAuthMsg("Registrando identificación institucional…");
  try{
