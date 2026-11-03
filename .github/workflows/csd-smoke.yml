@@ -11,6 +11,7 @@ on:
       - 'nivelacion-matematica-2/**'
       - 'refuerzo-tecnologias-2/**'
       - 'refuerzo-lectura-2/**'
+      - 'convivencia-buen-trato/**'
   workflow_dispatch:
 jobs:
   smoke:
