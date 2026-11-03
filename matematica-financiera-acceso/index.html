@@ -33,7 +33,7 @@ body.ipg-auth-ok #ipgAuthGate{display:none!important}
 .ipg-auth-card p{color:#64748b;line-height:1.5}
 .ipg-auth-grid{display:grid;gap:12px;margin-top:16px}
 .ipg-auth-grid label{font-size:13px;font-weight:800}
-.ipg-auth-grid input{width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid #dce5ed;border-radius:9px;font:inherit}
+.ipg-auth-grid input,.ipg-auth-grid select{width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid #dce5ed;border-radius:9px;font:inherit}
 .ipg-auth-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 .ipg-auth-actions button{border:0;border-radius:9px;padding:10px 13px;font-weight:800;cursor:pointer}
 .ipg-auth-primary{background:#0f766e;color:#fff}
@@ -58,7 +58,11 @@ body.ipg-auth-ok #ipgAuthGate{display:none!important}
 <h1>Matemática Financiera</h1>
 <p>Ingresa únicamente tu correo institucional IPG. No se requiere nombre, RUT ni carrera para abrir este reforzamiento.</p>
 <div class="ipg-auth-grid">
-<div><label>Correo institucional</label><input id="ipgAuthEmail" type="email" autocomplete="username" placeholder="nombre@alumnos.ipg.cl"></div>
+<div><label for="csdPerfil">Perfil de participación</label><select id="csdPerfil"><option value="estudiante">Estudiante</option><option value="docente">Docente</option><option value="colaborador">Colaborador</option></select></div>
+<div><label for="csdNombre">Nombre completo</label><input id="csdNombre" type="text" autocomplete="name" placeholder="Nombre y apellido"></div>
+<div id="csdRutWrap"><label for="csdRut">RUT</label><input id="csdRut" type="text" placeholder="12.345.678-5"></div>
+<div id="csdCarreraWrap"><label for="csdCarrera">Carrera</label><select id="csdCarrera"><option value="">Cargando carreras…</option></select></div>
+<div><label for="ipgAuthEmail">Correo institucional</label><input id="ipgAuthEmail" type="email" autocomplete="username" placeholder="nombre@alumnos.ipg.cl"></div>
 </div>
 <div class="ipg-auth-actions">
 <button class="ipg-auth-primary" id="ipgAuthLogin">Ingresar</button>
@@ -379,15 +383,46 @@ function ipgGrant(email){
   window.IPG_INSTITUTIONAL_EMAIL=email;
   document.body.classList.add("ipg-auth-ok");
 }
-async function ipgLoginEmail(){
-  const email=(document.getElementById("ipgAuthEmail")?.value||"").trim().toLowerCase();
-  if(!ipgInstitutional(email)) return ipgAuthMsg("Usa un correo @alumnos.ipg.cl, @docentes.ipg.cl o @ipg.cl.","err");
-  ipgAuthMsg("Registrando acceso...");
-  const tracked=await registrarAccesoModuloCSD(email);
-  if(!tracked)return ipgAuthMsg("No se pudo registrar el ingreso. Reintenta con conexión.","err");
-  ipgGrant(email);
-  ipgAuthMsg("Acceso registrado correctamente (correo declarado).","ok");
+function ipgRutValido(value){
+ const x=String(value||"").replace(/[.\s-]/g,"").toUpperCase();
+ if(!/^\d{7,8}[\dK]$/.test(x))return false;
+ let sum=0,m=2;for(let i=x.length-2;i>=0;i--){sum+=Number(x[i])*m;m=m===7?2:m+1}
+ const dv=11-sum%11;return x.slice(-1)===(dv===11?"0":dv===10?"K":String(dv));
 }
+function ipgActualizarCampos(){
+ const required=document.getElementById("csdPerfil").value!=="colaborador";
+ document.getElementById("csdRutWrap").hidden=!required;
+ document.getElementById("csdCarreraWrap").hidden=!required;
+}
+async function ipgCargarCarreras(){
+ const el=document.getElementById("csdCarrera");
+ try{
+  const r=await fetch(IPG_AUTH_URL+"/rest/v1/catalogo_carreras_csd?select=codigo,nombre&activo=eq.true&order=orden.asc",{headers:{apikey:IPG_AUTH_ANON,Authorization:"Bearer "+IPG_AUTH_ANON}});
+  if(!r.ok)throw Error("catalog");
+  const rows=await r.json();
+  el.replaceChildren(new Option("Selecciona tu carrera",""),...rows.map(x=>new Option(x.nombre,x.codigo)));
+ }catch(e){el.replaceChildren(new Option("No se pudieron cargar las carreras",""));ipgAuthMsg("Error al cargar carreras. Actualiza la página.","err")}
+}
+let ipgIngresoEnCurso=false;
+async function ipgLoginEmail(){
+ if(ipgIngresoEnCurso)return;
+ const perfil=document.getElementById("csdPerfil").value,nombre=document.getElementById("csdNombre").value.trim(),rut=document.getElementById("csdRut").value.trim(),carrera=document.getElementById("csdCarrera").value,email=document.getElementById("ipgAuthEmail").value.trim().toLowerCase(),required=perfil!=="colaborador";
+ if(!ipgInstitutional(email))return ipgAuthMsg("Ingresa un correo institucional IPG válido.","err");
+ if(nombre.length<3)return ipgAuthMsg("Ingresa tu nombre completo.","err");
+ if(required&&!ipgRutValido(rut))return ipgAuthMsg("Ingresa un RUT válido, con dígito verificador.","err");
+ if(required&&!carrera)return ipgAuthMsg("Selecciona tu carrera.","err");
+ ipgIngresoEnCurso=true;const btn=document.getElementById("ipgAuthLogin");btn.disabled=true;ipgAuthMsg("Registrando identificación institucional…");
+ try{
+  const sid=ipgAccessSid();
+  const r=await fetch(IPG_AUTH_URL+"/rest/v1/rpc/registrar_identificacion_csd",{method:"POST",headers:{"Content-Type":"application/json",apikey:IPG_AUTH_ANON,Authorization:"Bearer "+IPG_AUTH_ANON},body:JSON.stringify({p_email:email,p_nombre:nombre,p_rut:required?rut:null,p_carrera_codigo:required?carrera:null,p_perfil:perfil,p_modulo:IPG_ACCESS_MODULE,p_session_id:sid})});
+  if(!r.ok||await r.json()!==true)throw Error("Registro rechazado");
+  sessionStorage.setItem("csd_ok_"+IPG_ACCESS_MODULE.replace(/[^a-z0-9]+/gi,"_").toLowerCase(),"1");
+  ipgGrant(email);ipgAuthMsg("Ingreso registrado correctamente.","ok");
+ }catch(e){ipgAuthMsg("No fue posible registrar el ingreso. Comprueba tus datos y vuelve a intentar.","err")}
+ finally{ipgIngresoEnCurso=false;btn.disabled=false}
+}
+document.getElementById("csdPerfil").addEventListener("change",ipgActualizarCampos);
+ipgActualizarCampos();ipgCargarCarreras();
 document.getElementById("ipgAuthPortal")?.addEventListener("click",()=>location.href="../");
 document.getElementById("ipgAuthLogin")?.addEventListener("click",ipgLoginEmail);
 document.getElementById("ipgAuthEmail")?.addEventListener("keydown",e=>{if(e.key==="Enter")ipgLoginEmail();});
@@ -397,4 +432,4 @@ document.getElementById("ipgAuthEmail")?.addEventListener("keydown",e=>{if(e.key
  try{localStorage.removeItem(IPG_AUTH_KEY)}catch(_){}
 </script>
 
-<script defer src="../csd-impulsa/identificacion-sesion.js?v=20261103-matfin"></script><script>window.CSDBadgeSource=()=>({module:"Matemática Financiera",icon:"math",entries:Object.entries(s.tests||{}).map(([id,r])=>({id,title:'Unidad '+id.replace('u',''),score:r.score,threshold:70,passed:r.passed===true}))});</script><script defer src="../csd-impulsa/insignias.js?v=1"></script></body></html>
+<script defer src="../csd-impulsa/identificacion-sesion.js?v=20261103-rut"></script><script>window.CSDBadgeSource=()=>({module:"Matemática Financiera",icon:"math",entries:Object.entries(s.tests||{}).map(([id,r])=>({id,title:'Unidad '+id.replace('u',''),score:r.score,threshold:70,passed:r.passed===true}))});</script><script defer src="../csd-impulsa/insignias.js?v=1"></script></body></html>
