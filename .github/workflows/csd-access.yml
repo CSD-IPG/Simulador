@@ -1,0 +1,31 @@
+name: CSD - Acceso de todos los simuladores
+on:
+  push:
+    paths:
+      - 'wms/**'
+      - 'comex/**'
+      - 'portsim/**'
+      - 'finanzas/**'
+      - 'rrhh/**'
+      - 'marketing/**'
+      - 'integrado/**'
+      - 'qa/access.mjs'
+      - '.github/workflows/csd-access.yml'
+  workflow_dispatch:
+jobs:
+  access:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save playwright@1.57.0
+      - run: npx playwright install --with-deps chromium
+      - name: Servir copia local y probar ingreso sin enviar datos institucionales
+        run: |
+          python3 -m http.server 8765 > /tmp/csd-http.log 2>&1 &
+          node qa/access.mjs
