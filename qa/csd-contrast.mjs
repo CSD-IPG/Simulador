@@ -13,9 +13,10 @@ for(const id of modules){
   if(['matematica-financiera','contabilidad-costos','bases-proyectos'].includes(id)){
    await page.evaluate(()=>document.body.classList.add('ipg-auth-ok'));
    const tab=page.locator('.tab[data-v="u1"]');
-   if(await tab.count())await tab.click();
+   if(await tab.count())await tab.click({force:true,timeout:2500});
   }
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(350);
+  if(id==='matematica-financiera'){await fs.mkdir('qa-results',{recursive:true});await page.screenshot({path:'qa-results/matematica-financiera-unidad1.png',fullPage:true});}
   issue=await page.evaluate(()=>{
    function parse(color){
     if(!color||color==='transparent')return null;
