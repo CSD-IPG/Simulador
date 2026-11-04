@@ -261,7 +261,7 @@ async function registrarAccesoMarketing(email){
  const sid=(crypto.randomUUID?crypto.randomUUID():"marketing-"+Date.now());
  try{const r=await fetch(IPG_AUTH_URL+"/rest/v1/rpc/registrar_acceso_csd",{method:"POST",headers:{"Content-Type":"application/json","apikey":IPG_AUTH_ANON,"Authorization":"Bearer "+IPG_AUTH_ANON},body:JSON.stringify({p_email:email,p_modulo:"MARKETING",p_session_id:sid})});if(!r.ok)throw new Error(await r.text());return true;}catch(e){console.error("Acceso CSD",e);return false;}
 }
-async function ipgEmailLogin(){
+async function ipgEmailLogin(){if(!window.__csdIdentOk)return;
  const email=(document.getElementById("ipgAuthEmail").value||"").trim().toLowerCase();
  if(!ipgInstitutional(email))return ipgAuthMsg("Ingresa un correo institucional válido.","err");
  ipgAuthMsg("Registrando ingreso...");
@@ -275,4 +275,18 @@ document.getElementById("ipgAuthEmail")?.addEventListener("keydown",e=>{if(e.key
 // Se exige correo en cada ingreso a MARKETING, incluso si existe sesión previa.
 document.body.classList.remove("ipg-auth-ok");
 </script>
-<script defer src="../csd-impulsa/identificacion-sesion.js"></script></body></html>
+<script defer src="../csd-impulsa/identificacion-sesion.js"></script><script>(function(){
+const emailInput=document.getElementById('ipgAuthEmail'),btn=document.getElementById('ipgAuthLogin');
+if(!emailInput||!btn)return;
+const box=emailInput.closest('.ipg-auth-grid')||emailInput.parentElement;
+const fields=document.createElement('div');fields.innerHTML='<div><label>Perfil</label><select id="csdPerfil"><option value="estudiante">Estudiante</option><option value="docente">Docente</option><option value="colaborador">Administrativo / comunidad IPG</option></select></div><div><label>Nombre completo</label><input id="csdNombre" placeholder="Nombre y apellido" autocomplete="name"></div><div id="csdRutWrap"><label>RUT</label><input id="csdRut" placeholder="12.345.678-5"></div><div id="csdCarreraWrap"><label>Carrera</label><select id="csdCarrera"><option value="">Cargando carreras…</option></select></div>';
+box.prepend(...Array.from(fields.children));
+const $=id=>document.getElementById(id);
+$('csdPerfil').addEventListener('change',()=>{const academic=$('csdPerfil').value!=='colaborador';$('csdRutWrap').hidden=!academic;$('csdCarreraWrap').hidden=$('csdPerfil').value!=='estudiante'});
+const url='https://uegxxazgqvjjqnmpodln.supabase.co',key=IPG_AUTH_ANON;
+fetch(url+'/rest/v1/catalogo_carreras_csd?select=codigo,nombre&activo=eq.true&order=orden.asc',{headers:{apikey:key,Authorization:'Bearer '+key}}).then(r=>{if(!r.ok)throw Error('Catálogo no disponible');return r.json()}).then(rows=>{$('csdCarrera').replaceChildren(new Option('Selecciona tu carrera',''),...rows.map(x=>new Option(x.nombre,x.codigo)))}).catch(()=>{$('csdCarrera').replaceChildren(new Option('Error al cargar carreras',''))});
+let busy=false;
+async function enter(e){if(window.__csdIdentOk)return;e.preventDefault();e.stopImmediatePropagation();if(busy)return;const perfil=$('csdPerfil').value,nombre=$('csdNombre').value.trim(),rut=$('csdRut').value.trim(),carrera=$('csdCarrera').value,email=emailInput.value.trim().toLowerCase(),msg=$('ipgAuthMsg');if(!/^[^ @]+@(alumnos\.ipg\.cl|docentes\.ipg\.cl|ipg\.cl)$/.test(email)||nombre.length<3||(perfil!=='colaborador'&&!rut)||(perfil==='estudiante'&&!carrera)){msg.textContent='Completa nombre y correo institucional. Ingresa el RUT con o sin puntos y guion; selecciona carrera solo si eres estudiante.';return}busy=true;btn.disabled=true;msg.textContent='Registrando identificación institucional…';try{const sid='csd-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);const r=await fetch(url+'/rest/v1/rpc/registrar_identificacion_csd',{method:'POST',headers:{'Content-Type':'application/json',apikey:key,Authorization:'Bearer '+key},body:JSON.stringify({p_email:email,p_nombre:nombre,p_rut:perfil==='colaborador'?null:rut,p_carrera_codigo:perfil==='estudiante'?carrera:null,p_perfil:perfil,p_modulo:document.title,p_session_id:sid})});if(!r.ok||await r.json()!==true)throw Error('Registro rechazado');window.__csdIdentOk=true;btn.disabled=false;btn.click()}catch(err){msg.textContent='No se pudo registrar el ingreso. Revisa la conexión y reintenta.'}finally{busy=false;btn.disabled=false}}
+btn.addEventListener('click',enter,true);
+emailInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!window.__csdIdentOk){e.preventDefault();e.stopImmediatePropagation();btn.click()}},true);
+})();</script><script>document.body.classList.remove("ipg-auth-ok");</script></body></html>
