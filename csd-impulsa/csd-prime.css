@@ -125,3 +125,69 @@ body[data-csd-prime] input[type=checkbox],body[data-csd-prime] input[type=radio]
  body[data-csd-prime] .ipg-auth-card h1,
  body[data-csd-prime] .ipg-auth-card small{color:#e7f2ff!important;}
 }
+
+/* CSD | Correcciones de contraste detectadas por auditoría Chromium.
+   Fijar color de base en los degradados para evitar fondos claros heredados;
+   dar contraste a textos secundarios, barras y controles. */
+@media screen {
+ body[data-csd-prime]{background-color:#091c31!important;}
+ body[data-csd-prime] header,
+ body[data-csd-prime] .topbar,
+ body[data-csd-prime] .app-header,
+ body[data-csd-prime] .panel,
+ body[data-csd-prime] .box,
+ body[data-csd-prime] .card,
+ body[data-csd-prime] .tile,
+ body[data-csd-prime] .kpi,
+ body[data-csd-prime] .content,
+ body[data-csd-prime] .modal-content,
+ body[data-csd-prime] .ipg-auth-card {
+   background-color:#102b43!important;
+   color:#f1f8ff!important;
+ }
+ body[data-csd-prime] main .content{
+   background:#102b43!important;
+   color:#f1f8ff!important;
+   border-color:#50718d!important;
+ }
+ body[data-csd-prime] .bar:not(.progress):not(.unit-progress):not(.bar-chart),
+ body[data-csd-prime] .bar:not(.progress):not(.unit-progress) button{
+   border-color:#3a617e;
+ }
+ body[data-csd-prime="formacion-humana"] .bar{
+   background:#122c44!important;
+   border-bottom-color:#517592!important;
+ }
+ body[data-csd-prime="formacion-humana"] .bar button{
+   background:#245372!important;
+   color:#f4faff!important;
+   border:1px solid #5f91ad!important;
+ }
+ body[data-csd-prime="formacion-humana"] .bar #finish{
+   background:#1b6070!important;
+   color:#fff!important;
+ }
+ body[data-csd-prime] small,
+ body[data-csd-prime] .brand small,
+ body[data-csd-prime] .kpi small,
+ body[data-csd-prime] .cards small,
+ body[data-csd-prime] .st small{
+   color:#d3e6f5!important;
+ }
+ body[data-csd-prime] #rutaGate a{
+   background:#69dce7!important;
+   color:#06283b!important;
+   text-decoration:none!important;
+ }
+ body[data-csd-prime] .content h1,
+ body[data-csd-prime] .content h2,
+ body[data-csd-prime] .content h3,
+ body[data-csd-prime] .content p,
+ body[data-csd-prime] .content label,
+ body[data-csd-prime] .content summary{
+   color:#edf7ff!important;
+ }
+ body[data-csd-prime] .ipg-auth-card p{
+   color:#e2effa!important;
+ }
+}
