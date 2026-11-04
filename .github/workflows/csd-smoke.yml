@@ -3,6 +3,8 @@ on:
   push:
     paths:
       - 'qa/csd-smoke.mjs'
+      - 'qa/csd-contrast.mjs'
+      - 'csd-impulsa/csd-prime.css'
       - '.github/workflows/csd-smoke.yml'
       - 'catalogo-recursos.json'
       - 'csd-impulsa/trazabilidad-nivelaciones.js'
@@ -28,11 +30,15 @@ jobs:
         run: |
           npm install --no-save playwright@1.57.0
           npx playwright install --with-deps chromium
+      - name: Auditar contraste y legibilidad en 26 recursos
+        run: node qa/csd-contrast.mjs
       - name: Probar rutas y tests de nivelación en navegador real
         run: node qa/csd-smoke.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: csd-pruebas-navegador
-          path: qa-results/report.json
+          path: |
+            qa-results/report.json
+            qa-results/contrast.json
           retention-days: 30
