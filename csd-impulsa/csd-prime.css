@@ -69,3 +69,59 @@ body[data-csd-prime] input[type=checkbox],body[data-csd-prime] input[type=radio]
  body[data-csd-prime] .case,body[data-csd-prime] .q{background:#fff!important;color:#111!important;box-shadow:none!important}
  body[data-csd-prime] main p,body[data-csd-prime] main h2,body[data-csd-prime] main label{color:#111!important}
 }
+
+/* CSD | Contraste de superficies interiores de módulos, 2026-11-03.
+   La capa Prime define textos claros: todas las superficies de lectura deben
+   usar fondos oscuros. Corrige guías, fórmulas, tests y zonas auxiliares. */
+@media screen {
+ body[data-csd-prime] .guide,
+ body[data-csd-prime] .guide-head,
+ body[data-csd-prime] .guide-body,
+ body[data-csd-prime] .formula,
+ body[data-csd-prime] .quiz,
+ body[data-csd-prime] .exercise,
+ body[data-csd-prime] .report,
+ body[data-csd-prime] details,
+ body[data-csd-prime] details .solution,
+ body[data-csd-prime] .result,
+ body[data-csd-prime] .step,
+ body[data-csd-prime] .unit-head {
+   background:#102b43!important;color:#edf6ff!important;
+   border-color:#456783!important;
+ }
+ body[data-csd-prime] .guide-head{background:#20425d!important;}
+ body[data-csd-prime] .formula{background:#173a55!important;border-left:4px solid #6be0df!important;}
+ body[data-csd-prime] .quiz{background:#132f49!important;}
+ body[data-csd-prime] .guide h2,
+ body[data-csd-prime] .guide h3,
+ body[data-csd-prime] .guide p,
+ body[data-csd-prime] .quiz label,
+ body[data-csd-prime] .quiz p,
+ body[data-csd-prime] .formula,
+ body[data-csd-prime] .exercise b,
+ body[data-csd-prime] .guide-head strong,
+ body[data-csd-prime] details summary,
+ body[data-csd-prime] .result strong{color:#edf7ff!important;}
+ body[data-csd-prime] .result.pass,
+ body[data-csd-prime] .pass{background:#124a3c!important;color:#d9ffec!important;border-color:#3c977a!important;}
+ body[data-csd-prime] .result.fail,
+ body[data-csd-prime] .fail{background:#582b39!important;color:#ffe0e3!important;border-color:#a15f6c!important;}
+ body[data-csd-prime] .top,
+ body[data-csd-prime] .ipg-exitbar,
+ body[data-csd-prime] .side{background:#102b43!important;color:#edf7ff!important;border-color:#456783!important;}
+ body[data-csd-prime] .brand strong,
+ body[data-csd-prime] .nav .brand strong,
+ body[data-csd-prime] .ipg-exitbar .ipg-note{color:#e8f4ff!important;}
+ body[data-csd-prime] .side .tab{color:#dfeeff!important;background:transparent!important;}
+ body[data-csd-prime] .side .tab:hover,
+ body[data-csd-prime] .side .tab.active{color:#fff!important;background:#245b76!important;}
+ body[data-csd-prime] .kpi b,
+ body[data-csd-prime] .st b{color:#f5fbff!important;}
+ body[data-csd-prime] .unit-progress,
+ body[data-csd-prime] .pill{color:#edf7ff!important;}
+ body[data-csd-prime] button.btn.light,
+ body[data-csd-prime] button.ipg-back{background:#28516c!important;color:#f5fbff!important;}
+ body[data-csd-prime] .ipg-auth-card p,
+ body[data-csd-prime] .ipg-auth-card h1,
+ body[data-csd-prime] .ipg-auth-card small{color:#e7f2ff!important;}
+}
