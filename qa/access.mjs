@@ -1,7 +1,7 @@
 import {chromium} from 'playwright';
 import fs from 'node:fs/promises';
 const browser=await chromium.launch({headless:true});
-const modules=['wms','comex','portsim','finanzas','rrhh','marketing','integrado'];
+const modules=['wms','comex','portsim','finanzas','rrhh','marketing','integrado','contabilidad-costos','bases-proyectos','formacion-humana'];
 let failures=0;
 for(const module of modules)for(const perfil of ['estudiante','docente','colaborador']){
  const context=await browser.newContext();const page=await context.newPage();const writes=[];
@@ -16,16 +16,16 @@ for(const module of modules)for(const perfil of ['estudiante','docente','colabor
   if(await page.locator('#csdPrivacyGate').isVisible()){await page.locator('#csdPrivacyGate input').check();await page.locator('#csdPrivacyGate button').click();}
   await page.locator('#csdPerfil').selectOption(perfil);
   await page.locator('#csdNombre').fill('Prueba local de acceso');
-  await page.locator('#ipgAuthEmail').fill('prueba@ipg.cl');
+  await page.locator(module==='contabilidad-costos'?'#authEmail':module==='formacion-humana'?'#email':'#ipgAuthEmail').fill('prueba@ipg.cl');
   if(perfil!=='colaborador')await page.locator('#csdRut').fill('12.345.678-0');
   if(perfil==='estudiante')await page.locator('#csdCarrera').selectOption('EGNM-01');
   else if(await page.locator('#csdCarreraWrap').isVisible())throw Error('Carrera visible para '+perfil);
-  await page.locator('#ipgAuthLogin').click();
-  await page.waitForFunction(()=>document.body.classList.contains('ipg-auth-ok'),{timeout:10000});
+  await page.locator(module==='contabilidad-costos'?'#authLogin':module==='formacion-humana'?'#enter':'#ipgAuthLogin').click();
+  await page.waitForFunction(m=>m==='contabilidad-costos'?document.body.classList.contains('auth-ok'):m==='formacion-humana'?getComputedStyle(document.getElementById('login')).display==='none':document.body.classList.contains('ipg-auth-ok'),module,{timeout:10000});
   const ident=writes.find(x=>x.url.includes('registrar_identificacion_csd'))?.data;
   if(!ident||ident.p_perfil!==perfil||ident.p_carrera_codigo!==(perfil==='estudiante'?'EGNM-01':null))throw Error('Identificación incorrecta');
 
-  const ids=module==='wms'?['loginName','loginId','loginCareer']:module==='comex'?['stName','stId','stCareer']:['student','studentId','career'];
+  const ids=module==='wms'?['loginName','loginId','loginCareer']:module==='comex'?['stName','stId','stCareer']:module==='formacion-humana'?['name','career']:['student','studentId','career'];
   for(const id of ids){const el=page.locator('#'+id);if(await el.count()){if(await el.isVisible())throw Error('Dato personal repetido: '+id);const value=await el.inputValue();if(!value)throw Error('Dato no reutilizado: '+id);}}
   if(module==='wms'){
    await page.locator('#loginSection').fill('Sección de prueba');
