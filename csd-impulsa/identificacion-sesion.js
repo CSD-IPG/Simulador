@@ -63,5 +63,37 @@
   button.addEventListener('click',()=>{if(!cb.checked)return;try{sessionStorage.setItem(key,JSON.stringify({accepted:true,version:'csd-academico-v1',fecha:new Date().toISOString()}))}catch(e){}layer.remove();css.remove()});
   card.append(h,p,label,button);layer.append(card);document.body.append(layer);button.focus();
  }
- document.addEventListener('DOMContentLoaded',()=>{privacyGate();ensureProfile();apply();document.addEventListener('change',store,true);document.addEventListener('click',e=>{if(e.target?.closest?.('#ipgAuthLogin'))registrarPerfil()},true);document.addEventListener('input',e=>{if(e.target&&e.target.id==='ipgAuthEmail')store()},true)});
+
+ // La identificación se reutiliza solo dentro del recurso abierto; el RUT no se persiste.
+ function reuseIdentification(){
+  const profile=get('csdPerfil'),name=get('csdNombre'),rut=get('csdRut'),career=get('csdCarrera');
+  if(!profile||!name||!name.value.trim())return;
+  const module=location.pathname.split('/').filter(Boolean).filter(x=>x!=='index.html').pop();
+  const map=module==='wms'?{nombre:'loginName',rut:'loginId',carrera:'loginCareer'}:
+   module==='comex'?{nombre:'stName',rut:'stId',carrera:'stCareer'}:
+   module==='formacion-humana'?{nombre:'name',carrera:'career'}:
+   {nombre:'student',rut:'studentId',carrera:'career'};
+  const data={nombre:name.value.trim(),rut:rut?.value.trim()||findValue('email')||get('authEmail')?.value.trim()||get('email')?.value.trim()||'',
+   carrera:profile.value==='estudiante'?(career?.selectedOptions[0]?.textContent||''):profile.value==='docente'?'Participación docente':'Comunidad IPG'};
+  let first=null;
+  for(const [key,id] of Object.entries(map)){
+   const el=get(id);if(!el||el.closest('#ipgAuthGate,#authGate,#login'))continue;
+   if(el.value!==data[key])el.value=data[key];
+   el.readOnly=true;
+   const parent=el.parentElement;
+   if(parent&&parent.querySelectorAll('input,select,textarea').length===1){
+    if(!parent.classList.contains('csd-identity-reused'))parent.classList.add('csd-identity-reused');
+    first=first||parent;
+   }
+  }
+  if(first&&!get('csdIdentityNotice')){
+   const notice=document.createElement('p');notice.id='csdIdentityNotice';notice.className='csd-identity-notice';
+   notice.textContent='Tu identificación ya fue registrada al ingresar. Completa solo los datos de la actividad: asignatura, sección y docente, según corresponda.';
+   first.parentElement.insertBefore(notice,first);
+  }
+ }
+ const reuseStyle=document.createElement('style');reuseStyle.textContent='.csd-identity-reused{display:none!important}.csd-identity-notice{grid-column:1/-1;padding:12px!important;border:1px solid #648ba8!important;border-radius:10px;background:#173b55!important;color:#edf7ff!important;line-height:1.5}';document.head.appendChild(reuseStyle);
+ let reuseScheduled=false;
+ function scheduleReuse(){if(reuseScheduled)return;reuseScheduled=true;queueMicrotask(()=>{reuseScheduled=false;reuseIdentification()})}
+ document.addEventListener('DOMContentLoaded',()=>{privacyGate();ensureProfile();apply();reuseIdentification();new MutationObserver(scheduleReuse).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});document.addEventListener('change',store,true);document.addEventListener('click',e=>{if(e.target?.closest?.('#ipgAuthLogin'))registrarPerfil()},true);document.addEventListener('input',e=>{if(e.target&&e.target.id==='ipgAuthEmail')store()},true)});
 })();

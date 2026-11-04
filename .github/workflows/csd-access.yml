@@ -10,6 +10,8 @@ on:
       - 'marketing/**'
       - 'integrado/**'
       - 'qa/access.mjs'
+      - 'csd-impulsa/identificacion-sesion.js'
+      - 'csd-impulsa/csd-prime.css'
       - '.github/workflows/csd-access.yml'
   workflow_dispatch:
 jobs:
@@ -29,3 +31,8 @@ jobs:
         run: |
           python3 -m http.server 8765 > /tmp/csd-http.log 2>&1 &
           node qa/access.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wms-interior-verificado
+          path: qa-results/

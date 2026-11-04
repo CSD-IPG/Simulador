@@ -191,3 +191,32 @@ body[data-csd-prime] input[type=checkbox],body[data-csd-prime] input[type=radio]
    color:#e2effa!important;
  }
 }
+
+/* WMS: superficies internas verificadas después del ingreso. */
+@media screen {
+ body[data-csd-prime="wms"] #loginCard,
+ body[data-csd-prime="wms"] .ipg-student-guide,
+ body[data-csd-prime="wms"] .ipg-guide-box,
+ body[data-csd-prime="wms"] .scoreitem,
+ body[data-csd-prime="wms"] .report-sheet,
+ body[data-csd-prime="wms"] .report-kpi,
+ body[data-csd-prime="wms"] .timeline-item {
+  background:#14314a!important;color:#edf7ff!important;border-color:#557b98!important;
+ }
+ body[data-csd-prime="wms"] .brand,
+ body[data-csd-prime="wms"] .ipg-student-guide h3,
+ body[data-csd-prime="wms"] .ipg-student-guide p,
+ body[data-csd-prime="wms"] .ipg-guide-box b,
+ body[data-csd-prime="wms"] .scoreitem b,
+ body[data-csd-prime="wms"] .report-kpi b,
+ body[data-csd-prime="wms"] .report-title,
+ body[data-csd-prime="wms"] .report-meta,
+ body[data-csd-prime="wms"] .timeline-time,
+ body[data-csd-prime="wms"] .headmeta,
+ body[data-csd-prime="wms"] label {color:#edf7ff!important;}
+ body[data-csd-prime="wms"] .complete{background:#164d42!important;color:#d7fff0!important;}
+ body[data-csd-prime="wms"] .incomplete{background:#59411c!important;color:#fff0cd!important;}
+ body[data-csd-prime="wms"] .req{color:#ffbdbd!important;}
+ body[data-csd-prime="wms"] input:disabled,
+ body[data-csd-prime="wms"] select:disabled{opacity:1!important;color:#d5e8f7!important;background:#1c3a52!important;}
+}

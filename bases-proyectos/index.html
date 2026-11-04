@@ -36,7 +36,7 @@ body.ipg-auth-ok #ipgAuthGate{display:none!important}
 #ipgAuthMsg.err{background:#fff3f3;color:#9b2c2c}
 #ipgAuthMsg.ok{background:#eefaf4;color:#176b45}
 </style>
-<link rel="stylesheet" href="../csd-impulsa/csd-prime.css?v=20261103-contraste5"><script>document.addEventListener("DOMContentLoaded",()=>document.body.dataset.csdPrime="bases-proyectos")</script></head>
+<link rel="stylesheet" href="../csd-impulsa/csd-prime.css?v=20261104-wms-interior"><script>document.addEventListener("DOMContentLoaded",()=>document.body.dataset.csdPrime="bases-proyectos")</script></head>
 <body><div id="ipgAuthGate">
 <div class="ipg-auth-card">
 <div class="ipg-auth-brand">IPG · CENTRO DE SIMULACIÓN DIGITAL</div>
@@ -58,7 +58,7 @@ body.ipg-auth-ok #ipgAuthGate{display:none!important}
 <div class="layout"><aside class="side">
 <button class="tab active" data-v="inicio">Inicio</button><button class="tab" data-v="u1">Unidad I</button><button class="tab" data-v="u2">Unidad II</button><button class="tab" data-v="u3">Unidad III</button><button class="tab" data-v="registro">Registro</button><button class="tab" data-v="evidencia">Evidencia</button>
 </aside><main class="panel">
-<section class="view active" id="inicio"><h2>Ingreso al módulo</h2><p class="sub">Completa tus datos para iniciar una nueva sesión.</p>
+<section class="view active" id="inicio"><h2>Ingreso al módulo</h2><p class="sub">Tu identificación ya fue registrada. Completa solo los datos de la actividad.</p>
 <div class="form"><div class="f"><label>Nombre</label><input id="student"></div><div class="f"><label>ID / RUT</label><input id="studentId"></div><div class="f"><label>Carrera</label><input id="career" value="Ingeniería en Administración de Empresas"></div><div class="f"><label>Sección</label><input id="section"></div><div class="f"><label>Actividad</label><input id="activity" value="PROY-SIM01"></div><div class="f"><label>Docente</label><input id="teacher"></div></div>
 <div class="actions"><button class="btn pri" id="start">Iniciar reforzamiento</button><button class="btn light" id="reset">Reiniciar progreso</button></div><div class="notice" style="margin-top:14px"><b>Habilitación:</b> 4 de 5 respuestas correctas por unidad.</div></section>
 <section class="view" id="u1"></section><section class="view" id="u2"></section><section class="view" id="u3"></section>
@@ -185,4 +185,4 @@ btn.addEventListener('click',enter,true);
 emailInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!window.__csdIdentOk){e.preventDefault();e.stopImmediatePropagation();btn.click()}},true);
 })();
 </script>
-<script defer src="../csd-impulsa/identificacion-sesion.js"></script><script>window.CSDBadgeSource=()=>({module:"Bases para Proyectos",icon:"chart",entries:Object.entries(s.tests||{}).map(([id,r])=>({id,title:'Unidad '+id.replace('u',''),score:r.score,threshold:70,passed:r.passed===true}))});</script><script defer src="../csd-impulsa/insignias.js?v=1"></script></body></html>
+<script defer src="../csd-impulsa/identificacion-sesion.js?v=20261104-identificacion-unica"></script><script>window.CSDBadgeSource=()=>({module:"Bases para Proyectos",icon:"chart",entries:Object.entries(s.tests||{}).map(([id,r])=>({id,title:'Unidad '+id.replace('u',''),score:r.score,threshold:70,passed:r.passed===true}))});</script><script defer src="../csd-impulsa/insignias.js?v=1"></script></body></html>

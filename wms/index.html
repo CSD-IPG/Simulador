@@ -71,7 +71,7 @@ body.ipg-auth-ok #ipgAuthGate{display:none!important}
 #ipgAuthMsg.err{background:#fff3f3;color:#9b2c2c}
 #ipgAuthMsg.ok{background:#eefaf4;color:#176b45}
 </style>
-<link rel="stylesheet" href="../csd-impulsa/csd-prime.css?v=20261103-contraste5"><script>document.addEventListener("DOMContentLoaded",()=>document.body.dataset.csdPrime="wms")</script></head>
+<link rel="stylesheet" href="../csd-impulsa/csd-prime.css?v=20261104-wms-interior"><script>document.addEventListener("DOMContentLoaded",()=>document.body.dataset.csdPrime="wms")</script></head>
 <body><div id="ipgAuthGate">
 <div class="ipg-auth-card">
 <div class="ipg-auth-brand">IPG · CENTRO DE SIMULACIÓN DIGITAL</div>
@@ -100,13 +100,13 @@ body.ipg-auth-ok #ipgAuthGate{display:none!important}
     <div class="brand">IPG · CENTRO DE SIMULACIÓN DIGITAL</div>
     <h1>IPG WMS Simulator V3.6</h1>
     <p class="muted">Versión académica trazable · identifica al estudiante, registra acciones y genera evidencia final.</p>
-    <div class="info"><b>Privacidad:</b> esta versión funciona sin servidor. Los datos se guardan solo en este navegador y pueden exportarse como evidencia.</div>
+    <div class="info"><b>Privacidad:</b> La identificación de ingreso se reutiliza en esta actividad. La participación se registra institucionalmente y el avance se conserva también en este navegador.</div>
     <div class="row2" style="margin-top:14px">
       <div><label>Nombre completo <span class="req">*</span></label><input id="loginName" placeholder="Ej. Camila Soto Rojas"></div>
       <div><label>ID estudiante / RUT <span class="req">*</span></label><input id="loginId" placeholder="Ej. 12345678-9"></div>
       <div><label>Carrera <span class="req">*</span></label><input id="loginCareer" placeholder="Ej. TNS en Operaciones Logísticas"></div>
       <div><label>Sección <span class="req">*</span></label><input id="loginSection" placeholder="Ej. LOG-201"></div>
-      <div><label>Código de actividad <span class="req">*</span></label><input id="loginActivity" placeholder="Ej. SIM-LOG02"></div>
+      <div><label>Asignatura / código de actividad <span class="req">*</span></label><input id="loginActivity" placeholder="Ej. SIM-LOG02"></div>
       <div><label>Docente</label><input id="loginTeacher" placeholder="Nombre docente"></div>
     </div>
     <div class="actions">
@@ -133,7 +133,7 @@ body.ipg-auth-ok #ipgAuthGate{display:none!important}
   <h3>Guía rápida para comenzar</h3>
   <p>Antes de iniciar, revisa este flujo. Puedes suspender tu sesión y volver más tarde sin perder el avance.</p>
   <ol>
-    <li>Completa tu identificación y código de actividad.</li>
+    <li>Completa los datos adicionales de la actividad.</li>
     <li>Revisa el <b>Panel</b> y los indicadores iniciales.</li>
     <li>Recepciona al menos una orden de compra.</li>
     <li>Comprueba el inventario disponible.</li>
@@ -251,7 +251,7 @@ function downloadCSV(){const rows=[['IPG WMS Simulator V3.6'],['Estudiante',stat
 function downloadJSON(){downloadBlob(JSON.stringify(state,null,2),`WMS_${safeName(state.meta.studentId)}_${safeName(state.meta.activity)}.json`,'application/json')}
 function safeName(s){return String(s||'').replace(/[^a-z0-9_-]/gi,'_')}
 function downloadBlob(content,name,type){const blob=new Blob([content],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},100)}
-function renderGuide(){document.getElementById('guide').innerHTML=`<h2>Guía rápida V2</h2><div class="grid" style="margin-top:14px"><div class="card span-8"><h3>Flujo sugerido</h3><ol><li>Completa identificación y código de actividad.</li><li>Revisa el Panel.</li><li>Recepciona al menos una OC.</li><li>Comprueba inventario.</li><li>Ejecuta Picking → Packing → Despacho.</li><li>Activa una contingencia y registra tu decisión.</li><li>Abre <b>Evidencia</b> y revisa tu bitácora.</li><li>Finaliza y guarda el reporte como PDF; opcionalmente descarga CSV.</li></ol><h3>Qué registra el sistema</h3><ul><li>Identificación del estudiante y sección.</li><li>Código de actividad.</li><li>Hora de inicio y tiempo efectivo de sesión.</li><li>Operaciones ejecutadas.</li><li>Puntaje y errores.</li><li>Contingencias activadas.</li><li>Respuesta del estudiante.</li></ul><h3>Uso del PDF</h3><p>Al pulsar <b>Guardar PDF</b>, se abre la impresión del navegador. Selecciona “Guardar como PDF” si necesitas conservar una copia de tu evidencia.</p></div><div class="card span-4"><button class="btn danger" onclick="resetOps()">Restablecer ejercicio</button></div></div><div class="footer-note">Este entorno modela procesos WMS genéricos con propósito formativo.</div>`}
+function renderGuide(){document.getElementById('guide').innerHTML=`<h2>Guía rápida V2</h2><div class="grid" style="margin-top:14px"><div class="card span-8"><h3>Flujo sugerido</h3><ol><li>Completa los datos adicionales de la actividad.</li><li>Revisa el Panel.</li><li>Recepciona al menos una OC.</li><li>Comprueba inventario.</li><li>Ejecuta Picking → Packing → Despacho.</li><li>Activa una contingencia y registra tu decisión.</li><li>Abre <b>Evidencia</b> y revisa tu bitácora.</li><li>Finaliza y guarda el reporte como PDF; opcionalmente descarga CSV.</li></ol><h3>Qué registra el sistema</h3><ul><li>Identificación del estudiante y sección.</li><li>Código de actividad.</li><li>Hora de inicio y tiempo efectivo de sesión.</li><li>Operaciones ejecutadas.</li><li>Puntaje y errores.</li><li>Contingencias activadas.</li><li>Respuesta del estudiante.</li></ul><h3>Uso del PDF</h3><p>Al pulsar <b>Guardar PDF</b>, se abre la impresión del navegador. Selecciona “Guardar como PDF” si necesitas conservar una copia de tu evidencia.</p></div><div class="card span-4"><button class="btn danger" onclick="resetOps()">Restablecer ejercicio</button></div></div><div class="footer-note">Este entorno modela procesos WMS genéricos con propósito formativo.</div>`}
 function renderAll(){migrateReceiptRecords();renderDashboard();renderChallenges();renderReception();renderInventory();renderPicking();renderPacking();renderDispatch();renderCases();renderReport();renderGuide();persist(false)}
 window.addEventListener('beforeunload',()=>{if(state){pauseClock();persist(false)}});
 const saved=localStorage.getItem(STORAGE);if(saved){try{const s=JSON.parse(saved);if(s?.meta?.name){document.getElementById('loginName').value=s.meta.name;document.getElementById('loginId').value=s.meta.studentId||'';document.getElementById('loginCareer').value=s.meta.career||'';document.getElementById('loginSection').value=s.meta.section||'';document.getElementById('loginActivity').value=s.meta.activity||'';document.getElementById('loginTeacher').value=s.meta.teacher||'';}}catch(e){}}
@@ -497,5 +497,5 @@ emailInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!window.__csdIdent
 </script>
 <script>window.CSD_SUPABASE_PUBLISHABLE_KEY=IPG_TRACE_ANON;</script>
 <script defer src="../csd-impulsa/telemetria-proceso.js" data-module="wms"></script>
-<script defer src="../csd-impulsa/identificacion-sesion.js"></script></body>
+<script defer src="../csd-impulsa/identificacion-sesion.js?v=20261104-identificacion-unica"></script></body>
 </html>

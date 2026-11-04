@@ -57,7 +57,7 @@ body.auth-ok .ipg-studybar{display:flex}
 .ipg-studybar small{flex-basis:100%;color:var(--m);font-size:12px}
 @media(max-width:900px){.ipg-studybar{gap:6px;padding:8px}.ipg-studybar .saveb{margin-left:0}.ipg-studybar button{padding:8px 10px;font-size:12px}}
 </style>
-<link rel="stylesheet" href="../csd-impulsa/csd-prime.css?v=20261103-contraste5"><script>document.addEventListener("DOMContentLoaded",()=>document.body.dataset.csdPrime="contabilidad-costos")</script></head>
+<link rel="stylesheet" href="../csd-impulsa/csd-prime.css?v=20261104-wms-interior"><script>document.addEventListener("DOMContentLoaded",()=>document.body.dataset.csdPrime="contabilidad-costos")</script></head>
 <body>
 <div id="authGate">
   <div class="auth-card">
@@ -101,7 +101,7 @@ body.auth-ok .ipg-studybar{display:flex}
 </aside>
 <main class="panel">
 <section class="view active" id="inicio">
-<h2>Ingreso al módulo de reforzamiento</h2><p class="sub">Registra tus datos. El progreso queda guardado en este navegador.</p>
+<h2>Ingreso al módulo de reforzamiento</h2><p class="sub">Tu identificación ya fue registrada. Completa solo los datos de la actividad.</p>
 <div class="form"><div class="f"><label>Nombre estudiante</label><input id="student"></div><div class="f"><label>ID / RUT</label><input id="studentId"></div><div class="f"><label>Carrera</label><input id="career" value="TNS en Contabilidad General"></div><div class="f"><label>Sección</label><input id="section"></div><div class="f"><label>Código actividad</label><input id="activity" value="COSTOS-REF01"></div><div class="f"><label>Docente</label><input id="teacher"></div></div>
 <div class="actions"><button class="btn pri" id="start">Iniciar estudio</button><button class="btn light" id="reset">Reiniciar progreso</button></div>
 <div class="notice" style="margin-top:15px"><b>Habilitación:</b> cada unidad tiene un test de 5 preguntas. Se considera habilitada con <b>70% o más</b>; con 5 preguntas, esto implica responder correctamente al menos 4.</div>
@@ -340,4 +340,4 @@ btn.addEventListener('click',enter,true);
 emailInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!window.__csdIdentOk){e.preventDefault();e.stopImmediatePropagation();btn.click()}},true);
 })();
 </script>
-<script defer src="../csd-impulsa/identificacion-sesion.js"></script><script>window.CSDBadgeSource=()=>({module:"Contabilidad de Costos",icon:"chart",entries:Object.entries(s.tests||{}).map(([id,r])=>({id,title:'Unidad '+id.replace('u',''),score:r.score,threshold:70,passed:r.passed===true}))});</script><script defer src="../csd-impulsa/insignias.js?v=1"></script></body></html>
+<script defer src="../csd-impulsa/identificacion-sesion.js?v=20261104-identificacion-unica"></script><script>window.CSDBadgeSource=()=>({module:"Contabilidad de Costos",icon:"chart",entries:Object.entries(s.tests||{}).map(([id,r])=>({id,title:'Unidad '+id.replace('u',''),score:r.score,threshold:70,passed:r.passed===true}))});</script><script defer src="../csd-impulsa/insignias.js?v=1"></script></body></html>
