@@ -60,3 +60,6 @@ for(const id of modules){
 await browser.close();
 await fs.mkdir('qa-results',{recursive:true});
 await fs.writeFile('qa-results/contrast.json',JSON.stringify({total:results.length,results},null,2));
+const failures=results.filter(x=>x.id!=='impulsa'&&x.issues.some(y=>y.error||y.ratio<4.5));
+console.log('CONTRASTE_FINAL',JSON.stringify({tested:results.length,passed:results.length-failures.length,failed:failures.length,failures:failures.map(x=>x.id)}));
+if(failures.length)process.exitCode=1;
