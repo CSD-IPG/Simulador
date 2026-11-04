@@ -21,7 +21,7 @@ for(const module of modules)for(const perfil of ['estudiante','docente','colabor
   if(perfil==='estudiante')await page.locator('#csdCarrera').selectOption('EGNM-01');
   else if(await page.locator('#csdCarreraWrap').isVisible())throw Error('Carrera visible para '+perfil);
   await page.locator(module==='contabilidad-costos'?'#authLogin':module==='formacion-humana'?'#enter':'#ipgAuthLogin').click();
-  await page.waitForFunction(m=>m==='contabilidad-costos'?document.body.classList.contains('auth-ok'):m==='formacion-humana'?getComputedStyle(document.getElementById('login')).display==='none':document.body.classList.contains('ipg-auth-ok'),module,{timeout:10000});
+  await page.waitForFunction(m=>m==='contabilidad-costos'?document.body.classList.contains('auth-ok'):m==='formacion-humana'?document.getElementById('gate').hidden:document.body.classList.contains('ipg-auth-ok'),module,{timeout:10000});
   const ident=writes.find(x=>x.url.includes('registrar_identificacion_csd'))?.data;
   if(!ident||ident.p_perfil!==perfil||ident.p_carrera_codigo!==(perfil==='estudiante'?'EGNM-01':null))throw Error('Identificación incorrecta');
 
