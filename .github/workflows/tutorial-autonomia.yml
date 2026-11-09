@@ -1,36 +1,26 @@
-name: Actualizar videos de uso autónomo
+name: Publicar corrección de videos CSD
 on:
   push:
     paths: ['.github/workflows/tutorial-autonomia.yml']
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 concurrency:
   group: pages
   cancel-in-progress: false
 jobs:
-  videos:
+  publicar:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu-core
-      - run: pip install edge-tts Pillow numpy scipy
-      - run: python tools/tutoriales/corregir_autonomia.py
-      - name: Conservar videos y subtítulos corregidos
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add ayuda/*.mp4 ayuda/*.vtt
-          git commit -m 'Corrige videos CSD y WMS para práctica autónoma'
-          git push
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
       - uses: actions/deploy-pages@v4
-# Ajuste de posición del texto del capítulo de acceso.
+        id: deployment
