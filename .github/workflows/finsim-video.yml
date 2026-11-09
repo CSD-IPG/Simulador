@@ -1,0 +1,42 @@
+name: FIN-SIM - Video de orientación autónoma
+on:
+  push:
+    paths: ['.github/workflows/finsim-video.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  generar-y-publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu-core
+      - run: pip install edge-tts==7.3.1 Pillow==11.3.0 numpy==2.2.6 scipy==1.15.3
+      - run: python tools/tutoriales/crear_video_finsim.py
+      - name: Verificar video y modelo financiero
+        run: |
+          ffmpeg -v error -i finanzas/ayuda/finsim-primeros-pasos.mp4 -f null -
+          node finanzas/laboral.test.cjs
+      - name: Conservar video, subtítulos y entrada del simulador
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add finanzas/ayuda finanzas/index.html
+          git diff --cached --quiet || git commit -m 'Publica orientación autónoma de FIN-SIM con narración y subtítulos'
+          git push
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+      - uses: actions/deploy-pages@v4
