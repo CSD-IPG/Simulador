@@ -177,8 +177,9 @@ async function ipgPostFinalSnapshot(){
 }
 async function ipgGoPortal(finalize=false){
   if(finalize){
-    if(!ipgTraceStarted()){alert("Inicia una actividad antes de finalizar.");return false}
-    await ipgPostFinalSnapshot();
+    if(!ipgTraceStarted()&&!window.portSimHasTurn?.()){alert("Inicia una actividad antes de finalizar.");return false}
+    if(window.portSimHasTurn?.())await window.portSimFinalizeTurn?.();
+    if(ipgTraceStarted())await ipgPostFinalSnapshot();
     window.location.href="../";return true
   }
   try{
