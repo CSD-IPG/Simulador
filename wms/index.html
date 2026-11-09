@@ -71,7 +71,25 @@ body.ipg-auth-ok #ipgAuthGate{display:none!important}
 #ipgAuthMsg.err{background:#fff3f3;color:#9b2c2c}
 #ipgAuthMsg.ok{background:#eefaf4;color:#176b45}
 </style>
-<link rel="stylesheet" href="../csd-impulsa/csd-prime.css?v=20261104-wms-interior"><script>document.addEventListener("DOMContentLoaded",()=>document.body.dataset.csdPrime="wms")</script><link rel="stylesheet" href="../ayuda/tutoriales.css"><script defer src="../ayuda/tutoriales.js"></script></head>
+<link rel="stylesheet" href="../csd-impulsa/csd-prime.css?v=20261104-wms-interior"><script>document.addEventListener("DOMContentLoaded",()=>document.body.dataset.csdPrime="wms")</script><link rel="stylesheet" href="../ayuda/tutoriales.css"><script defer src="../ayuda/tutoriales.js"></script><style>
+.ipg-wms-intro{background:linear-gradient(125deg,#0c2949,#104b66);border:1px solid #4286a2;border-radius:16px;padding:20px 22px;margin:0 0 18px;color:#eefaff;box-shadow:0 8px 24px #081f3624}
+.ipg-wms-intro-head{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.ipg-wms-intro-kicker{font-size:11px;letter-spacing:.09em;font-weight:800;color:#83f0e6}
+.ipg-wms-intro h2{color:white;margin:7px 0;font-size:22px}
+.ipg-wms-intro p{color:#dcecf6;line-height:1.55;margin:8px 0;max-width:720px}
+
+.ipg-wms-intro #wmsIntroToggle{background:#40d6c2;color:#09263c;border:0;font-weight:800}
+#wmsIntroContent[hidden]{display:none!important}
+#wmsIntroContent{margin-top:18px;border-top:1px solid #52829d;padding-top:16px}
+#wmsIntroVideo{display:block;width:min(900px,100%);max-height:65vh;aspect-ratio:16/9;margin:auto;background:#071626;border-radius:12px}
+.ipg-wms-intro .help-chapters{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0}
+.ipg-wms-intro .help-chapters button{border:1px solid #89c5d6;background:#153e5c;color:#f5fbff;border-radius:8px;padding:8px 10px;cursor:pointer}
+.ipg-wms-intro .help-chapters button:hover{background:#22668b}
+.ipg-wms-intro .ipg-wms-intro-foot{font-size:13px;max-width:none}
+.ipg-wms-intro a{color:#92fcf2}
+@media(max-width:700px){.ipg-wms-intro{padding:15px}.ipg-wms-intro-head{align-items:stretch}#wmsIntroToggle{width:100%}}
+@media print{#wmsIntroPanel{display:none!important}}
+</style></head>
 <body><div id="ipgAuthGate">
 <div class="ipg-auth-card">
 <div class="ipg-auth-brand">IPG · CENTRO DE SIMULACIÓN DIGITAL</div>
@@ -84,7 +102,7 @@ body.ipg-auth-ok #ipgAuthGate{display:none!important}
 <button class="ipg-auth-primary" id="ipgAuthLogin">Ingresar</button>
 <button class="ipg-auth-secondary" id="ipgAuthPortal">Volver al CSD</button>
 </div>
-<p style="font-size:14px"><strong>¿Primera vez en el WMS?</strong><br><a href="ayuda.html">Ver video y consultar el manual</a></p><div id="ipgAuthMsg">Acceso permitido para @alumnos.ipg.cl, @docentes.ipg.cl y @ipg.cl. No se requiere contraseña.</div>
+<div id="ipgAuthMsg">Acceso permitido para @alumnos.ipg.cl, @docentes.ipg.cl y @ipg.cl. No se requiere contraseña.</div>
 </div></div>
 
 <div class="ipg-exitbar" id="ipgMainToolbar">
@@ -129,7 +147,30 @@ body.ipg-auth-ok #ipgAuthGate{display:none!important}
 <main>
 
 
-<div class="ipg-student-guide" id="ipgStudentGuide"><p><a href="ayuda.html" target="_blank" rel="noopener">Video e instructivo completo (abre otra pestaña)</a> · <a href="../ayuda/Manual_WMS.pdf" download>Descargar manual PDF</a></p>
+<section id="wmsIntroPanel" class="ipg-wms-intro" aria-labelledby="wmsIntroTitle">
+  <div class="ipg-wms-intro-head">
+    <div><span class="ipg-wms-intro-kicker">CSD IPG · APOYO AL APRENDIZAJE AUTÓNOMO</span><h2 id="wmsIntroTitle">Conoce cómo funciona WMS</h2><p>Antes de explorar la bodega o resolver los desafíos profesionales, conoce sus dos modalidades y los principales procesos. Puedes ver esta guía cuando quieras.</p></div>
+    <button type="button" id="wmsIntroToggle" class="btn primary" aria-expanded="false" aria-controls="wmsIntroContent">▶ Ver video explicativo</button>
+  </div>
+  <div id="wmsIntroContent" hidden>
+    <video id="wmsIntroVideo" controls playsinline preload="metadata" poster="../ayuda/wms-primeros-pasos-portada.jpg?v=20261109-autonomo" aria-label="Video de introducción autónoma al simulador WMS">
+      <source src="../ayuda/wms-primeros-pasos.mp4?v=20261109-autonomo" type="video/mp4">
+      <track kind="subtitles" src="../ayuda/wms-primeros-pasos.vtt?v=20261109-autonomo" srclang="es" label="Español" default>
+      Tu navegador no admite video HTML5. Puedes consultar la guía escrita en el menú Guía.
+    </video>
+    <p class="ipg-wms-intro-foot">Narración en español · Música instrumental original · Subtítulos disponibles · Duración aproximada: 2 min 42 s.</p>
+    <div class="help-chapters" aria-label="Capítulos del video">
+      <button type="button" data-help-video="wmsIntroVideo" data-help-seek="0">0:00 · Bienvenida</button>
+      <button type="button" data-help-video="wmsIntroVideo" data-help-seek="28">0:28 · Modalidades de trabajo</button>
+      <button type="button" data-help-video="wmsIntroVideo" data-help-seek="54">0:54 · Recepción</button>
+      <button type="button" data-help-video="wmsIntroVideo" data-help-seek="86">1:26 · Picking</button>
+      <button type="button" data-help-video="wmsIntroVideo" data-help-seek="116">1:56 · Despacho</button>
+      <button type="button" data-help-video="wmsIntroVideo" data-help-seek="145">2:25 · Guardar o finalizar</button>
+    </div>
+    <p class="ipg-wms-intro-foot"><a href="../ayuda/Manual_WMS.pdf" download>Descargar manual de uso en PDF</a> · También encontrarás la explicación escrita en el menú <b>Guía</b>.</p>
+  </div>
+</section>
+<div class="ipg-student-guide" id="ipgStudentGuide"><p><b>Recurso opcional:</b> video explicativo disponible en esta misma pantalla y manual en el menú Guía.</p>
   <h3>Guía rápida para comenzar</h3>
   <p>Antes de iniciar, revisa este flujo. Puedes suspender tu sesión y volver más tarde sin perder el avance.</p>
   <ol>
@@ -501,5 +542,27 @@ emailInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!window.__csdIdent
 </script>
 <script>window.CSD_SUPABASE_PUBLISHABLE_KEY=IPG_TRACE_ANON;</script>
 <script defer src="../csd-impulsa/telemetria-proceso.js" data-module="wms"></script>
-<script defer src="../csd-impulsa/identificacion-sesion.js?v=20261104-identificacion-unica2"></script></body>
+<script defer src="../csd-impulsa/identificacion-sesion.js?v=20261104-identificacion-unica2"></script><script>
+document.addEventListener('DOMContentLoaded',()=>{
+ const toggle=document.getElementById('wmsIntroToggle');
+ const pane=document.getElementById('wmsIntroContent');
+ const video=document.getElementById('wmsIntroVideo');
+ if(!toggle||!pane||!video)return;
+ toggle.addEventListener('click',()=>{
+  const open=pane.hidden;
+  pane.hidden=!open;
+  toggle.setAttribute('aria-expanded',String(open));
+  toggle.textContent=open?'Ocultar video explicativo':'▶ Ver video explicativo';
+  if(!open)video.pause();
+ });
+ document.querySelectorAll('#wmsIntroContent [data-help-seek]').forEach(btn=>btn.addEventListener('click',()=>{
+  pane.hidden=false;
+  toggle.setAttribute('aria-expanded','true');
+  toggle.textContent='Ocultar video explicativo';
+  const time=Number(btn.dataset.helpSeek);
+  const jump=()=>{video.currentTime=time;video.play().catch(()=>{})};
+  if(video.readyState>=1)jump();else video.addEventListener('loadedmetadata',jump,{once:true});
+ }));
+});
+</script></body>
 </html>
