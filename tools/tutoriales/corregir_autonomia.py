@@ -43,7 +43,7 @@ async def main():
      cues.append(f'{stamp(start)} --> {stamp(end)}\n{line}')
    for j in range(len(edits)):args+=['-i',str(tmp/f'{j}.png')]
    for j,(_,_,a,b,_,_) in enumerate(edits):
-    filters.append(f'{vf}[{len(edits)+1+j}:v]overlay=1292:358:enable=\'gte(t,{a})*lt(t,{b})\'[v{j}]');vf=f'[v{j}]'
+    filters.append(f'{vf}[{len(edits)+1+j}:v]overlay=1292:{300 if a == 14 else 358}:enable=\'gte(t,{a})*lt(t,{b})\'[v{j}]');vf=f'[v{j}]'
    filters.append('[0:a]anull'+mute+'[base]')
    filters.append('[base]'+''.join(voices)+f'amix=inputs={len(voices)+1}:duration=first:normalize=0[a]')
    out=tmp/'out.mp4';run(args+['-filter_complex',';'.join(filters),'-map',vf,'-map','[a]','-c:v','libx264','-preset','veryfast','-crf','22','-c:a','aac','-b:a','128k','-t',str(dur),'-movflags','+faststart',str(out)])
