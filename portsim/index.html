@@ -176,18 +176,34 @@ async function ipgPostFinalSnapshot(){
   }catch(e){console.error("Cierre central:",e);ipgTraceStatus("sesión cerrada localmente; sincronización pendiente.",true)}
 }
 async function ipgGoPortal(finalize=false){
-  if(finalize){await ipgPostFinalSnapshot();window.location.href="../";return}
+  if(finalize){
+    if(!ipgTraceStarted()){alert("Inicia una actividad antes de finalizar.");return false}
+    await ipgPostFinalSnapshot();
+    window.location.href="../";return true
+  }
   try{
     if(ipgTraceStarted()){await ipgTraceSync("suspension","Suspendido");ipgTrace.paused=true;localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace))}
+    window.portSimSaveTurn?.();
   }catch(e){console.error("Suspensión:",e)}
   ipgStopLocalClock();
   window.location.href="../";
 }
-document.getElementById("ipgBackPortal")?.addEventListener("click",async()=>{await ipgGoPortal(false)});
+document.getElementById("ipgBackPortal")?.addEventListener("click",async(e)=>{const b=e.currentTarget;b.disabled=true;b.textContent="Guardando...";try{await ipgGoPortal(false)}catch(err){b.disabled=false;b.textContent="← Guardar y volver al portal";alert("No se pudo completar el regreso. El avance local permanece guardado.")}});
 document.getElementById("ipgFinishPortal")?.addEventListener("click",async(e)=>{
   const btn=e.currentTarget;
-  if(btn.dataset.confirmed!=="1"){btn.dataset.confirmed="1";btn.textContent="Confirmar finalización";setTimeout(()=>{if(btn.dataset.confirmed==="1"){btn.dataset.confirmed="0";btn.textContent="Finalizar y volver al portal"}},5000);return}
-  btn.disabled=true;btn.textContent="Finalizando...";await ipgGoPortal(true)
+  if(btn.disabled)return;
+  if(!ipgTraceStarted()&&!window.portSimHasTurn?.()){alert("Primero inicia una simulación.");return}
+  const pending=window.portSimHasTurn?.()&&!window.portSimTurnClosed?.();
+  const question=pending?"Este turno aún tiene tareas sin cerrar. ¿Deseas finalizar la participación y volver al portal de todas formas?":"¿Confirmas que deseas finalizar la actividad y volver al portal? No se podrá continuar este mismo turno.";
+  if(!confirm(question))return;
+  btn.disabled=true;btn.textContent="Finalizando...";
+  try{
+    window.portSimSaveTurn?.();
+    await ipgGoPortal(true);
+  }catch(err){
+    console.error("Error al finalizar",err);btn.disabled=false;btn.textContent="Finalizar y volver al portal";
+    alert("No se pudo completar el cierre. Tu avance se conserva en este dispositivo.");
+  }
 });
 
 
@@ -258,7 +274,7 @@ document.getElementById("ipgAuthEmail")?.addEventListener("keydown",e=>{if(e.key
 })();
 </script><script>window.CSD_SUPABASE_PUBLISHABLE_KEY=IPG_TRACE_ANON;</script>
 <script defer src="../csd-impulsa/telemetria-proceso.js" data-module="portsim"></script>
-<script defer src="../csd-impulsa/identificacion-sesion.js?v=20261104-identificacion-unica2"></script><script defer src="operacion-core.js?v=2"></script><script defer src="operacion.js?v=3-contraste"></script><script>(function(){
+<script defer src="../csd-impulsa/identificacion-sesion.js?v=20261104-identificacion-unica2"></script><script defer src="operacion-core.js?v=2"></script><script defer src="operacion.js?v=4-guardado"></script><script defer src="tutorial.js?v=1"></script><script>(function(){
 const emailInput=document.getElementById('ipgAuthEmail'),btn=document.getElementById('ipgAuthLogin');
 if(!emailInput||!btn)return;
 const box=emailInput.closest('.ipg-auth-grid')||emailInput.parentElement;
