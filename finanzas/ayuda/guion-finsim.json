@@ -1,0 +1,46 @@
+{
+  "voice": "es-CL-CatalinaNeural",
+  "duration": 120,
+  "chapters": [
+    {
+      "start": 0,
+      "title": "Bienvenido a FIN-SIM",
+      "narration": "Bienvenido a FIN SIM, tu espacio de práctica autónoma. Aquí puedes explorar información financiera, tomar decisiones y revisar sus efectos. Elige cuándo comenzar y avanza a tu ritmo."
+    },
+    {
+      "start": 15,
+      "title": "Elige cómo practicar",
+      "narration": "Al ingresar encontrarás dos modalidades. Práctica libre te permite explorar y ejercitar. Desafíos laborales te propone un encargo dentro de una empresa simulada. Cada modalidad conserva su propio avance en este navegador."
+    },
+    {
+      "start": 30,
+      "title": "Asume un rol financiero",
+      "narration": "En Desafíos laborales, elige un caso y revisa el rol que asumirás. Encontrarás situaciones de liquidez, costos o demanda. Lee el encargo y las metas financieras antes de iniciar tu trabajo."
+    },
+    {
+      "start": 45,
+      "title": "Revisa y diagnostica",
+      "narration": "Consulta los antecedentes y las fórmulas. Calcula el diagnóstico en millones de pesos, indicados como MM, y selecciona la prioridad del encargo. Al verificarlo, recibirás una nueva comunicación que modifica la situación de la empresa."
+    },
+    {
+      "start": 60,
+      "title": "Analiza y decide",
+      "narration": "Analiza las medidas disponibles y compara sus efectos, costos y riesgos. Escribe el fundamento de tu decisión y confirma para ejecutarla. Puedes aplicar hasta dos medidas distintas. Observa cómo cambian los indicadores del caso."
+    },
+    {
+      "start": 75,
+      "title": "Presenta tu cierre",
+      "narration": "Completa las cifras del cierre y redacta tu conclusión, los riesgos y el seguimiento. El avance muestra tareas completadas; revisa por separado las metas financieras. Tus argumentos quedan disponibles para tu autoevaluación."
+    },
+    {
+      "start": 90,
+      "title": "Pausa y retoma",
+      "narration": "Puedes pausar y retomar tu intento. Para salir, utiliza Guardar y volver al portal. Regresa desde el mismo dispositivo y navegador, sin borrar sus datos. El avance detallado se conserva localmente."
+    },
+    {
+      "start": 105,
+      "title": "Guarda tu evidencia",
+      "narration": "Descarga tu evidencia en JSON o la bitácora en CSV. Para conservar el informe en PDF, utiliza Imprimir y Guardar como PDF. Descarga tu trabajo antes de crear un nuevo intento. Explora, decide y aprende."
+    }
+  ]
+}
