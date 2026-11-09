@@ -178,12 +178,15 @@ async function ipgPostFinalSnapshot(){
 async function ipgGoPortal(finalize=false){
   if(finalize){
     if(!ipgTraceStarted()&&!window.portSimHasTurn?.()){alert("Inicia una actividad antes de finalizar.");return false}
-    if(window.portSimHasTurn?.())await window.portSimFinalizeTurn?.();
+    if(window.portSimHasTurn?.())await Promise.race([window.portSimFinalizeTurn?.(),new Promise(resolve=>setTimeout(resolve,4200))]);
     if(ipgTraceStarted())await ipgPostFinalSnapshot();
     window.location.href="../";return true
   }
   try{
-    if(ipgTraceStarted()){await ipgTraceSync("suspension","Suspendido");ipgTrace.paused=true;localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace))}
+    if(ipgTraceStarted()){
+      ipgTrace.paused=true;localStorage.setItem(IPG_TRACE_KEY,JSON.stringify(ipgTrace));
+      await Promise.race([ipgTraceSync("suspension","Suspendido"),new Promise(resolve=>setTimeout(resolve,2800))]);
+    }
     window.portSimSaveTurn?.();
   }catch(e){console.error("Suspensión:",e)}
   ipgStopLocalClock();
