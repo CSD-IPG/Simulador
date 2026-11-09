@@ -48,7 +48,7 @@ function apply(s,type,p={}){
   const m=metrics(s.values);
   if(!near(p.sales,m.sales)||!near(p.ebitda,m.ebitda)||!near(p.cash,m.cash))return fail('Tu cierre no concilia con las operaciones. Revisa ventas, EBITDA y caja después de aplicar las medidas.');
   for(const k of ['conclusion','risk','next'])if(String(p[k]||'').trim().length<40)return fail('Completa conclusión, riesgo y seguimiento con al menos 40 caracteres en cada campo. La extensión permite registrar el informe; no evalúa su calidad.');
-  s.closure={...p,goals:result(s),at:new Date().toISOString(),qualitative:'Fundamentación registrada para autoevaluación; no calificada automáticamente.'};s.phase='cerrado';
+  s.closure={...p,goals:result(s),at:new Date().toISOString(),qualitative:'Fundamentación registrada para tu autoevaluación; no calificada automáticamente.'};s.phase='cerrado';
  }else return fail('Acción desconocida.');
  s.events.push({at:new Date().toISOString(),type,values:metrics(s.values),progress:progress(s)});
  return {ok:true,message:type==='diagnostico'?'Diagnóstico verificado. Llegó una nueva comunicación de la empresa.':type==='decision'?'Medida ejecutada. Revisa su efecto en los indicadores y el riesgo pendiente.':'Cierre conciliado. Revisa metas y retroalimentación; un intento cerrado puede quedar bajo las metas.'};
