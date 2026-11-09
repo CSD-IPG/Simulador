@@ -4,7 +4,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: pages
+  group: finsim-video
   cancel-in-progress: false
 jobs:
   generar-y-publicar:
