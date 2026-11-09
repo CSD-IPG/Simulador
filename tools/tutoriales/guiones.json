@@ -1,0 +1,29 @@
+{
+  "voz": "es-CL-CatalinaNeural",
+  "idioma": "Español de Chile",
+  "tipo_voz": "síntesis de voz",
+  "musica": "composición instrumental original, 124 BPM, piano, pads y percusión electrónica",
+  "guiones": {
+    "WMS": [
+      "Aprende a gestionar una bodega simulada. Este ejemplo utiliza datos ficticios y gestión libre. Puedes pausar el video cuando lo necesites.",
+      "Ingresa con tu correo institucional. Revisa la identificación y completa los datos de la actividad que solicite la pantalla, como asignatura, sección y docente.",
+      "En gestión libre exploras las operaciones. En Desafíos laborales eliges un caso y lees sus instrucciones. Cada modalidad mantiene su propio avance en este navegador.",
+      "Identifica las órdenes de compra pendientes, los productos con bajo stock y los pedidos abiertos. Utiliza el menú lateral para cambiar de proceso.",
+      "En Recepción, revisa cantidad, ubicación y condición. En este ejemplo, OC-1001 recibe 30 monitores en B-01-01, con condición Conforme. Pulsa Recepcionar.",
+      "Consulta SKU-003: el stock pasa de 12 a 42 monitores después de recibir 30. Comprueba siempre la ubicación y la disponibilidad antes de preparar pedidos.",
+      "Picking significa recoger los productos. Como ejemplo independiente, prepara PED-2001: 10 teclados, SKU-001. Escribe A-01-01 en Confirmar ubicación y pulsa Confirmar picking.",
+      "En Packing, verifica el mismo pedido PED-2001 y sus 10 unidades. Selecciona el tipo de embalaje adecuado y pulsa Confirmar packing.",
+      "En Despacho, revisa el transportista y documento, ingresa una patente de ejemplo y pulsa Despachar. El pedido debe haber pasado primero por Picking y Packing.",
+      "Abre Evidencia y revisa operaciones, puntaje y errores. Para conservar un PDF, utiliza Imprimir en el navegador y elige Guardar como PDF. Sigue las indicaciones de entrega de tu docente.",
+      "Guardar y volver al portal pausa la sesión. Para retomarla usa el mismo navegador y dispositivo, sin borrar sus datos. Finalizar y volver al portal requiere confirmar el cierre. Descarga la evidencia antes de finalizar."
+    ],
+    "CSD": [
+      "El Centro de Simulación Digital de la Escuela de Gestión, Negocios y Marítima es tu espacio para aprender haciendo y fortalecer conocimientos, habilidades y actitudes.",
+      "En Explorar recursos puedes buscar por nombre y filtrar por tipo, área o carrera. Prueba con WMS. Los recursos transversales también aparecen al seleccionar una carrera.",
+      "Los simuladores permiten operar y tomar decisiones. Los reforzamientos ofrecen apoyo para aprender paso a paso. El repositorio reúne materiales de consulta y práctica.",
+      "Mi CSD: Mi Ruta de Aprendizaje reúne recursos asociados a tu carrera. En CSD Impulsa encuentras el diagnóstico de inicio y la nivelación que corresponda a tus resultados.",
+      "Al abrir un módulo, sigue sus indicaciones de acceso y uso de datos. Utiliza tu correo institucional cuando se solicite. El WMS cuenta con un video y un manual para comenzar.",
+      "Lee las instrucciones, realiza las actividades y consulta la retroalimentación. Conserva la evidencia que ofrezca el recurso y sigue las indicaciones de tu docente. Explora. Practica. Transforma."
+    ]
+  }
+}
