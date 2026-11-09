@@ -2,6 +2,20 @@
 window.portSimSaveTurn=persist;
 window.portSimHasTurn=()=>!!st.events.length;
 window.portSimTurnClosed=()=>!!st.closed;
+window.portSimFinalizeTurn=async()=>{
+  st.finalizedAt=new Date().toISOString();
+  persist();
+  for(const event of st.events.filter(e=>!e.synced))await sync(event.action,event);
+  const email=window.IPG_INSTITUTIONAL_EMAIL||localStorage.getItem('ipg_csd_email_access_v1')||'';
+  if(email){
+    try{
+      const row={session_id:st.session,evento:'turno_finalizacion_manual',email_institucional:email,simulador:'IPG PORTSIM',actividad:E.cases.find(x=>x.id===st.id)?.name||'Turno operativo',estado:'Finalizado',avance:E.progress(st),tiempo_segundos:Math.round((st.minutes||0)*60),puntaje:null,intentos:1};
+      const res=await Promise.race([fetch(IPG_TRACE_URL+'/rest/v1/participaciones',{method:'POST',headers:{apikey:IPG_TRACE_ANON,Authorization:'Bearer '+IPG_TRACE_ANON,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify(row)}),new Promise((_,rej)=>setTimeout(()=>rej(Error('timeout')),2500))]);
+      if(!res.ok)throw Error('No confirmado');
+    }catch(e){console.warn('Cierre avanzado conservado localmente:',e)}
+  }
+  persist();
+};
 const root=document.createElement('section');root.id='portOperations';const host=document.querySelector('.shell');host.prepend(root);const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));let message='Asume la coordinación de un turno: revisa las órdenes antes de actuar.';
 const select=(name,options)=>'<select name="'+name+'">'+options.map(([v,l])=>'<option value="'+v+'">'+esc(l)+'</option>').join('')+'</select>';
 const units=()=>select('unit',E.cargo.map(u=>[u.id,u.id+' · '+u.kind]));const field=(name,label,type='text',extra='')=>'<label>'+label+'<input name="'+name+'" type="'+type+'" '+extra+' required></label>';const check=(name,label)=>'<label class="opcheck"><input name="'+name+'" type="checkbox">'+label+'</label>';
