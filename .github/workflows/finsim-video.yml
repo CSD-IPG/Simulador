@@ -1,12 +1,8 @@
 name: FIN-SIM - Video de orientación autónoma
 on:
-  push:
-    paths: ['.github/workflows/finsim-video.yml']
   workflow_dispatch:
 permissions:
   contents: write
-  pages: write
-  id-token: write
 concurrency:
   group: pages
   cancel-in-progress: false
@@ -14,8 +10,6 @@ jobs:
   generar-y-publicar:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    environment:
-      name: github-pages
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -35,8 +29,3 @@ jobs:
           git add finanzas/ayuda finanzas/index.html
           git diff --cached --quiet || git commit -m 'Publica orientación autónoma de FIN-SIM con narración y subtítulos'
           git push
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
-      - uses: actions/deploy-pages@v4
