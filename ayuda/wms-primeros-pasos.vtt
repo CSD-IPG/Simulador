@@ -1,0 +1,45 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:14.000
+Aprende a gestionar una bodega simulada. Este ejemplo utiliza datos ficticios y gestión libre. Puedes pausar el video cuando lo necesites.
+
+2
+00:00:14.000 --> 00:00:28.000
+Ingresa con tu correo institucional. Revisa la identificación y completa los datos de la actividad que solicite la pantalla, como asignatura, sección y docente.
+
+3
+00:00:28.000 --> 00:00:42.000
+En gestión libre exploras las operaciones. En Desafíos laborales eliges un caso y lees sus instrucciones. Cada modalidad mantiene su propio avance en este navegador.
+
+4
+00:00:42.000 --> 00:00:54.000
+Identifica las órdenes de compra pendientes, los productos con bajo stock y los pedidos abiertos. Utiliza el menú lateral para cambiar de proceso.
+
+5
+00:00:54.000 --> 00:01:12.000
+En Recepción, revisa cantidad, ubicación y condición. En este ejemplo, OC-1001 recibe 30 monitores en B-01-01, con condición Conforme. Pulsa Recepcionar.
+
+6
+00:01:12.000 --> 00:01:26.000
+Consulta SKU-003: el stock pasa de 12 a 42 monitores después de recibir 30. Comprueba siempre la ubicación y la disponibilidad antes de preparar pedidos.
+
+7
+00:01:26.000 --> 00:01:44.000
+Picking significa recoger los productos. Como ejemplo independiente, prepara PED-2001: 10 teclados, SKU-001. Escribe A-01-01 en Confirmar ubicación y pulsa Confirmar picking.
+
+8
+00:01:44.000 --> 00:01:56.000
+En Packing, verifica el mismo pedido PED-2001 y sus 10 unidades. Selecciona el tipo de embalaje adecuado y pulsa Confirmar packing.
+
+9
+00:01:56.000 --> 00:02:10.000
+En Despacho, revisa el transportista y documento, ingresa una patente de ejemplo y pulsa Despachar. El pedido debe haber pasado primero por Picking y Packing.
+
+10
+00:02:10.000 --> 00:02:24.000
+Abre Evidencia y revisa operaciones, puntaje y errores. Para conservar un PDF, utiliza Imprimir en el navegador y elige Guardar como PDF. Sigue las indicaciones de entrega de tu docente.
+
+11
+00:02:24.000 --> 00:02:40.000
+Guardar y volver al portal pausa la sesión. Para retomarla usa el mismo navegador y dispositivo, sin borrar sus datos. Finalizar y volver al portal requiere confirmar el cierre. Descarga la evidencia antes de finalizar.

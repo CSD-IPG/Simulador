@@ -1,0 +1,11 @@
+
+.csd-help{padding:28px;border:1px solid #365473;border-radius:20px;background:#10233c;color:#f5f9ff;margin:22px 0;font-family:system-ui,sans-serif}
+.csd-help h2,.csd-help h3{color:#f5f9ff!important;margin:0 0 12px}.csd-help p,.csd-help li,.csd-help summary{color:#d0dff0!important;line-height:1.65}
+.csd-help video{display:block;width:100%;max-width:1050px;aspect-ratio:16/9;object-fit:contain;border:1px solid #42627e;border-radius:12px;background:#081426;margin:18px 0}
+.csd-help a{color:#5be7e5!important}.csd-help .help-actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+.csd-help .help-link{display:inline-flex;padding:11px 16px;border:1px solid #527490;border-radius:10px;text-decoration:none;font-weight:700}
+.csd-help button{background:#163c59;color:#f5f9ff;border:1px solid #527490;border-radius:9px;padding:10px 12px;cursor:pointer;font:inherit}
+.csd-help button:focus-visible,.csd-help a:focus-visible,.csd-help summary:focus-visible{outline:3px solid #ffcc77;outline-offset:3px}
+.csd-help .help-chapters{display:flex;gap:8px;flex-wrap:wrap}.csd-help details{margin:15px 0}.csd-help summary{cursor:pointer;font-weight:700}
+.csd-help .help-note{font-size:13px;color:#b8cce0!important}.csd-help .help-step{padding:12px 0;border-top:1px solid #365473}
+@media(max-width:600px){.csd-help{padding:17px}.csd-help .help-chapters{display:grid;grid-template-columns:1fr 1fr}.csd-help button{font-size:13px}}
