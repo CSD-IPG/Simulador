@@ -345,6 +345,15 @@ async function login(){
    const r=await fetch(SUPABASE_URL+"/auth/v1/token?grant_type=password",{method:"POST",headers:{"Content-Type":"application/json","apikey":ANON_KEY},body:JSON.stringify({email,password})});
    const j=await r.json();
    if(!r.ok||!j.access_token)throw new Error(j.error_description||j.msg||"No fue posible autenticar.");
+   const headers={apikey:ANON_KEY,Authorization:'Bearer '+j.access_token,'Content-Type':'application/json'};
+   const school=await fetch(SUPABASE_URL+'/rest/v1/rpc/es_usuario_escuela',{method:'POST',headers,body:'{}'});
+   if(!school.ok)throw Error('No se pudo verificar el perfil de la cuenta.');
+   if(await school.json()!==true){
+     const team=await fetch(SUPABASE_URL+'/rest/v1/rpc/seguimiento_academico',{method:'POST',headers,body:JSON.stringify({accion:'inicio'})});
+     if(!team.ok)throw Error('Su cuenta aún no está habilitada. Si recibió un enlace de activación, ingrese desde ese enlace.');
+     sessionStorage.setItem('seguimiento_token',j.access_token);
+     location.assign('seguimiento/');return;
+   }
    TOKEN=j.access_token;sessionStorage.setItem("csd_token",TOKEN);showDash();await loadAllData();
  }catch(e){$("loginMsg").innerHTML='<div class="notice bad">'+esc(e.message)+'</div>';}
 }

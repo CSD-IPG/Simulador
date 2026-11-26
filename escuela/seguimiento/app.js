@@ -1,6 +1,5 @@
 import {SUPABASE_URL,ANON_KEY} from './config.js';
 import {parseWorkbook,analyze,suggestedAction,gradeLabels,gradeStatus} from './analysis.js';
-import {generateOffice} from './office.js';
 const $=id=>document.getElementById(id);
 const html=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const fmt=n=>n==null?'—':Number(n).toLocaleString('es-CL');
@@ -19,14 +18,50 @@ function showLogin(){request++;user=null;model=null;preview=null;caseRut='';$('c
 async function jsonRequest(path,body,auth=''){
  const headers={'Content-Type':'application/json',apikey:ANON_KEY};if(auth)headers.Authorization='Bearer '+auth;
  let resp;try{resp=await fetch(SUPABASE_URL+path,{method:'POST',headers,body:JSON.stringify(body),cache:'no-store'})}catch{throw Error('No se pudo conectar con el servidor de la Escuela. Revise la conexión y reintente.')}
- const j=await resp.json().catch(()=>({}));if(!resp.ok){if(auth&&resp.status===401){sessionStorage.removeItem('seguimiento_token');sessionStorage.removeItem('csd_token');token='';showLogin();throw Error('La sesión terminó. Ingrese nuevamente.')}throw Error(j.message||j.msg||j.error_description||'La operación no pudo completarse.')}return j;
+ const j=await resp.json().catch(()=>({}));if(!resp.ok){if(auth&&auth===token&&resp.status===403&&j.message==='La cuenta no tiene acceso al seguimiento'){sessionStorage.removeItem('seguimiento_token');sessionStorage.removeItem('csd_token');token='';showLogin();throw Error('La cuenta no tiene acceso al seguimiento. Consulte con la Dirección.')}if(auth&&resp.status===401){sessionStorage.removeItem('seguimiento_token');sessionStorage.removeItem('csd_token');token='';showLogin();throw Error('La sesión terminó. Ingrese nuevamente.')}throw Error(j.error_code==='invalid_credentials'?'El correo o la clave no coinciden.':j.message||j.msg||j.error_description||'La operación no pudo completarse.')}return j;
 }
 const api=(accion,datos={})=>jsonRequest('/rest/v1/rpc/seguimiento_academico',{accion,datos},token);
 function fail(e){status(e?.message||String(e),true);}
 async function busy(btn,fn){if(btn?.disabled)return;if(btn)btn.disabled=true;try{await fn()}catch(e){fail(e);const d=document.querySelector('dialog[open]');if(d){let a=d.querySelector('.dialog-error');if(!a){a=document.createElement('p');a.className='alert error dialog-error';a.setAttribute('role','alert');d.prepend(a)}a.textContent=e.message}}finally{if(btn)btn.disabled=false}}
 function cleanDialog(d){d.querySelector('.dialog-error')?.remove()}
-$('signin').onsubmit=e=>{e.preventDefault();busy(e.submitter,async()=>{const j=await jsonRequest('/auth/v1/token?grant_type=password',{email:$('email').value.trim(),password:$('password').value});token=j.access_token;$('password').value='';await start();sessionStorage.setItem('seguimiento_token',token)})};
-$('signup').onclick=e=>busy(e.currentTarget,async()=>{if(!$('signin').reportValidity())return;if($('password').value.length<8)throw Error('Use una contraseña de al menos ocho caracteres.');await jsonRequest('/auth/v1/signup',{email:$('email').value.trim(),password:$('password').value});$('password').value='';status('Solicitud procesada. Revise su correo de confirmación. Si ya tiene una cuenta, ingrese con su contraseña.')});
+const fragment = new URLSearchParams(location.hash.slice(1));
+let activationCode = fragment.get('activar') || '';
+if (fragment.has('activar')) history.replaceState(null, '', location.pathname + location.search);
+function configureSignIn() {
+ const activating = Boolean(activationCode);
+ $('activationNote').hidden = !activating;
+ $('activationNote').textContent = activating ? 'Use el correo que la Dirección habilitó. Si ya tiene una cuenta del CSD, ingrese su clave habitual. Si es nueva, elija una clave personal de al menos ocho caracteres.' : '';
+ $('passwordLabel').textContent = activating ? 'Clave habitual o nueva clave personal' : 'Clave personal';
+ $('signinButton').textContent = activating ? 'Activar e ingresar' : 'Ingresar';
+ $('firstAccess').hidden = activating;
+}
+configureSignIn();
+$('signin').onsubmit=e=>{
+ e.preventDefault();
+ busy(e.submitter,async()=>{
+  const email=$('email').value.trim(),password=$('password').value,creds={email,password};
+  let session;
+  if(activationCode){
+   const mode=await jsonRequest('/rest/v1/rpc/preparar_acceso_seguimiento',{correo:email,codigo:activationCode});
+   if(mode!=='existente'&&mode!=='nueva')throw Error('Revise el correo. Si el enlace venció o fue reemplazado, solicite uno nuevo a la Dirección.');
+   if(mode==='nueva'){
+    if(password.length<8)throw Error('Elija una clave de al menos ocho caracteres.');
+    session=await jsonRequest('/auth/v1/signup',creds);
+    if(!session.access_token){$('password').value='';status('Revise su correo de confirmación. Luego vuelva a abrir este enlace para ingresar con su clave.');return;}
+   }else{
+    session=await jsonRequest('/auth/v1/token?grant_type=password',creds);
+   }
+   await jsonRequest('/rest/v1/rpc/seguimiento_academico',{accion:'vincular',datos:{codigo:activationCode}},session.access_token);
+   activationCode='';configureSignIn();
+  }else{
+   session=await jsonRequest('/auth/v1/token?grant_type=password',creds);
+  }
+  token=session.access_token;
+  $('password').value='';
+  await start();
+  sessionStorage.setItem('seguimiento_token',token);
+ });
+};
 $('logout').onclick=()=>{const previousToken=token;sessionStorage.removeItem('seguimiento_token');sessionStorage.removeItem('csd_token');token='';showLogin();status('Sesión cerrada.');if(previousToken)fetch(SUPABASE_URL+'/auth/v1/logout?scope=local',{method:'POST',headers:{apikey:ANON_KEY,Authorization:'Bearer '+previousToken}}).catch(()=>{})};
 async function start(preferred=period){
  const oldRole=user?.role;user=await api('inicio');if(!oldRole)tab=admin()?'dashboard':'cases';if(!admin())tab='cases';
@@ -94,18 +129,39 @@ function openCase(rut){
  f.onsubmit=e=>{e.preventDefault();busy(e.submitter,async()=>{const values=Object.fromEntries(new FormData(f));await api('intervenir',{...values,periodo:period,rut,id:pendingId});await refresh();status('Intervención guardada.')})};
 }
 function drawTeam(){
+ if(!admin())return;
  const members=user.members||[];
- $('content').innerHTML='<section class="card"><h2>Equipo de seguimiento</h2><p>Habilite el correo que cada integrante usará para ingresar y asígnele sus estudiantes desde las fichas. Cada integrante podrá consultar los casos a su cargo.</p><form id="memberForm"><div class="fields"><label>Correo institucional<input name="email" type="email" required></label><label>Perfil<select name="role">'+options(['Jefatura','Consejería'])+'</select></label></div><button>Habilitar integrante</button></form></section><section class="card"><h2>Integrantes</h2>'+(!members.length?'<p>Aún no hay integrantes habilitados.</p>':table(['Correo','Perfil','Acceso','Acción'],members.map((m,i)=>[html(m.email),html(m.role),m.active?'Habilitado':'Suspendido','<button class="secondary" data-member="'+i+'">'+(m.active?'Suspender acceso':'Habilitar acceso')+'</button>'])))+'</section>';
- async function save(values){await api('equipo',values);user=await api('inicio');drawTeam();status('Acceso de equipo actualizado.')}
+ const rows=members.map((m,i)=>{
+  const permission=m.active?'Habilitado':'Suspendido';
+  const linked=m.linked?'Cuenta vinculada':m.expires&&Date.parse(m.expires)>Date.now()?'Enlace vigente':'Pendiente de activación';
+  const permit='<button class="secondary" data-member="'+i+'">'+(m.active?'Suspender acceso':'Habilitar acceso')+'</button>';
+  const invite=m.active&&!m.linked?'<button data-invite="'+i+'">'+(linked==='Enlace vigente'?'Renovar enlace':'Generar enlace de activación')+'</button>':'';
+  return [html(m.email),html(m.role),permission,linked,'<div class="actions">'+invite+permit+'</div>'];
+ });
+ $('content').innerHTML='<section class="card"><h2>Equipo de seguimiento</h2><p>Los integrantes con cuenta vinculada ingresan con su clave personal. Para quienes están pendientes, genere un enlace y compártalo por un canal individual. Puede asignar fichas antes de la activación.</p><form id="memberForm"><div class="fields"><label>Correo institucional<input name="email" type="email" required></label><label>Perfil<select name="role">'+options(['Jefatura','Consejería'])+'</select></label></div><button>Habilitar integrante</button></form></section><section class="card"><h2>Integrantes</h2>'+(members.length?table(['Correo','Perfil','Acceso','Cuenta','Acciones'],rows):'<p>Aún no hay integrantes habilitados.</p>')+'</section>';
+ async function save(values){await api('equipo',values);user=await api('inicio');if(!admin())return;drawTeam();status('Acceso de equipo actualizado.')}
  $('memberForm').onsubmit=e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target));busy(e.submitter,()=>save({...v,active:true}))};
  $('content').querySelectorAll('[data-member]').forEach(btn=>btn.onclick=()=>{const m=members[+btn.dataset.member];busy(btn,()=>save({email:m.email,role:m.role,active:!m.active}))});
+ $('content').querySelectorAll('[data-invite]').forEach(btn=>btn.onclick=()=>busy(btn,async()=>{
+  const m=members[+btn.dataset.invite];
+  const result=await api('activacion',{email:m.email});
+  if(!admin())return;
+  const link=new URL('./',location.href);link.hash=new URLSearchParams({activar:result.codigo}).toString();
+  $('inviteLink').value=link.href;
+  $('inviteMessage').textContent='Comparta este enlace únicamente con '+m.email+'. Vence el '+new Date(result.vence).toLocaleString('es-CL',{timeZone:'America/Santiago'})+' (hora de Chile).';
+  $('copied').textContent='';$('inviteDialog').showModal();$('inviteLink').select();
+  user=await api('inicio');if(admin())drawTeam();
+ }));
 }
+$('inviteDialog').addEventListener('close',()=>{$('inviteLink').value='';$('inviteMessage').textContent='';});
+$('copyInvite').onclick=async()=>{try{await navigator.clipboard.writeText($('inviteLink').value);$('copied').textContent='Enlace copiado.'}catch{$('inviteLink').select();$('copied').textContent='El enlace está seleccionado. Cópielo con el teclado.'}};
 function drawExports(){
+ if(!admin())return;
  const files=[['informe','Word','Informe académico','Análisis del cierre, indicadores de rendimiento y focos de seguimiento.'],['contactos','Excel','Reporte de contacto','Fichas de estudiantes, responsables e intervenciones registradas.'],['presentacion','PowerPoint','Presentación de resultados','Diapositivas institucionales para el Consejo de Escuela.'],['tablero','Excel','Tablero de información','Indicadores, desgloses y base del ciclo para su análisis.']];
  $('content').innerHTML='<section class="card"><h2>Reportes del cierre</h2><p>'+html(periodName(period))+' · Versión '+fmt(model.version)+' · '+html(model.filename)+'</p><p class="muted">Las descargas consideran el ciclo completo. El reporte de contacto incluye las gestiones guardadas hasta el momento de la descarga.</p></section><div class="files">'+files.map(([key,type,title,desc])=>'<article class="card"><span class="filetype">'+type+'</span><div><h3>'+title+'</h3><p>'+desc+'</p></div><button data-file="'+key+'">Descargar '+type+'</button></article>').join('')+'</div>';
- $('content').querySelectorAll('[data-file]').forEach(btn=>btn.onclick=()=>busy(btn,async()=>{const p=period,base=model;const raw=await api('leer',{periodo:p});if(!user||period!==p)throw Error('Cambió el cierre seleccionado. Vuelva a descargar.');const current={...base,...raw,analysis:analyze(raw.rows)};const {blob,filename}=await generateOffice(btn.dataset.file,current);const link=document.createElement('a'),url=URL.createObjectURL(blob);link.href=url;link.download=filename;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),45000);status('Descarga preparada para '+periodName(p)+'.')}));
+ $('content').querySelectorAll('[data-file]').forEach(btn=>btn.onclick=()=>busy(btn,async()=>{const p=period,base=model,actor=token;const raw=await api('reporte',{periodo:p});if(!admin()||actor!==token||period!==p)throw Error('Cambió el cierre seleccionado. Vuelva a descargar.');const current={...base,...raw,analysis:analyze(raw.rows)};const {generateOffice}=await import('./office.js');const {blob,filename}=await generateOffice(btn.dataset.file,current);if(!admin()||actor!==token||period!==p)return;const link=document.createElement('a'),url=URL.createObjectURL(blob);link.href=url;link.download=filename;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),45000);status('Descarga preparada para '+periodName(p)+'.')}));
 }
-$('openImport').onclick=()=>{preview=null;const d=$('importDialog');cleanDialog(d);$('loadForm').reset();$('year').value=period?+period.slice(0,4):new Date().getFullYear();$('cycle').value=period?Math.min(10,+period.slice(5)+1):'';$('preview').replaceChildren();d.showModal()};
+$('openImport').onclick=()=>{if(!admin())return;preview=null;const d=$('importDialog');cleanDialog(d);$('loadForm').reset();$('year').value=period?+period.slice(0,4):new Date().getFullYear();$('cycle').value=period?Math.min(10,+period.slice(5)+1):'';$('preview').replaceChildren();d.showModal()};
 $('loadForm').oninput=()=>{preview=null;$('preview').replaceChildren();cleanDialog($('importDialog'))};
 $('loadForm').onsubmit=e=>{e.preventDefault();busy(e.submitter,async()=>{
  cleanDialog($('importDialog'));preview=null;$('preview').textContent='Validando inscripciones y clasificación…';
@@ -119,4 +175,4 @@ $('loadForm').onsubmit=e=>{e.preventDefault();busy(e.submitter,async()=>{
  if(data.errors.length)return;preview={p,rows:data.rows,filename:input.name,expected:prior?.version||0};
  $('confirmImport').onclick=ev=>busy(ev.currentTarget,async()=>{if(!preview)return;const v=preview;await api('importar',{periodo:v.p,expected:v.expected,filename:v.filename,rows:v.rows});preview=null;$('importDialog').close();tab='dashboard';await start(v.p);status('Cierre guardado. Los cuatro documentos están disponibles en Reportes.')});
  })};
-if(token)start().catch(e=>{showLogin();fail(e)});else showLogin();
+if(token&&!activationCode)start().catch(e=>{showLogin();fail(e)});else showLogin();
