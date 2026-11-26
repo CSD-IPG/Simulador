@@ -103,14 +103,15 @@ function drawDash(){
 }
 function pager(id,total,p,per){return '<div class="pager"><button id="'+id+'back" class="secondary" '+(!p?'disabled':'')+'>Anterior</button><small>'+ (total?fmt(p*per+1)+'–'+fmt(Math.min((p+1)*per,total))+' de '+fmt(total):'0 resultados')+'</small><button id="'+id+'next" class="secondary" '+((p+1)*per>=total?'disabled':'')+'>Siguiente</button></div>'}
 function bindPager(id,fn){$(id+'back').onclick=()=>fn(-1);$(id+'next').onclick=()=>fn(1)}
-const stateOf=t=>t?.events?.[0]?.outcome||'Pendiente';
+const stateOf=t=>t?.closed?'Cerrado':t?.events?.[0]?.outcome||'Pendiente';
 function allCases(){return [...model.analysis.cases,...Object.entries(model.tracking).filter(([,t])=>!t.active).map(([rut,t])=>({rut,name:t.name,career:t.career,risk:'Archivo',affected:0,subjects:[]}))]}
 function drawCases(){
  const all=allCases();
  const specific=caseFilters.group==='participacion';
- const pool=specific?all.filter(c=>c.absent>0||c.notTaken>0):all;
- const groups=[['todas','Todas las fichas'],['participacion','Contacto por notas 0,0 y 1,0']];
- const groupButtons=groups.map(([key,label])=>'<button type="button" data-group="'+key+'" aria-current="'+(key===(specific?'participacion':'todas'))+'">'+label+'</button>').join('');
+ const closedOnly=caseFilters.group==='cerradas';
+ const pool=closedOnly?all.filter(c=>model.tracking[c.rut]?.closed):specific?all.filter(c=>c.absent>0||c.notTaken>0):all.filter(c=>!model.tracking[c.rut]?.closed);
+ const groups=[['todas','Todas las fichas'],['participacion','Contacto por notas 0,0 y 1,0'],['cerradas','Casos cerrados']];
+ const groupButtons=groups.map(([key,label])=>'<button type="button" data-group="'+key+'" aria-current="'+(key===(specific?'participacion':closedOnly?'cerradas':'todas'))+'">'+label+'</button>').join('');
  const motives=[['notTaken','No rindió evaluaciones (1,0)'],['absent','Sin participación (0,0)'],['both','Ambas situaciones']];
  const motiveFilter=specific?select('cMotive','Situación académica',motives,'Nota 0,0 o 1,0',caseFilters.motive):'';
  $('content').innerHTML='<nav id="caseGroups" aria-label="Vistas de seguimiento">'+groupButtons+'</nav><section class="card"><h2>'+(specific?'Contacto por notas 0,0 y 1,0':'Fichas de estudiantes')+'</h2>'+
@@ -120,7 +121,7 @@ function drawCases(){
   '</div></section><div class="metrics" id="contactMetrics"></div><section class="card"><div id="caseList"></div></section>';
  $('caseGroups').onclick=e=>{
   const button=e.target.closest('[data-group]');if(!button)return;
-  caseFilters.group=button.dataset.group;caseFilters.motive='';page=0;drawCases();
+  caseFilters.group=button.dataset.group;caseFilters.motive='';caseFilters.state='';page=0;drawCases();
  };
  for(const k of ['Career','Risk','State',...(specific?['Motive']:[])]){
   $('c'+k).onchange=e=>{caseFilters[k.toLowerCase()]=e.target.value;page=0;list()};
@@ -133,18 +134,19 @@ function drawCases(){
    (!caseFilters.career||c.career===caseFilters.career)&&(!caseFilters.risk||c.risk===caseFilters.risk)&&
    (!caseFilters.state||stateOf(model.tracking[c.rut])===caseFilters.state)&&
    (!specific||!caseFilters.motive||(caseFilters.motive==='both'?(c.absent>0&&c.notTaken>0):c[caseFilters.motive]>0)));
-  const active=items.filter(c=>model.tracking[c.rut]?.active!==false);
+  const active=items.filter(c=>model.tracking[c.rut]?.active!==false&&!model.tracking[c.rut]?.closed);
   const count=key=>active.filter(c=>stateOf(model.tracking[c.rut])===key).length;
   const reached=active.filter(c=>model.tracking[c.rut]?.events?.some(e=>e.outcome==='Contacto efectivo')).length;
   $('contactMetrics').innerHTML=metric(fmt(active.length),admin()?'Estudiantes de la selección':'Mis estudiantes de la selección','Fichas vigentes')+
-   metric(fmt(count('Pendiente')),'Pendientes','Sin intervenciones registradas')+metric(fmt(count('Intento sin respuesta')),'Intento sin respuesta','Según la última gestión')+metric(fmt(reached),'Con contacto efectivo','Contacto confirmado en el historial');
+   metric(fmt(count('Pendiente')),'Pendientes','Sin intervenciones registradas')+metric(fmt(count('Intento sin respuesta')),'Intento sin respuesta','Según la última gestión')+metric(fmt(reached),'Con contacto efectivo','Contacto confirmado en el historial')+
+   metric(fmt(all.filter(c=>model.tracking[c.rut]?.closed).length),'Casos cerrados','Excluidos de gestiones pendientes');
   const per=25;
   page=Math.min(page,Math.max(0,Math.ceil(items.length/per)-1));
   const rows=items.slice(page*per,(page+1)*per).map(c=>{
    const t=model.tracking[c.rut],last=t?.events?.[0];
    const date=last?.created_at?new Date(last.created_at).toLocaleDateString('es-CL',{timeZone:'America/Santiago'}):'';
    return ['<button class="textbtn" data-rut="'+html(c.rut)+'">'+html(c.name)+'</button>',html(c.career),html(c.risk),
-    ...(specific?[fmt(c.absent),fmt(c.notTaken)]:[fmt(c.affected)]),html(t?.assignee||'Sin asignar'),html(stateOf(t))+(date?'<br><small>'+html(date)+'</small>':''),html(last?.next_date||'—')];
+    ...(specific?[fmt(c.absent),fmt(c.notTaken)]:[fmt(c.affected)]),html(t?.assignee||'Sin asignar'),html(stateOf(t))+(date?'<br><small>'+html(date)+'</small>':''),html(t?.closed?'Caso cerrado':last?.next_date||'—')];
   });
   const headers=['Estudiante','Carrera','Riesgo',...(specific?['Asignaturas con 0,0','Asignaturas con 1,0']:['Asignaturas sin aprobar']),'Responsable','Última gestión','Próximo seguimiento'];
   $('caseList').innerHTML=(rows.length?table(headers,rows):'<p class="empty">No hay estudiantes que coincidan con esta selección.</p>')+pager('c',items.length,page,per);
@@ -156,16 +158,20 @@ function drawCases(){
 function openCase(rut){
  const c=allCases().find(v=>v.rut===rut),t=model.tracking[rut];if(!c||!t)return;
  caseRut=rut;pendingId=crypto.randomUUID();const dialog=$('caseDialog');cleanDialog(dialog);
- const assignments=admin()?'<form id="assign"><label>Responsable asignado<select id="assignee">'+options([['','Sin asignar'],...unique([...(user.members||[]).filter(m=>m.active).map(m=>m.email),t.assignee])],t.assignee||'')+'</select></label><button class="secondary">Guardar asignación</button></form>':'';
+ const assignments=admin()&&!t.closed?'<form id="assign"><label>Responsable asignado<select id="assignee">'+options([['','Sin asignar'],...unique([...(user.members||[]).filter(m=>m.active).map(m=>m.email),t.assignee])],t.assignee||'')+'</select></label><button class="secondary">Guardar asignación</button></form>':'';
  const hist=t.events.map(ev=>'<article class="history"><b>'+html(ev.outcome)+'</b> · '+html(ev.channel)+'<br><small>'+html(new Date(ev.created_at).toLocaleString('es-CL',{timeZone:'America/Santiago'}))+' · '+html(ev.author)+'</small><p>'+html(ev.note)+'</p>'+[['Recurso CSD',ev.csd],['Derivación',ev.referral],['Próximo seguimiento',ev.next_date]].filter(x=>x[1]).map(([k,v])=>'<p>'+k+' · '+html(v)+'</p>').join('')+'</article>').join('');
  $('caseDetail').innerHTML='<h3>'+html(c.name)+'</h3><p>'+html(c.rut)+' · '+html(c.career)+'</p>'+(t.active?'<div class="notice">'+html(suggestedAction(c))+' <a href="../../" target="_blank" rel="noopener">Abrir CSD</a></div>'+table(['Asignatura','Sección','Nota final','Situación'],c.subjects.map(r=>[html(r.subject),html(r.section),r.grade.toLocaleString('es-CL',{minimumFractionDigits:1,maximumFractionDigits:1}),html(gradeLabels[gradeStatus(r.grade)])+(r.review?'<br><small>Revisar cierre con Registro Curricular</small>':'')])):'<p class="notice">Esta ficha quedó archivada al actualizar el cierre. Su historial está disponible para consulta.</p>')+assignments+
+ '<div class="notice"><strong>Estado: '+(t.closed?'CERRADO':'ABIERTO')+'</strong>'+(t.closed?'<p>Cierre registrado: '+html(t.closed_at?new Date(t.closed_at).toLocaleString('es-CL',{timeZone:'America/Santiago'}):'Sin fecha')+' · Responsable del cierre: '+html(t.closed_by||'No registrado')+'</p>':'<p>La ficha permanecerá activa hasta confirmar el cierre.</p>')+'</div><p><button type="button" class="secondary" id="downloadCase">Descargar ficha de gestión (Word)</button></p>'+
+ '<p><small>Responsable asignado: '+html(t.assignee||'Sin asignar')+' · Supervisión institucional: Dirección de Escuela'+(t.supervisor?' ('+html(t.supervisor)+')':'')+'. La identificación de supervisión no equivale a una firma o aprobación.</small></p>'+
  '<h3 style="margin-top:20px">Historial de intervenciones</h3>'+(hist||'<p class="muted">Aún no se registran intervenciones.</p>')+
- '<form id="eventForm"><h3>Registrar intervención</h3><div class="fields"><label>Canal<select name="channel">'+options(['Correo institucional','Llamada','Reunión','Aula virtual','Otro'])+'</select></label><label>Resultado<select name="outcome">'+options(['Intento sin respuesta','Contacto efectivo','Derivado','Cerrado'])+'</select></label></div><label>Gestión realizada y acuerdos<textarea name="note" required maxlength="4000"></textarea></label><label>Recurso del CSD recomendado<input name="csd" maxlength="300"></label><div class="fields"><label>Área de derivación<input name="referral" maxlength="300"></label><label>Próximo seguimiento<input name="next_date" type="date"></label></div><button>Guardar intervención</button></form>';
+ (t.closed?'':'<form id="eventForm"><h3>Registrar intervención</h3><div class="fields"><label>Canal<select name="channel">'+options(['Correo institucional','Llamada','Reunión','Aula virtual','Otro'])+'</select></label><label>Resultado<select name="outcome">'+options(['Intento sin respuesta','Contacto efectivo','Derivado','Cerrado'])+'</select></label></div><label>Gestión realizada y acuerdos<textarea name="note" required maxlength="4000"></textarea></label><label>Recurso del CSD recomendado<input name="csd" maxlength="300"></label><div class="fields"><label>Área de derivación<input name="referral" maxlength="300"></label><label>Próximo seguimiento<input name="next_date" type="date"></label></div><label class="notice"><input type="checkbox" name="cerrar" value="true" id="closeCase"> Confirmo que las gestiones se encuentran concluidas y solicito cerrar este caso. Una vez cerrado, quedará sólo para consulta.</label><button>Guardar intervención</button></form>');
  if(!dialog.open)dialog.showModal();
  const refresh=async()=>{const p=period;const raw=await api('leer',{periodo:p});if(p!==period||!user)return;model={...model,...raw,analysis:analyze(raw.rows)};drawCases();openCase(rut)};
+ $('downloadCase').onclick=e=>busy(e.currentTarget,async()=>{const {generateCaseSheet}=await import('./office.js');const {blob,filename}=await generateCaseSheet({period,caseData:c,tracking:t});const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=filename;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),45000);status('Ficha individual descargada.')});
+ if(t.closed)return;
  if(admin())$('assign').onsubmit=e=>{e.preventDefault();busy(e.submitter,async()=>{await api('asignar',{periodo:period,rut,email:$('assignee').value,prev:t.assignee});await refresh();status('Asignación guardada.')})};
- const f=$('eventForm');f.elements.outcome.onchange=()=>{f.elements.referral.required=f.elements.outcome.value==='Derivado'};
- f.onsubmit=e=>{e.preventDefault();busy(e.submitter,async()=>{const values=Object.fromEntries(new FormData(f));await api('intervenir',{...values,periodo:period,rut,id:pendingId});await refresh();status('Intervención guardada.')})};
+ const f=$('eventForm');f.elements.outcome.onchange=()=>{f.elements.referral.required=f.elements.outcome.value==='Derivado';f.elements.cerrar.required=f.elements.outcome.value==='Cerrado';if(f.elements.outcome.value==='Cerrado')f.elements.next_date.value=''};
+ f.onsubmit=e=>{e.preventDefault();busy(e.submitter,async()=>{const values=Object.fromEntries(new FormData(f));if(values.cerrar==='true'&&values.outcome!=='Cerrado')throw Error('Seleccione el resultado Cerrado para cerrar la ficha.');await api('intervenir',{...values,periodo:period,rut,id:pendingId});await refresh();status('Intervención guardada.')})};
 }
 function drawTeam(){
  if(!admin())return;
