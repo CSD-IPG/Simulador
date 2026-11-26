@@ -189,6 +189,9 @@ export async function generateCaseSheet({period:cycleId,caseData,tracking}){
   para('Responsable asignado: '+String(tracking.assignee||'Sin asignar')),
   para('Supervisión institucional: Dirección de Escuela'+(tracking.supervisor?' · '+tracking.supervisor:'')),
   para('La identificación de supervisión no constituye firma, aprobación ni validación de las gestiones.'),
+  para('Próximo seguimiento: '+String(tracking.due||'—')),
+  para('Fecha automática sugerida: '+String(tracking.suggested_due||'—')),
+  para('Estado evidencia CSD: '+String(tracking.evidence||'No solicitada')),
   para('Fecha de cierre: '+when(tracking.closed_at)),
   para('Cierre registrado por: '+String(tracking.closed_by||'—')),
   para('ANTECEDENTES ACADÉMICOS',true)
@@ -206,7 +209,11 @@ export async function generateCaseSheet({period:cycleId,caseData,tracking}){
   if(e.csd)paras.push(para('Recurso recomendado: '+e.csd));
   if(e.referral)paras.push(para('Derivación: '+e.referral));
   if(e.next_date)paras.push(para('Próximo seguimiento previsto: '+e.next_date));
+  if(e.suggested_date)paras.push(para('Fecha sugerida: '+e.suggested_date));
+  if(e.reschedule_reason)paras.push(para('Motivo del cambio: '+e.reschedule_reason));
+  if(e.evidence)paras.push(para('Evidencia CSD: '+e.evidence));
  }
+ if(tracking.schedule_history?.length){paras.push(para('HISTORIAL DE REPROGRAMACIONES',true));for(const h of tracking.schedule_history)paras.push(para(String(h.previous||'—')+' → '+String(h.next)+' · '+String(h.reason)+' · '+String(h.author)+' · '+when(h.at)));}
  paras.push(para('Registro generado: '+when(new Date().toISOString())));
  paras.push(para('Evidencia administrativa basada en las gestiones registradas en la plataforma. No sustituye una firma o validación institucional.'));
  const doc=XML+'<w:document xmlns:w="'+W+'"><w:body>'+paras.join('')+'<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1080" w:right="1080" w:bottom="1080" w:left="1080"/></w:sectPr></w:body></w:document>';
