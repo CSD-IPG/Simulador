@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="same-origin"><title>Seguimiento académico · IPG</title><link rel="stylesheet" href="style.css"><script src="vendor/jszip.min.js" defer></script><script src="app.js" type="module"></script></head>
+<body><header><div class="brand"><span class="mark">IPG</span><div><strong>Escuela de Gestión, Negocios y Marítima</strong><small>Centro de Simulación Digital</small></div></div><a href="../">Tablero Escuela</a></header>
+<main><div id="alert" role="status" aria-live="polite"></div>
+<section id="login" class="login" hidden><div class="login-band">Acceso del equipo académico</div><h1>Seguimiento académico</h1><p>Ingrese con la cuenta autorizada para gestionar los cierres de ciclo y el acompañamiento estudiantil.</p>
+<form id="signin"><label>Correo institucional<input id="email" type="email" autocomplete="username" required></label><label>Contraseña<input id="password" type="password" autocomplete="current-password" required></label><button>Ingresar</button></form>
+<details><summary>Activar mi cuenta de equipo</summary><p>Si la Dirección ya habilitó su correo y aún no tiene una cuenta, ingrese su correo y una contraseña arriba y solicite la activación. Confirme su correo antes de ingresar.</p><button id="signup" class="secondary">Solicitar activación</button></details></section>
+<section id="app" hidden><div class="heading"><div><p class="eyebrow">Gestión académica</p><h1>Asignaturas críticas y seguimiento</h1></div><div class="account"><span id="identity"></span><button id="logout" class="textbtn">Cerrar sesión</button></div></div>
+<div class="bar"><label>Cierre de ciclo<select id="period"></select></label><button id="reload" class="secondary">Actualizar datos</button><button id="openImport" data-admin>Cargar cierre</button></div>
+<nav id="tabs" aria-label="Secciones"><button data-tab="dashboard" data-admin>Desempeño</button><button data-tab="cases">Seguimiento</button><button data-tab="exports" data-admin>Reportes</button><button data-tab="team" data-admin>Equipo</button></nav>
+<section id="content"></section></section>
+<dialog id="importDialog"><div class="dialog-head"><h2>Cargar cierre de ciclo</h2><button type="button" class="secondary" data-close="importDialog">Cerrar</button></div>
+<form id="loadForm"><div class="fields"><label>Año<input type="number" id="year" min="1900" max="2099" required></label><label>Ciclo<input type="number" id="cycle" min="1" max="10" required></label></div>
+<label>Consolidado de notas de U+ (.xlsx)<input type="file" id="file" accept=".xlsx" required></label><button type="submit">Validar planilla</button></form><div id="preview" aria-live="polite"></div></dialog>
+<dialog id="caseDialog"><div class="dialog-head"><h2>Ficha de seguimiento</h2><button class="secondary" data-close="caseDialog">Cerrar</button></div><div id="caseDetail"></div></dialog>
+</main></body></html>
