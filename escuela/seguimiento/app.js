@@ -106,12 +106,51 @@ function bindPager(id,fn){$(id+'back').onclick=()=>fn(-1);$(id+'next').onclick=(
 const stateOf=t=>t?.events?.[0]?.outcome||'Pendiente';
 function allCases(){return [...model.analysis.cases,...Object.entries(model.tracking).filter(([,t])=>!t.active).map(([rut,t])=>({rut,name:t.name,career:t.career,risk:'Archivo',affected:0,subjects:[]}))]}
 function drawCases(){
- const all=allCases(),current=all.filter(c=>model.tracking[c.rut]?.active!==false),tot=key=>current.filter(c=>stateOf(model.tracking[c.rut])===key).length;
- const effective=current.filter(c=>model.tracking[c.rut]?.events?.some(e=>e.outcome==='Contacto efectivo')).length;
- $('content').innerHTML='<div class="metrics">'+metric(fmt(current.length),admin()?'Casos del cierre':'Mis casos','Una ficha por estudiante')+metric(fmt(tot('Pendiente')),'Pendientes','Sin intervenciones registradas')+metric(fmt(tot('Intento sin respuesta')),'Intento sin respuesta','Según la última gestión')+metric(fmt(effective),'Con contacto efectivo','Contacto confirmado en el historial')+'</div><section class="card"><h2>Fichas de estudiantes</h2><div class="filters"><label>Buscar estudiante<input id="findCase" placeholder="Nombre o RUT" value="'+html(caseFilters.query)+'"></label>'+select('cCareer','Carrera',unique(all.map(c=>c.career)),'Todas',caseFilters.career)+select('cRisk','Riesgo',unique(all.map(c=>c.risk)),'Todos',caseFilters.risk)+select('cState','Última gestión',['Pendiente','Intento sin respuesta','Contacto efectivo','Derivado','Cerrado'],'Todas',caseFilters.state)+'</div><div id="caseList" style="margin-top:16px"></div></section>';
- ['Career','Risk','State'].forEach(k=>$('c'+k).onchange=e=>{caseFilters[k.toLowerCase()]=e.target.value;page=0;list()});$('findCase').oninput=e=>{caseFilters.query=e.target.value;page=0;list()};
- function list(){const q=fold(caseFilters.query).replace(/[.\s-]/g,'');const items=all.filter(c=>(!q||fold(c.name+' '+c.rut).replace(/[.\s-]/g,'').includes(q))&&(!caseFilters.career||c.career===caseFilters.career)&&(!caseFilters.risk||c.risk===caseFilters.risk)&&(!caseFilters.state||stateOf(model.tracking[c.rut])===caseFilters.state));const per=25;
- $('caseList').innerHTML=table(['Estudiante','Carrera','Riesgo','Asignaturas sin aprobar','Responsable','Última gestión','Próximo seguimiento'],items.slice(page*per,(page+1)*per).map(c=>{const t=model.tracking[c.rut];return ['<button class="textbtn" data-rut="'+html(c.rut)+'">'+html(c.name)+'</button>',html(c.career),html(c.risk),fmt(c.affected),html(t?.assignee||'Sin asignar'),html(stateOf(t)),html(t?.events?.[0]?.next_date||'—')]}))+pager('c',items.length,page,per);bindPager('c',step=>{page+=step;list()});$('caseList').querySelectorAll('[data-rut]').forEach(b=>b.onclick=()=>openCase(b.dataset.rut))}
+ const all=allCases();
+ const specific=caseFilters.group==='participacion';
+ const pool=specific?all.filter(c=>c.absent>0||c.notTaken>0):all;
+ const groups=[['todas','Todas las fichas'],['participacion','Contacto por notas 0,0 y 1,0']];
+ const groupButtons=groups.map(([key,label])=>'<button type="button" data-group="'+key+'" aria-current="'+(key===(specific?'participacion':'todas'))+'">'+label+'</button>').join('');
+ const motives=[['notTaken','No rindió evaluaciones (1,0)'],['absent','Sin participación (0,0)'],['both','Ambas situaciones']];
+ const motiveFilter=specific?select('cMotive','Situación académica',motives,'Nota 0,0 o 1,0',caseFilters.motive):'';
+ $('content').innerHTML='<nav id="caseGroups" aria-label="Vistas de seguimiento">'+groupButtons+'</nav><section class="card"><h2>'+(specific?'Contacto por notas 0,0 y 1,0':'Fichas de estudiantes')+'</h2>'+
+  (specific?'<p>Una ficha por estudiante con al menos una asignatura con nota final 0,0 o 1,0. Abra el nombre para consultar o registrar un contacto.</p>':'')+
+  '<div class="filters"><label>Buscar estudiante<input id="findCase" placeholder="Nombre o RUT" value="'+html(caseFilters.query)+'"></label>'+
+  motiveFilter+select('cCareer','Carrera',unique(all.map(c=>c.career)),'Todas',caseFilters.career)+select('cRisk','Riesgo',unique(all.map(c=>c.risk)),'Todos',caseFilters.risk)+select('cState','Última gestión',['Pendiente','Intento sin respuesta','Contacto efectivo','Derivado','Cerrado'],'Todas',caseFilters.state)+
+  '</div></section><div class="metrics" id="contactMetrics"></div><section class="card"><div id="caseList"></div></section>';
+ $('caseGroups').onclick=e=>{
+  const button=e.target.closest('[data-group]');if(!button)return;
+  caseFilters.group=button.dataset.group;caseFilters.motive='';page=0;drawCases();
+ };
+ for(const k of ['Career','Risk','State',...(specific?['Motive']:[])]){
+  $('c'+k).onchange=e=>{caseFilters[k.toLowerCase()]=e.target.value;page=0;list()};
+ }
+ $('findCase').oninput=e=>{caseFilters.query=e.target.value;page=0;list()};
+ function list(){
+  const query=fold(caseFilters.query).replace(/[.\s-]/g,'');
+  const items=pool.filter(c=>
+   (!query||fold(c.name+' '+c.rut).replace(/[.\s-]/g,'').includes(query))&&
+   (!caseFilters.career||c.career===caseFilters.career)&&(!caseFilters.risk||c.risk===caseFilters.risk)&&
+   (!caseFilters.state||stateOf(model.tracking[c.rut])===caseFilters.state)&&
+   (!specific||!caseFilters.motive||(caseFilters.motive==='both'?(c.absent>0&&c.notTaken>0):c[caseFilters.motive]>0)));
+  const active=items.filter(c=>model.tracking[c.rut]?.active!==false);
+  const count=key=>active.filter(c=>stateOf(model.tracking[c.rut])===key).length;
+  const reached=active.filter(c=>model.tracking[c.rut]?.events?.some(e=>e.outcome==='Contacto efectivo')).length;
+  $('contactMetrics').innerHTML=metric(fmt(active.length),admin()?'Estudiantes de la selección':'Mis estudiantes de la selección','Fichas vigentes')+
+   metric(fmt(count('Pendiente')),'Pendientes','Sin intervenciones registradas')+metric(fmt(count('Intento sin respuesta')),'Intento sin respuesta','Según la última gestión')+metric(fmt(reached),'Con contacto efectivo','Contacto confirmado en el historial');
+  const per=25;
+  page=Math.min(page,Math.max(0,Math.ceil(items.length/per)-1));
+  const rows=items.slice(page*per,(page+1)*per).map(c=>{
+   const t=model.tracking[c.rut],last=t?.events?.[0];
+   const date=last?.created_at?new Date(last.created_at).toLocaleDateString('es-CL',{timeZone:'America/Santiago'}):'';
+   return ['<button class="textbtn" data-rut="'+html(c.rut)+'">'+html(c.name)+'</button>',html(c.career),html(c.risk),
+    ...(specific?[fmt(c.absent),fmt(c.notTaken)]:[fmt(c.affected)]),html(t?.assignee||'Sin asignar'),html(stateOf(t))+(date?'<br><small>'+html(date)+'</small>':''),html(last?.next_date||'—')];
+  });
+  const headers=['Estudiante','Carrera','Riesgo',...(specific?['Asignaturas con 0,0','Asignaturas con 1,0']:['Asignaturas sin aprobar']),'Responsable','Última gestión','Próximo seguimiento'];
+  $('caseList').innerHTML=(rows.length?table(headers,rows):'<p class="empty">No hay estudiantes que coincidan con esta selección.</p>')+pager('c',items.length,page,per);
+  bindPager('c',step=>{page+=step;list()});
+  $('caseList').querySelectorAll('[data-rut]').forEach(b=>b.onclick=()=>openCase(b.dataset.rut));
+ }
  list();
 }
 function openCase(rut){
@@ -119,7 +158,7 @@ function openCase(rut){
  caseRut=rut;pendingId=crypto.randomUUID();const dialog=$('caseDialog');cleanDialog(dialog);
  const assignments=admin()?'<form id="assign"><label>Responsable asignado<select id="assignee">'+options([['','Sin asignar'],...unique([...(user.members||[]).filter(m=>m.active).map(m=>m.email),t.assignee])],t.assignee||'')+'</select></label><button class="secondary">Guardar asignación</button></form>':'';
  const hist=t.events.map(ev=>'<article class="history"><b>'+html(ev.outcome)+'</b> · '+html(ev.channel)+'<br><small>'+html(new Date(ev.created_at).toLocaleString('es-CL',{timeZone:'America/Santiago'}))+' · '+html(ev.author)+'</small><p>'+html(ev.note)+'</p>'+[['Recurso CSD',ev.csd],['Derivación',ev.referral],['Próximo seguimiento',ev.next_date]].filter(x=>x[1]).map(([k,v])=>'<p>'+k+' · '+html(v)+'</p>').join('')+'</article>').join('');
- $('caseDetail').innerHTML='<h3>'+html(c.name)+'</h3><p>'+html(c.rut)+' · '+html(c.career)+'</p>'+(t.active?'<div class="notice">'+html(suggestedAction(c))+' <a href="../../" target="_blank" rel="noopener">Abrir CSD</a></div>'+table(['Asignatura','Sección','Nota final','Situación'],c.subjects.map(r=>[html(r.subject),html(r.section),fmt(r.grade),html(gradeLabels[gradeStatus(r.grade)])])):'<p class="notice">Esta ficha quedó archivada al actualizar el cierre. Su historial está disponible para consulta.</p>')+assignments+
+ $('caseDetail').innerHTML='<h3>'+html(c.name)+'</h3><p>'+html(c.rut)+' · '+html(c.career)+'</p>'+(t.active?'<div class="notice">'+html(suggestedAction(c))+' <a href="../../" target="_blank" rel="noopener">Abrir CSD</a></div>'+table(['Asignatura','Sección','Nota final','Situación'],c.subjects.map(r=>[html(r.subject),html(r.section),r.grade.toLocaleString('es-CL',{minimumFractionDigits:1,maximumFractionDigits:1}),html(gradeLabels[gradeStatus(r.grade)])+(r.review?'<br><small>Revisar cierre con Registro Curricular</small>':'')])):'<p class="notice">Esta ficha quedó archivada al actualizar el cierre. Su historial está disponible para consulta.</p>')+assignments+
  '<h3 style="margin-top:20px">Historial de intervenciones</h3>'+(hist||'<p class="muted">Aún no se registran intervenciones.</p>')+
  '<form id="eventForm"><h3>Registrar intervención</h3><div class="fields"><label>Canal<select name="channel">'+options(['Correo institucional','Llamada','Reunión','Aula virtual','Otro'])+'</select></label><label>Resultado<select name="outcome">'+options(['Intento sin respuesta','Contacto efectivo','Derivado','Cerrado'])+'</select></label></div><label>Gestión realizada y acuerdos<textarea name="note" required maxlength="4000"></textarea></label><label>Recurso del CSD recomendado<input name="csd" maxlength="300"></label><div class="fields"><label>Área de derivación<input name="referral" maxlength="300"></label><label>Próximo seguimiento<input name="next_date" type="date"></label></div><button>Guardar intervención</button></form>';
  if(!dialog.open)dialog.showModal();
