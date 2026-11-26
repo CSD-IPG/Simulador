@@ -170,3 +170,50 @@ export async function generateOffice(kind,model){
   const blob=await z.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:3},mimeType:'application/vnd.openxmlformats-officedocument.'+mime});
   return {blob,filename:label+'_IPG_Ciclo'+model.cycle+'_'+model.year+'.'+ext};
 }
+
+/* Ficha individual de seguimiento descargable. Sólo usa los datos que la API autorizó al usuario. */
+export async function generateCaseSheet({period:cycleId,caseData,tracking}){
+ if(!globalThis.JSZip)throw Error('Falta el componente local de exportación Word.');
+ if(!caseData?.rut||!tracking)throw Error('La ficha no está disponible.');
+ const z=new globalThis.JSZip();
+ const para=(value,bold=false)=>'<w:p><w:r>'+(bold?'<w:rPr><w:b/></w:rPr>':'')+'<w:t xml:space="preserve">'+xml(value)+'</w:t></w:r></w:p>';
+ const when=value=>value?new Intl.DateTimeFormat('es-CL',{dateStyle:'medium',timeStyle:'short',timeZone:'America/Santiago'}).format(new Date(value)):'—';
+ const paras=[
+  para('IPG · Escuela de Gestión, Negocios y Marítima',true),
+  para('FICHA INDIVIDUAL DE SEGUIMIENTO ACADÉMICO',true),
+  para('Documento de evidencia de gestión · '+String(cycleId||'')),
+  para('Estudiante: '+String(caseData.name||tracking.name||'')),
+  para('RUT: '+String(caseData.rut)),
+  para('Carrera: '+String(caseData.career||tracking.career||'')),
+  para('Estado del caso: '+(tracking.closed?'CERRADO':'ABIERTO'),true),
+  para('Responsable asignado: '+String(tracking.assignee||'Sin asignar')),
+  para('Supervisión institucional: Dirección de Escuela'+(tracking.supervisor?' · '+tracking.supervisor:'')),
+  para('La identificación de supervisión no constituye firma, aprobación ni validación de las gestiones.'),
+  para('Fecha de cierre: '+when(tracking.closed_at)),
+  para('Cierre registrado por: '+String(tracking.closed_by||'—')),
+  para('ANTECEDENTES ACADÉMICOS',true)
+ ];
+ for(const s of caseData.subjects||[])paras.push(para(String(s.subject||'Asignatura')+' · Sección '+String(s.section||'—')+' · Nota final '+(Number.isFinite(s.grade)?s.grade.toLocaleString('es-CL',{minimumFractionDigits:1,maximumFractionDigits:1}):'—')));
+ paras.push(para('HISTORIAL DE GESTIONES',true));
+ const events=[...(tracking.events||[])].sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at)));
+ if(!events.length)paras.push(para('No registra intervenciones.'));
+ for(let i=0;i<events.length;i++){
+  const e=events[i];
+  paras.push(para('Gestión '+(i+1)+' · '+when(e.created_at)+' · '+String(e.outcome||'—'),true));
+  paras.push(para('Responsable de la gestión: '+String(e.author||'—')));
+  paras.push(para('Canal: '+String(e.channel||'—')));
+  paras.push(para('Gestión realizada y acuerdos: '+String(e.note||'—')));
+  if(e.csd)paras.push(para('Recurso recomendado: '+e.csd));
+  if(e.referral)paras.push(para('Derivación: '+e.referral));
+  if(e.next_date)paras.push(para('Próximo seguimiento previsto: '+e.next_date));
+ }
+ paras.push(para('Registro generado: '+when(new Date().toISOString())));
+ paras.push(para('Evidencia administrativa basada en las gestiones registradas en la plataforma. No sustituye una firma o validación institucional.'));
+ const doc=XML+'<w:document xmlns:w="'+W+'"><w:body>'+paras.join('')+'<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1080" w:right="1080" w:bottom="1080" w:left="1080"/></w:sectPr></w:body></w:document>';
+ z.file('[Content_Types].xml',contentTypes([['word/document.xml','wordprocessingml.document.main']]));
+ z.file('_rels/.rels',relationships([['rId1','officeDocument','word/document.xml']]));
+ z.file('word/document.xml',doc);
+ const blob=await z.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:3}});
+ const safeRut=String(caseData.rut).replace(/[^0-9kK-]/g,'_');
+ return {blob,filename:'Ficha_Seguimiento_'+safeRut+'_'+String(cycleId||'').replace(/[^0-9-]/g,'')+'.docx'};
+}
