@@ -7,7 +7,7 @@
 <details id="firstAccess"><summary>¿Es su primer ingreso?</summary><p>Si aún no ha vinculado su cuenta, solicite a la Dirección su enlace personal de activación. Ábralo para definir su clave o vincular la que ya utiliza.</p></details></section>
 <section id="app" hidden><div class="heading"><div><p class="eyebrow">Gestión académica</p><h1>Asignaturas críticas y seguimiento</h1></div><div class="account"><span id="identity"></span><button id="logout" class="textbtn">Cerrar sesión</button></div></div>
 <div class="bar"><label>Cierre de ciclo<select id="period"></select></label><button id="reload" class="secondary">Actualizar datos</button><button id="openImport" data-admin>Cargar cierre</button></div>
-<nav id="tabs" aria-label="Secciones"><button data-tab="dashboard" data-admin>Desempeño</button><button data-tab="cases">Seguimiento</button><button data-tab="exports" data-admin>Reportes</button><button data-tab="team" data-admin>Equipo</button></nav>
+<nav id="tabs" aria-label="Secciones"><button data-tab="dashboard" data-admin>Desempeño</button><button data-tab="cases">Seguimiento</button><button id="alertTab" data-tab="alerts">🔔 Notificaciones</button><button data-tab="exports" data-admin>Reportes</button><button data-tab="team" data-admin>Equipo</button></nav>
 <section id="content"></section></section>
 <dialog id="importDialog"><div class="dialog-head"><h2>Cargar cierre de ciclo</h2><button type="button" class="secondary" data-close="importDialog">Cerrar</button></div>
 <form id="loadForm"><div class="fields"><label>Año<input type="number" id="year" min="1900" max="2099" required></label><label>Ciclo<input type="number" id="cycle" min="1" max="10" required></label></div>
