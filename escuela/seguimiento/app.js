@@ -11,11 +11,11 @@ const metric=(n,label,detail)=>'<article class="metric"><small>'+html(label)+'</
 const unique=items=>[...new Set(items.filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'es',{numeric:true}));
 const fold=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 let token=sessionStorage.getItem('seguimiento_token')||sessionStorage.getItem('csd_token')||'',user,model,period='',tab='dashboard',preview,request=0,caseRut='',page=0,subjectPage=0;
-let filters={},caseFilters={},pendingId='';
+let filters={},caseFilters={},pendingId='',alertItems=[],mailItems=[];
 const admin=()=>user?.role==='Dirección';
 const staffName=v=>({'catalina.roman@ipg.cl':'Catalina Román','nicolas.cabrera@ipg.cl':'Nicolás Cabrera','matias.guerrero@ipg.cl':'Matías Guerrero','nayaret.mendez@ipg.cl':'Nayaret Méndez','nidia.olavarria@ipg.cl':'Nidia Olavarría'}[v]||v||'Sin asignar');
 function status(msg='',bad=false){$('alert').textContent=msg;$('alert').className=bad?'error':'';}
-function showLogin(){request++;user=null;model=null;preview=null;caseRut='';$('content').replaceChildren();$('caseDetail').replaceChildren();$('preview').replaceChildren();for(const d of document.querySelectorAll('dialog[open]'))d.close();$('app').hidden=true;$('login').hidden=false;}
+function showLogin(){request++;alertItems=[];mailItems=[];user=null;model=null;preview=null;caseRut='';$('content').replaceChildren();$('caseDetail').replaceChildren();$('preview').replaceChildren();for(const d of document.querySelectorAll('dialog[open]'))d.close();$('app').hidden=true;$('login').hidden=false;}
 async function jsonRequest(path,body,auth=''){
  const headers={'Content-Type':'application/json',apikey:ANON_KEY};if(auth)headers.Authorization='Bearer '+auth;
  let resp;try{resp=await fetch(SUPABASE_URL+path,{method:'POST',headers,body:JSON.stringify(body),cache:'no-store'})}catch{throw Error('No se pudo conectar con el servidor de la Escuela. Revise la conexión y reintente.')}
@@ -76,15 +76,25 @@ async function load(p){
   const current={...raw,year:+p.slice(0,4),cycle:+p.slice(5),analysis:analyze(raw.rows),previous:null};model=current;
   const prior=admin()&&user.periods.find(x=>x.period<p);
   if(prior){try{const prev=await api('leer',{periodo:prior.period});if(stamp!==request)return;current.previous={year:+prior.period.slice(0,4),cycle:+prior.period.slice(5),analysis:analyze(prev.rows),rows:prev.rows}}catch(e){if(stamp!==request)return;status('No se pudo cargar la comparación histórica. '+e.message,true)}}
- }if(stamp===request)render();
+ }if(stamp===request){await loadAlerts().catch(()=>{});if(stamp===request)render();}
 }
 $('period').onchange=e=>load(e.target.value).catch(fail);$('reload').onclick=e=>busy(e.currentTarget,()=>start());
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
 $('tabs').onclick=e=>{const t=e.target.closest('[data-tab]');if(t){tab=t.dataset.tab;render()}};
 function render(){if(!user)return;document.querySelectorAll('[data-tab]').forEach(x=>x.setAttribute('aria-current',String(x.dataset.tab===tab)));
  if(tab==='team'&&admin())return drawTeam();
+ if(tab==='alerts')return drawAlerts();
  if(!model){$('content').innerHTML='<div class="card empty"><h2>'+(admin()?'Aún no hay un cierre cargado':'Sin fichas asignadas')+'</h2><p>'+(admin()?'Use «Cargar cierre» para validar el consolidado de notas de U+ e iniciar el análisis.':'Las fichas aparecerán cuando la Dirección le asigne estudiantes.')+'</p></div>';return}
  if(tab==='dashboard'&&admin())drawDash();else if(tab==='exports'&&admin())drawExports();else drawCases();
+}
+async function loadAlerts(){const actor=token;const data=await api('alertas');if(actor!==token||!user)return;alertItems=data.items||[];mailItems=data.mail||[];const b=$('alertTab');if(b){const n=alertItems.filter(a=>!a.read).length;b.textContent='🔔 Notificaciones'+(n?' ('+n+')':'');}}
+function drawAlerts(){
+ const list=alertItems;
+ const rows=list.map(a=>[html(a.date),html(periodName(a.period)),html(a.type),fmt(a.count),a.read?'Leída':'<button class="secondary" data-read="'+html(a.id)+'">Marcar leída</button>','<button class="secondary" data-alert-period="'+html(a.period)+'" data-alert-type="'+html(a.type)+'">Ver seguimiento</button>']);
+ $('content').innerHTML='<section class="card"><h2>Centro de notificaciones</h2><p>Alertas consolidadas por fecha y ciclo, con acceso a las fichas autorizadas. El historial conserva los avisos anteriores; consulte el seguimiento para comprobar su estado actual.</p><button id="refreshAlerts" class="secondary">Actualizar notificaciones</button></section><div class="metrics">'+metric(fmt(list.filter(a=>!a.read).length),'Sin leer','Avisos registrados')+metric(fmt(list.length),'Historial','Últimos 150 avisos')+'</div><section class="card">'+(rows.length?table(['Fecha','Ciclo','Tipo de alerta','Casos','Lectura','Acción'],rows):'<p>No hay alertas registradas.</p>')+'</section>'+(admin()?'<section class="card"><h3>Control de envíos por correo</h3><p>El envío externo requiere un proveedor autorizado. El registro indica su estado real.</p>'+(mailItems.length?table(['Fecha','Destinatario','Estado','Enviado'],mailItems.map(e=>[html(e.date),html(staffName(e.recipient)),html(e.status),html(e.sent_at||'—')])):'<p>Sin envíos registrados.</p>')+'</section>':'');
+ $('refreshAlerts').onclick=e=>busy(e.currentTarget,async()=>{await loadAlerts();drawAlerts()});
+ $('content').querySelectorAll('[data-read]').forEach(b=>b.onclick=()=>busy(b,async()=>{await api('leer_alerta',{id:Number(b.dataset.read)});await loadAlerts();drawAlerts()}));
+ $('content').querySelectorAll('[data-alert-period]').forEach(b=>b.onclick=()=>busy(b,async()=>{const p=b.dataset.alertPeriod;tab='cases';await load(p);if(model){caseFilters.deadline=b.dataset.alertType.includes('vencidos')||b.dataset.alertType.includes('Escalamiento')?'Vencido':b.dataset.alertType.includes('de hoy')?'Hoy':b.dataset.alertType.includes('Próximos')?'Próximo':'';drawCases()}}));
 }
 const select=(id,label,list,first,selected)=>'<label>'+html(label)+'<select id="'+id+'">'+options([['',first],...list],selected)+'</select></label>';
 function filtered(rows){return rows.filter(r=>(!filters.career||r.careerCode===filters.career)&&(!filters.subject||r.subjectCode===filters.subject)&&(!filters.section||String(r.section)===filters.section))}
@@ -121,13 +131,13 @@ function drawCases(){
  $('content').innerHTML='<nav id="caseGroups" aria-label="Vistas de seguimiento">'+groupButtons+'</nav><section class="card"><h2>'+(specific?'Contacto por notas 0,0 y 1,0':'Fichas de estudiantes')+'</h2>'+
   (specific?'<p>Una ficha por estudiante con al menos una asignatura con nota final 0,0 o 1,0. Abra el nombre para consultar o registrar un contacto.</p>':'')+
   '<div class="filters"><label>Buscar estudiante<input id="findCase" placeholder="Nombre o RUT" value="'+html(caseFilters.query)+'"></label>'+
-  motiveFilter+select('cCareer','Carrera',unique(all.map(c=>c.career)),'Todas',caseFilters.career)+select('cRisk','Riesgo',unique(all.map(c=>c.risk)),'Todos',caseFilters.risk)+select('cState','Última gestión',['Pendiente','Intento sin respuesta','Contacto efectivo','Derivado','Cerrado'],'Todas',caseFilters.state)+
+  motiveFilter+select('cCareer','Carrera',unique(all.map(c=>c.career)),'Todas',caseFilters.career)+select('cRisk','Riesgo',unique(all.map(c=>c.risk)),'Todos',caseFilters.risk)+select('cState','Última gestión',['Pendiente','Intento sin respuesta','Contacto efectivo','Derivado','Cerrado'],'Todas',caseFilters.state)+select('cDeadline','Plazo',['Hoy','Próximo','Vencido','Vigente','Cerrado','Sin programar'],'Todos',caseFilters.deadline)+
   '</div></section><div class="metrics" id="contactMetrics"></div><section class="card"><div id="caseList"></div></section>';
  $('caseGroups').onclick=e=>{
   const button=e.target.closest('[data-group]');if(!button)return;
   caseFilters.group=button.dataset.group;caseFilters.motive='';caseFilters.state='';page=0;drawCases();
  };
- for(const k of ['Career','Risk','State',...(specific?['Motive']:[])]){
+ for(const k of ['Career','Risk','State','Deadline',...(specific?['Motive']:[])]){
   $('c'+k).onchange=e=>{caseFilters[k.toLowerCase()]=e.target.value;page=0;list()};
  }
  $('findCase').oninput=e=>{caseFilters.query=e.target.value;page=0;list()};
@@ -136,7 +146,7 @@ function drawCases(){
   const items=pool.filter(c=>
    (!query||fold(c.name+' '+c.rut).replace(/[.\s-]/g,'').includes(query))&&
    (!caseFilters.career||c.career===caseFilters.career)&&(!caseFilters.risk||c.risk===caseFilters.risk)&&
-   (!caseFilters.state||stateOf(model.tracking[c.rut])===caseFilters.state)&&
+   (!caseFilters.state||stateOf(model.tracking[c.rut])===caseFilters.state)&&(!caseFilters.deadline||deadline(model.tracking[c.rut])===caseFilters.deadline)&&
    (!specific||!caseFilters.motive||(caseFilters.motive==='both'?(c.absent>0&&c.notTaken>0):c[caseFilters.motive]>0)));
   const active=items.filter(c=>model.tracking[c.rut]?.active!==false&&!model.tracking[c.rut]?.closed);
   const count=key=>active.filter(c=>stateOf(model.tracking[c.rut])===key).length;
