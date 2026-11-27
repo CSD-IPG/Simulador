@@ -26,6 +26,8 @@ function fail(e){status(e?.message||String(e),true);}
 async function busy(btn,fn){if(btn?.disabled)return;if(btn)btn.disabled=true;try{await fn()}catch(e){fail(e);const d=document.querySelector('dialog[open]');if(d){let a=d.querySelector('.dialog-error');if(!a){a=document.createElement('p');a.className='alert error dialog-error';a.setAttribute('role','alert');d.prepend(a)}a.textContent=e.message}}finally{if(btn)btn.disabled=false}}
 function cleanDialog(d){d.querySelector('.dialog-error')?.remove()}
 const fragment = new URLSearchParams(location.hash.slice(1));
+let linkedCase=fragment.get('ficha');
+const linkedPeriod=fragment.get('ciclo');
 let activationCode = fragment.get('activar') || '';
 if (fragment.has('activar')) history.replaceState(null, '', location.pathname + location.search);
 function configureSignIn() {
@@ -64,11 +66,18 @@ $('signin').onsubmit=e=>{
  });
 };
 $('logout').onclick=()=>{const previousToken=token;sessionStorage.removeItem('seguimiento_token');sessionStorage.removeItem('csd_token');token='';showLogin();status('Sesión cerrada.');if(previousToken)fetch(SUPABASE_URL+'/auth/v1/logout?scope=local',{method:'POST',headers:{apikey:ANON_KEY,Authorization:'Bearer '+previousToken}}).catch(()=>{})};
-async function start(preferred=period){
+async function start(preferred=linkedCase?linkedPeriod:period){
  const oldRole=user?.role;user=await api('inicio');if(!oldRole)tab=admin()?'dashboard':'cases';if(!admin())tab='cases';
  $('login').hidden=true;$('app').hidden=false;$('identity').textContent=user.role+' · '+user.email;document.querySelectorAll('[data-admin]').forEach(n=>n.hidden=!admin());
  const periods=user.periods||[];$('period').innerHTML=periods.length?options(periods.map(p=>[p.period,periodName(p.period)]),preferred):'<option>Sin cierres disponibles</option>';
  $('period').disabled=!periods.length;await load(periods.some(p=>p.period===preferred)?preferred:periods[0]?.period||'');
+ if(linkedCase&&user){
+  const rut=period===linkedPeriod&&model&&allCases().find(c=>model.tracking[c.rut]?.enlace===linkedCase)?.rut;
+  linkedCase=null;
+  history.replaceState(null,'',location.pathname+location.search);
+  if(!rut){status('La ficha del enlace no está disponible para esta cuenta.',true);return;}
+  tab='cases';render();openCase(rut);
+ }
 }
 async function load(p){
  const stamp=++request;model=null;period=p;page=0;subjectPage=0;filters={};caseFilters={};status();$('content').innerHTML='<div class="loading">Cargando cierre…</div>';
