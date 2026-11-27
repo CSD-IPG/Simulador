@@ -130,6 +130,7 @@ function drawCases(){
  const motiveFilter=specific?select('cMotive','Situación académica',motives,'Nota 0,0 o 1,0',caseFilters.motive):'';
  $('content').innerHTML='<nav id="caseGroups" aria-label="Vistas de seguimiento">'+groupButtons+'</nav><section class="card"><h2>'+(specific?'Contacto por notas 0,0 y 1,0':'Fichas de estudiantes')+'</h2>'+
   (specific?'<p>Una ficha por estudiante con al menos una asignatura con nota final 0,0 o 1,0. Abra el nombre para consultar o registrar un contacto.</p>':'')+
+  (!closedOnly?bulkNotice(all):'')+
   '<div class="filters"><label>Buscar estudiante<input id="findCase" placeholder="Nombre o RUT" value="'+html(caseFilters.query)+'"></label>'+
   motiveFilter+select('cCareer','Carrera',unique(all.map(c=>c.career)),'Todas',caseFilters.career)+select('cRisk','Riesgo',unique(all.map(c=>c.risk)),'Todos',caseFilters.risk)+select('cState','Última gestión',['Pendiente','Intento sin respuesta','Contacto efectivo','Derivado','Cerrado'],'Todas',caseFilters.state)+select('cDeadline','Plazo',['Hoy','Próximo','Vencido','Vigente','Cerrado','Sin programar'],'Todos',caseFilters.deadline)+
   '</div></section><div class="metrics" id="contactMetrics"></div><section class="card"><div id="caseList"></div></section>';
@@ -169,13 +170,30 @@ function drawCases(){
  }
  list();
 }
+function gmailDraft(fields){
+ const url=new URL('https://mail.google.com/mail/');
+ url.search=new URLSearchParams({authuser:'escuela.gestion@ipg.cl',view:'cm',fs:'1',...fields});
+ return url.href;
+}
+function bulkNotice(cases){
+ if(!admin())return '';
+ const pending=cases.map(c=>model.tracking[c.rut]).filter(t=>t?.active&&!t.closed);
+ const assigned=pending.map(t=>String(t.assignee||'').trim().toLowerCase()).filter(email=>/^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(email));
+ const recipients=unique(assigned);
+ const summary=fmt(assigned.length)+' fichas abiertas con responsable · '+fmt(recipients.length)+' destinatarios';
+ if(!recipients.length)return '<p>Sin responsables asignados para el aviso masivo de este ciclo.</p>';
+ const draft=gmailDraft({
+  bcc:recipients.join(','),
+  su:'Gestiones pendientes · '+periodName(period),
+  body:'Estimado equipo,\n\nLes solicito revisar sus fichas abiertas, actualizar las gestiones realizadas y verificar sus plazos en Seguimiento Académico IPG:\n\nhttps://csd-ipg.github.io/Simulador/escuela/seguimiento/\n\nSaludos cordiales,\nDirección de Escuela'
+ });
+ return '<div class="notice"><strong>Aviso masivo del ciclo seleccionado</strong><p>'+html(summary)+'</p><a href="'+html(draft)+'" target="_blank" rel="noopener noreferrer">Redactar aviso masivo en Gmail</a><p><small>Incluye todas las fichas abiertas asignadas del ciclo. Revise los destinatarios en CCO y el remitente antes de enviar.</small></p></div>';
+}
 function manualNotice(tracking){
  if(!admin()||!tracking.active||tracking.closed||!tracking.assignee)return '';
  const subject=deadline(tracking)==='Vencido'?'Seguimiento académico vencido':'Aviso de seguimiento académico';
  const message='Tiene un caso asignado en Seguimiento Académico. Revise sus casos y plazos en el panel institucional:\n\nhttps://csd-ipg.github.io/Simulador/escuela/seguimiento/';
- const url=new URL('https://mail.google.com/mail/');
- url.search=new URLSearchParams({authuser:'escuela.gestion@ipg.cl',view:'cm',fs:'1',to:tracking.assignee,su:subject,body:message});
- return '<p><a href="'+html(url.href)+'" target="_blank" rel="noopener noreferrer">Redactar aviso en Gmail</a><br><small>Para asignaciones urgentes o vencimientos. Revise el remitente antes de enviar.</small></p>';
+ return '<p><a href="'+html(gmailDraft({to:tracking.assignee,su:subject,body:message}))+'" target="_blank" rel="noopener noreferrer">Redactar aviso en Gmail</a><br><small>Para asignaciones urgentes o vencimientos. Revise el remitente antes de enviar.</small></p>';
 }
 function solicitudesIPG(items=[]){
  const fields=[['Jefatura de Carrera','jefatura'],['Registro Académico','registro'],['Jefatura Administrativa','administracion'],['Finanzas','finanzas']];
