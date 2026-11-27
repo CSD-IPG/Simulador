@@ -136,7 +136,7 @@
     status.textContent = "";
     sync.textContent = "";
     full.hidden = !dialog.requestFullscreen;
-    frame.src = "grua-y-patio.html?v=1";
+    frame.src = "grua-y-patio.html?v=2";
     dialog.showModal();
     void sendPending();
   });
