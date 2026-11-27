@@ -22,6 +22,19 @@ function probarAccesoIPG() {
   console.log('Acceso autenticado comprobado. Sin datos enviados.');
 }
 
+function interpretarMarcaIPG(valor, zona) {
+  if (valor instanceof Date) return valor;
+  if (typeof valor === 'number' && Number.isFinite(valor)) {
+    const fechaLocal = new Date(Date.UTC(1899, 11, 30) + Math.round(valor * 86400) * 1000);
+    return Utilities.parseDate(fechaLocal.toISOString().slice(0, 19), zona, "yyyy-MM-dd'T'HH:mm:ss");
+  }
+  const texto = String(valor).trim();
+  if (/^\d{1,2}\/\d{1,2}\/\d{4} \d{1,2}:\d{2}:\d{2}$/.test(texto)) {
+    return Utilities.parseDate(texto, zona, 'd/M/yyyy H:mm:ss');
+  }
+  return null;
+}
+
 function sincronizarSolicitudesIPG() {
   const id = PropertiesService.getScriptProperties().getProperty('PLANILLA_IPG');
   if (!id) throw new Error('Falta la propiedad PLANILLA_IPG.');
@@ -33,20 +46,25 @@ function sincronizarSolicitudesIPG() {
   const identificacion = hoja.getRange(2, 1, filas, 3).getValues();
   const tipos = hoja.getRange(2, 12, filas, 1).getDisplayValues();
   const aportes = hoja.getRange(2, 17, filas, 4).getDisplayValues();
+  const zona = libro.getSpreadsheetTimeZone();
+  const omitidas = [];
   const solicitudes = identificacion.flatMap(([marca, fecha, rut], i) => {
     if (!marca && !rut) return [];
     const documento = String(rut).replace(/[.\s-]/g, '').toUpperCase();
     const tipo = tipos[i][0].trim();
-    if (!(marca instanceof Date) || !/^[0-9]{1,8}[0-9K]$/.test(documento) || !tipo) {
-      throw new Error('Revise marca temporal, RUT y tipo de solicitud en la fila ' + (i + 2) + '.');
+    const enviada = interpretarMarcaIPG(marca, zona);
+    if (!enviada || !/^[0-9]{1,8}[0-9K]$/.test(documento) || !tipo) {
+      omitidas.push(i + 2);
+      return [];
     }
     const [jefatura, registro, administracion, finanzas] = aportes[i].map(valor => valor.trim() || null);
     return [{
-      rut: documento, enviada_en: marca.toISOString(), tipo,
+      rut: documento, enviada_en: enviada.toISOString(), tipo,
       fecha: fecha instanceof Date ? Utilities.formatDate(fecha, libro.getSpreadsheetTimeZone(), 'yyyy-MM-dd') : null,
       jefatura, registro, administracion, finanzas
     }];
   });
+  if (omitidas.length) console.warn('Filas sin datos válidos para vincular: ' + omitidas.join(', '));
   let cambios = 0;
   for (let i = 0; i < solicitudes.length; i += 100) {
     const respuesta = enviarSolicitudesIPG(solicitudes.slice(i, i + 100));
