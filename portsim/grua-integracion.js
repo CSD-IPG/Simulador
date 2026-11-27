@@ -7,10 +7,16 @@
 
   const launch = document.createElement("section");
   launch.id = "grua-launch";
-  launch.innerHTML = `<div><h2>Grúa y Patio 3D</h2>
-    <p>Opera la grúa desde la cabina, descarga el buque y asigna la carga en el patio. Elige modo guiado o desafío dentro de la práctica.</p>
-    <p id="grua-status" role="status"></p></div>
-    <button type="button" id="grua-start">Abrir cabina 3D</button>`;
+  launch.setAttribute("aria-labelledby", "grua-heading");
+  launch.innerHTML = `<div class="grua-copy">
+    <p class="grua-role">Simulación de grúa portacontenedores</p>
+    <h2 id="grua-heading">Grúa y Patio 3D</h2>
+    <p>El buque está en el muelle y hay una carga con retiro prioritario. Desde la cabina, alinea el bastidor, iza los contenedores y decide dónde ubicarlos en el patio.</p>
+    <p class="grua-modes">Practica en <strong>modo guiado</strong> o pon a prueba tus decisiones en <strong>modo desafío</strong>.</p>
+    <button type="button" id="grua-start">Entrar a la cabina 3D</button>
+    <p id="grua-status" role="status"></p>
+  </div>
+  <div class="grua-art"><img class="grua-cover" src="grua-cabina.webp" width="960" height="640" alt="Ilustración de una cabina de grúa con vista al buque y los contenedores del muelle."></div>`;
   document.querySelector(".shell").before(launch);
 
   const dialog = document.createElement("dialog");
@@ -25,9 +31,21 @@
   document.body.append(dialog);
   const style = document.createElement("style");
   style.textContent = `
-    #grua-launch{margin:14px auto;max-width:1250px;padding:16px 20px;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:1px solid #397a9b;border-radius:14px;background:#0d2846;color:#f3f8ff}
-    #grua-launch h2,#grua-launch p{margin:0 0 4px;color:inherit}
+    #grua-launch{box-sizing:border-box;margin:16px auto;max-width:min(1250px,calc(100% - 32px));display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);isolation:isolate;overflow:hidden;border:1px solid #397a9b;border-radius:18px;background:linear-gradient(125deg,#112e4d,#081b31);color:#f3f8ff}
+    #grua-launch .grua-copy{padding:clamp(22px,3vw,42px);align-self:center}
+    #grua-launch p{margin:0 0 14px;color:#dbeaf6;font-size:1rem;line-height:1.55}
+    #grua-launch .grua-role{margin-bottom:7px;color:#80f3dc;font-weight:750;font-size:.88rem}
+    #grua-launch h2{margin:0 0 10px;color:#fff;font-size:clamp(1.8rem,4vw,3rem);line-height:1.02;letter-spacing:-.035em}
+    #grua-launch .grua-modes{font-size:.94rem}
+    #grua-launch .grua-art{position:relative;min-height:270px;background:#12304b}
+    #grua-launch .grua-cover{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+    #grua-status:empty{display:none}
+    #grua-launch #grua-status:not(:empty){margin:10px 0 0}
     #grua-launch button,#grua-dialog button{background:#80f3dc;color:#082820;border:0;border-radius:7px;padding:9px 12px;font:700 14px system-ui;cursor:pointer}
+    #grua-launch #grua-start{min-height:44px;padding:10px 18px;font-size:1rem}
+    #grua-launch #grua-start:hover{background:#b1fae9}
+    #grua-launch #grua-start:focus-visible{outline:3px solid #ffd781;outline-offset:4px}
+    @media(max-width:680px){#grua-launch{grid-template-columns:minmax(0,1fr)}#grua-launch .grua-art{grid-row:1;aspect-ratio:2/1;min-height:0}}
     #grua-dialog{margin:0;padding:0;border:0;width:100%;max-width:none;height:100%;max-height:none;background:#07121e;color:#f3f8ff}
     #grua-dialog[open]{display:flex;flex-direction:column}
     #grua-dialog header{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:7px 12px;background:#12304b}
