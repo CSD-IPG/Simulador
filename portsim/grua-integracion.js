@@ -1,0 +1,153 @@
+(() => {
+  "use strict";
+  const accessConfirmed = () => window.__csdIdentOk
+    && document.body.classList.contains("ipg-auth-ok")
+    && !document.getElementById("csdPrivacyGate");
+  const field = id => document.getElementById(id)?.value.trim() || null;
+
+  const launch = document.createElement("section");
+  launch.id = "grua-launch";
+  launch.innerHTML = `<div><h2>Grúa y Patio 3D</h2>
+    <p>Opera la grúa desde la cabina, descarga el buque y asigna la carga en el patio. Elige modo guiado o desafío dentro de la práctica.</p>
+    <p id="grua-status" role="status"></p></div>
+    <button type="button" id="grua-start">Abrir cabina 3D</button>`;
+  document.querySelector(".shell").before(launch);
+
+  const dialog = document.createElement("dialog");
+  dialog.id = "grua-dialog";
+  dialog.setAttribute("aria-label", "Grúa y Patio 3D");
+  dialog.innerHTML = `<header><strong>Grúa y Patio 3D</strong>
+    <span id="grua-sync" role="status"></span>
+    <button type="button" id="grua-retry" hidden>Reintentar registro</button>
+    <button type="button" id="grua-full">Pantalla completa</button>
+    <button type="button" id="grua-back">Volver a Operaciones Portuarias</button></header>
+    <iframe title="Cabina de grúa y patio 3D"></iframe>`;
+  document.body.append(dialog);
+  const style = document.createElement("style");
+  style.textContent = `
+    #grua-launch{margin:14px auto;max-width:1250px;padding:16px 20px;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:1px solid #397a9b;border-radius:14px;background:#0d2846;color:#f3f8ff}
+    #grua-launch h2,#grua-launch p{margin:0 0 4px;color:inherit}
+    #grua-launch button,#grua-dialog button{background:#80f3dc;color:#082820;border:0;border-radius:7px;padding:9px 12px;font:700 14px system-ui;cursor:pointer}
+    #grua-dialog{margin:0;padding:0;border:0;width:100%;max-width:none;height:100%;max-height:none;background:#07121e;color:#f3f8ff}
+    #grua-dialog[open]{display:flex;flex-direction:column}
+    #grua-dialog header{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:7px 12px;background:#12304b}
+    #grua-sync{flex:1;font-size:.85rem;min-width:8ch}
+    #grua-dialog iframe{width:100%;flex:1;min-height:0;border:0}
+    body:has(#grua-dialog[open]){overflow:hidden}
+  `;
+  document.head.append(style);
+
+  const frame = dialog.querySelector("iframe");
+  const sync = document.getElementById("grua-sync");
+  const retry = document.getElementById("grua-retry");
+  const startButton = document.getElementById("grua-start");
+  const status = document.getElementById("grua-status");
+  const full = document.getElementById("grua-full");
+  const pending = [];
+  let flush = null;
+  let current = null;
+  let attemptNumber = 0;
+  let participant;
+
+  function sendPending() {
+    if (flush) return flush;
+    if (!pending.length) return Promise.resolve(true);
+    retry.hidden = true;
+    sync.textContent = "Guardando participación…";
+    flush = (async () => {
+      while (pending.length) {
+        const response = await fetch(IPG_TRACE_URL + "/rest/v1/participaciones", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json", apikey: IPG_TRACE_ANON,
+            Authorization: "Bearer " + (ipgAccessToken() || IPG_TRACE_ANON),
+            Prefer: "return=minimal"
+          },
+          body: JSON.stringify(pending[0]),
+          signal: AbortSignal.timeout(10000)
+        });
+        if (!response.ok) throw new Error("Registro rechazado: " + response.status);
+        pending.shift();
+      }
+      sync.textContent = "Participación registrada";
+      return true;
+    })().catch(() => {
+      sync.textContent = "Registro pendiente. Reintenta antes de salir.";
+      retry.hidden = false;
+      return false;
+    }).finally(() => { flush = null; });
+    return flush;
+  }
+
+  window.addEventListener("message", event => {
+    if (event.origin !== location.origin || event.source !== frame.contentWindow
+      || !dialog.open || !accessConfirmed() || event.data?.type !== "portsim-grua") return;
+    const { id, mission, mode, progress, seconds, score } = event.data;
+    if (typeof id !== "string" || typeof mission !== "string" || mission.length > 100
+      || !["guiado", "desafio"].includes(mode) || !Number.isInteger(progress)
+      || progress < 0 || progress > 100 || !Number.isInteger(seconds) || seconds < 0
+      || (score !== null && (!Number.isInteger(score) || score < 0 || score > 100 || progress !== 100))) return;
+    if (current?.id !== id) {
+      current = { id, progress: -1, finished: false };
+      attemptNumber += 1;
+    }
+    if (current.finished || (score === null && current.progress === progress)) return;
+    const evento = score !== null ? "finalizacion" : current.progress === -1 ? "inicio" : "avance";
+    current.progress = progress;
+    current.finished = score !== null;
+    pending.push({
+      ...participant, session_id: id, evento, simulador: "IPG PORTSIM · Grúa y Patio 3D",
+      actividad: mission + " · " + (mode === "guiado" ? "Modo guiado" : "Modo desafío"),
+      estado: evento === "finalizacion" ? "Finalizado" : evento === "inicio" ? "Iniciado" : "En progreso",
+      avance: progress, puntaje: score, intentos: attemptNumber, tiempo_segundos: seconds
+    });
+    void sendPending();
+  });
+
+  startButton.addEventListener("click", () => {
+    if (!accessConfirmed() || !field("studentId")) {
+      status.textContent = "Completa el ingreso institucional para abrir la práctica.";
+      return;
+    }
+    participant = {
+      nombre: field("student"), rut_id: field("studentId"), carrera: field("career"),
+      email_institucional: window.IPG_INSTITUTIONAL_EMAIL,
+      seccion: field("section"), docente: field("teacher")
+    };
+    current = null;
+    status.textContent = "";
+    sync.textContent = "";
+    full.hidden = !dialog.requestFullscreen;
+    frame.src = "grua-y-patio.html?v=1";
+    dialog.showModal();
+    void sendPending();
+  });
+  full.addEventListener("click", async () => {
+    try {
+      if (document.fullscreenElement === dialog) await document.exitFullscreen();
+      else await dialog.requestFullscreen();
+    } catch {
+      full.textContent = "Vista ampliada";
+    }
+  });
+  document.addEventListener("fullscreenchange", () => {
+    full.textContent = document.fullscreenElement === dialog ? "Salir de pantalla completa" : "Pantalla completa";
+  });
+  retry.addEventListener("click", sendPending);
+  async function closeCabin() {
+    if (current && !current.finished && !confirm("Esta misión sigue en curso. ¿Quieres salir y conservar el avance registrado?")) return;
+    const saved = await sendPending();
+    if (!saved && !confirm("Hay registros pendientes de sincronización. ¿Quieres volver al módulo de todos modos?")) return;
+    if (document.fullscreenElement === dialog) await document.exitFullscreen();
+    dialog.close();
+    frame.removeAttribute("src");
+    status.textContent = !saved ? "Registro pendiente. Abre la cabina para volver a intentar el envío."
+      : current?.finished ? "Misión finalizada. El resultado se registró en el CSD." : "";
+    startButton.focus();
+  }
+  document.getElementById("grua-back").addEventListener("click", closeCabin);
+  dialog.addEventListener("cancel", event => {
+    event.preventDefault();
+    void closeCabin();
+  });
+})();

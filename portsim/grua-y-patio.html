@@ -1,0 +1,2111 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grúa y patio · CSD IPG</title>
+<style>
+:root{color-scheme:dark;--bg:#07121e;--panel:#0e2031;--border:#2b4659;--text:#eff7fc;--muted:#b4c9d9;--teal:#80f3dc;--amber:#ffd078;--red:#ffb4a9;font:16px/1.45 Inter,system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;color:var(--text);background:radial-gradient(ellipse at 30% -20%,#21465e,#07121e 58%)}main{max-width:1540px;padding:16px clamp(12px,2.8vw,44px) 30px;margin:auto}h1,h2,p{margin:0}h2{font-size:1rem}button{font:inherit;cursor:pointer}button:disabled{opacity:.46;cursor:default}button:focus-visible{outline:3px solid var(--amber);outline-offset:3px}[hidden]{display:none!important}.muted{color:var(--muted)}.top,.intro,.controls,.actions,.legend,.stage-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.top{justify-content:space-between;padding-bottom:10px;border-bottom:1px solid var(--border);color:var(--muted);font-size:.82rem}.brand{color:var(--teal);letter-spacing:.12em;font-weight:850}.intro{justify-content:space-between;margin:15px 0}.intro h1{font-size:clamp(1.65rem,3vw,2.85rem);line-height:1.06;letter-spacing:-.05em}.intro p{font-size:.94rem;margin-top:5px;color:var(--muted)}.btn,.key{border:1px solid #3c6078;border-radius:8px;color:var(--text);background:#162d40;min-height:42px;padding:5px 11px;font-weight:700}.btn:hover:not(:disabled),.key:hover:not(:disabled){background:#214a60}.btn.primary,.btn[aria-pressed=true]{background:var(--teal);border-color:var(--teal);color:#062820}.btn.primary:hover:not(:disabled),.btn[aria-pressed=true]:hover{background:#b6faea}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:12px;align-items:start}.panel,.hud,.viewport{border:1px solid var(--border);background:var(--panel);border-radius:12px}.game{min-width:0;display:grid;gap:8px}.hud{display:grid;grid-template-columns:repeat(4,1fr);overflow:hidden}.metric{padding:6px 13px}.hud .metric+.metric{border-left:1px solid var(--border)}.metric span{display:block;color:var(--muted);font-size:.79rem}.metric strong{display:block;color:var(--text);font:800 clamp(1.02rem,2.1vw,1.52rem)/1.28 ui-monospace,monospace}.metric.deadline strong{color:var(--amber)}.metric.progress strong{color:var(--teal)}
+.viewport{position:relative;isolation:isolate;overflow:hidden;background:#123346}.viewport canvas{width:100%;height:auto;display:block}.stage-head{position:absolute;z-index:3;top:9px;left:10px;right:10px;justify-content:space-between;pointer-events:none}.stage-head span{padding:4px 8px;border:1px solid #678e9d;border-radius:6px;background:#061622e8;color:#eaf6fc;font:700 clamp(.65rem,1.1vw,.81rem)/1.25 ui-monospace,monospace}.stage-head #position{color:var(--teal)}.slot-marker{position:absolute;z-index:3;transform:translate(-50%,-50%);border:1px solid #7897a7;border-radius:4px;color:var(--text);background:#11252de8;padding:2px 5px;min-width:32px;font:800 clamp(.65rem,1.15vw,.82rem)/1.3 ui-monospace,monospace}.slot-marker:hover,.slot-marker[aria-pressed=true]{background:var(--teal);color:#062820;border-color:var(--teal)}.slot-marker[data-closed=true]{border-color:#e4988c;color:#ffe4df;background:#502e36}.slot-marker[data-closed=true][aria-pressed=true]{outline:2px solid var(--teal)}.slot-marker:disabled{opacity:1}.announce{min-height:44px;border:1px solid var(--border);border-left:3px solid var(--teal);border-radius:8px;padding:9px 11px;background:#102638;font-size:.91rem}.announce[data-level=bad]{border-left-color:var(--red);color:var(--red)}.announce[data-level=warn]{border-left-color:var(--amber);color:var(--amber)}.controls{justify-content:space-between}.direction{display:flex;gap:4px}.key{min-width:43px;font-size:1.12rem;padding:4px}.control-label{color:var(--muted);font-size:.82rem}.actions{justify-content:flex-start}kbd{display:inline-block;color:#def3fc;background:#0b1d2b;border:1px solid #466477;border-radius:4px;padding:0 4px;font:700 .78rem ui-monospace,monospace}.primary kbd{color:#142c26;background:#c3fbec;border-color:#54877b}
+.aside{display:grid;gap:9px}.panel{padding:12px}.panel h2{margin:0 0 6px}.order p,.panel li,.hint p{font-size:.88rem}.order strong{color:var(--amber)}.manifest{list-style:none;padding:0;margin:7px 0 0;display:grid;gap:5px}.manifest li{display:flex;justify-content:space-between;gap:5px;border-top:1px solid var(--border);padding-top:5px;color:var(--muted)}.manifest b{color:var(--text)}.manifest .priority b{color:var(--amber)}.log{margin:0;padding-left:20px;color:var(--muted);max-height:110px;overflow:auto}.log li+li{margin-top:3px}.instructions{margin-top:7px;color:var(--muted)}.report{margin-top:12px}.report h2:focus{outline:2px solid var(--teal)}.report .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:8px 0}.report .metric{border:1px solid var(--border);background:#091b2a;border-radius:7px}.report p+p,.report .actions{margin-top:8px}.award{color:var(--amber);font-weight:800;margin-bottom:5px}.learning{color:var(--muted);font-size:.81rem;margin-top:10px}.legend{color:var(--muted);font-size:.77rem;gap:6px 13px}.legend b{color:var(--amber)}.legend .closed{color:var(--red)}
+@media(max-width:1050px){.layout{grid-template-columns:minmax(0,1fr) 240px}}@media(max-width:790px){.layout{grid-template-columns:minmax(0,1fr)}.aside{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:520px){.aside{grid-template-columns:minmax(0,1fr)}.hud .metric{padding:5px}.metric span{font-size:.7rem}.metric strong{font-size:1rem}.slot-marker{min-width:27px;padding:1px 3px}.stage-head{top:5px;left:5px;right:5px}.report .metrics{grid-template-columns:repeat(2,1fr)}}
+
+.viewbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:5px 10px;font-size:.84rem}.viewbar .btn{min-height:34px;padding:4px 9px;font-size:.83rem}.slot-marker.off-camera{display:none}.manifest li{display:grid;grid-template-columns:1fr auto;align-items:baseline}.manifest .destination{grid-column:1/-1;font-size:.82rem;color:#c2d6e2;margin-top:-1px}.manifest .cargo-status{font-size:.8rem}.order .closing{margin-top:8px;padding-top:7px;border-top:1px solid var(--border);color:#b4c9d9}.viewport:focus-within{border-color:#679bb0}
+
+.operation-readout{display:flex;gap:6px 14px;flex-wrap:wrap;padding:6px 10px;border:1px solid var(--border);background:#102638;border-radius:8px;font:700 .81rem ui-monospace,monospace;color:#b9d6e2}.operation-readout strong{color:var(--teal)}[data-motion]{touch-action:none;user-select:none}.control-label{line-height:1.65}.mini{font-size:.78rem}.signals{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.signals span{color:var(--muted)}dialog{max-width:min(600px,calc(100vw - 24px));width:100%;border:1px solid #43687d;background:#102337;color:var(--text);border-radius:16px;padding:clamp(15px,4vw,27px);box-shadow:0 20px 80px #03101edb;max-height:calc(100dvh - 24px);overflow:auto}dialog::backdrop{background:#05121bbc}dialog h2{font-size:1.45rem;margin:4px 0 6px}.quiz-options{display:grid;gap:8px;margin:12px 0}.quiz-options .btn{text-align:left;white-space:normal}.quiz-feedback{min-height:1.6em;margin-bottom:8px;color:#b7efe1}.quiz-links{font-size:.76rem;color:var(--muted);margin-top:12px}.quiz-links a{color:var(--teal)}.quiz-title{font-size:.8rem;color:var(--teal);font-weight:800;letter-spacing:.04em}#quiz-question{margin:10px 0 5px;font-size:1rem}
+.crane-desk{background:linear-gradient(155deg,#172b3a,#0b1927 65%);border:1px solid #3a586b;border-radius:13px;padding:clamp(9px,1.5vw,16px);display:grid;gap:9px;box-shadow:inset 0 1px #71879536}.desk-head,.desk-footer,.safety-controls,.lamp-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.desk-head,.desk-footer{justify-content:space-between}.desk-head p{font:750 .71rem ui-monospace,monospace;letter-spacing:.11em;color:var(--teal);margin-bottom:3px}.desk-head h2{font-size:1.32rem;margin:0}.desk-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.console-unit{position:relative;min-width:0;border:1px solid #456073;border-radius:8px;background:linear-gradient(160deg,#213849,#101e2a 67%);padding:9px 8px;box-shadow:inset 0 1px #71879554,0 2px 4px #03101c70}.console-unit h3{font-size:.91rem;margin:0}.unit-sub{font-size:.78rem;color:var(--muted);margin:2px 0 5px}.axis-row,.axis-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.axis-row .btn,.axis-grid .btn{min-width:0;padding:4px;font-size:.79rem;min-height:35px;overflow-wrap:anywhere}.lever-track{height:54px;position:relative;margin:3px auto 8px;width:96px;overflow:hidden;background:radial-gradient(ellipse,#182b3a,#0a141e);border:1px solid #4f6d7e;border-radius:14px;box-shadow:inset 0 2px 6px #030b12}.lever-track:before,.cross-track:after{content:"";width:72%;height:10px;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#07131e;border:1px solid #344d60;border-radius:6px}.cross-track:after{width:12px;height:72%}.lever-track i{position:absolute;z-index:1;left:50%;top:50%;width:21px;height:21px;border-radius:50%;background:linear-gradient(#a0b4be,#3e5566 45%,#162532);box-shadow:0 4px 6px #02090d,inset 0 0 0 1px #a7bec592;transform:translate(calc(-50% + var(--jx,0px)),calc(-50% + var(--jy,0px)));transition:transform .1s}.spreader-panel{margin:8px auto;width:min(132px,91%);height:44px;position:relative;border:2px solid #a79061;background:#172634;display:grid;place-items:center;border-radius:4px;font:700 .68rem ui-monospace,monospace;color:#d7e6ed}.spreader-panel i{position:absolute;width:10px;height:10px;border-radius:50%;background:#ffb878;box-shadow:0 0 8px #ffc68675}.spreader-panel i:nth-child(1){left:-4px;top:-4px}.spreader-panel i:nth-child(2){right:-4px;top:-4px}.spreader-panel i:nth-child(3){left:-4px;bottom:-4px}.spreader-panel i:nth-child(4){right:-4px;bottom:-4px}.spreader-panel[data-locked="true"] i{background:#8bf8ad;box-shadow:0 0 8px #8bf8ad88}.lamp-row{margin:6px 0;gap:4px 10px}.lamp{font-size:.72rem;color:#bdcdd8}.lamp:before{content:"";background:#647483;display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px}.lamp[data-active="true"]:before{background:#8bf8ad;box-shadow:0 0 5px #8bf8ad88}.close-lock{color:#09281e;background:#9de5c9;border-color:#9de5c9}.close-lock:hover:not(:disabled){color:#fff}.emergency{display:flex;align-items:center;gap:8px;text-align:left;color:#ffd8d6;border-color:#9d6064;background:#422733;font-size:.79rem;line-height:1.15}.emergency i{width:24px;height:24px;border:3px solid #eeb66a;background:radial-gradient(circle at 37% 30%,#fb7a72,#bf242c 62%,#721b23);border-radius:50%;box-shadow:0 2px 4px #080d13}.emergency[aria-pressed=true]{color:#ffd8d6;background:#5e2535;border-color:#ff9496}.emergency[aria-pressed=true]:hover{color:#35141b;background:#ffd5d5}.desk-footer .btn{font-size:.8rem}.guide-count{margin:8px 0;color:#b7eee1}.guide-choices{display:grid;gap:7px;margin:9px 0}.guide-choices .btn{text-align:left}.guide-choices .btn[data-seen=true]{border-color:#80bca7}.guide-desc{padding:9px;background:#0b1f30;border:1px solid var(--border);border-radius:7px;min-height:4.5em;color:#edf5fc}@media(max-width:650px){.desk-grid{grid-template-columns:1fr 1fr}.instrument-unit{grid-column:1/-1;grid-row:2}}@media(max-width:340px){.desk-grid{grid-template-columns:1fr}.instrument-unit{grid-column:auto;grid-row:auto}}
+.mission-notice{margin-top:8px;padding:7px 8px;border:1px solid #8f7042;border-radius:6px;color:#ffd68f;background:#352c24}.mission-choice{margin-top:6px;color:var(--muted);font-size:.76rem}</style>
+<style>
+.alignment-monitor{position:absolute;z-index:4;right:12px;bottom:11%;width:31%;min-width:185px;background:#081b28f5;border:1px solid #75a9b8;box-shadow:0 3px 18px #001019b0;border-radius:9px;padding:5px;container-type:inline-size}
+.monitor-title,.monitor-readout{display:flex;align-items:center;justify-content:space-between;gap:5px;font-size:clamp(.64rem,4cqw,.79rem);color:#c7e8f0;padding:2px 4px}
+.monitor-title .btn{min-height:25px;padding:2px 6px;font-size:.67rem}.monitor-readout strong{color:#92e7d8;letter-spacing:.03em}
+#alignment-camera{display:block;width:100%;aspect-ratio:44/26;height:auto!important;border-radius:4px}
+.viewport.precision-expanded .alignment-monitor{inset:40px 8% 7%;width:84%;display:flex;flex-direction:column;justify-content:center;max-width:none}
+.viewport.precision-expanded #alignment-camera{height:calc(100% - 50px)!important;object-fit:contain;aspect-ratio:auto}
+.viewport.precision-expanded .slot-marker{display:none!important}
+.viewport[data-view="map"]:not(.precision-expanded) .alignment-monitor{display:none}
+.manifest{max-height:310px;overflow:auto}.mission-notice p{margin:5px 0}.mission-notice .btn{min-height:34px}.mission-notice[hidden]{display:none}
+@media(max-width:650px){.alignment-monitor{min-width:120px;width:39%;right:5px;bottom:9%;padding:2px}.monitor-title,.monitor-readout{font-size:.56rem}.monitor-title .btn{font-size:.58rem;min-height:21px}.viewport.precision-expanded .alignment-monitor{inset:29px 3% 3%;width:94%}}
+</style>
+<style>
+#three-canvas{position:absolute;inset:0;width:100%;height:100%!important;display:none;z-index:1;cursor:grab;touch-action:none}
+.viewport.webgl-active #three-canvas{display:block}
+.viewport.webgl-active #canvas{opacity:0}
+#three-canvas.grabbing{cursor:grabbing}
+.viewport .slot-marker{z-index:3;transform:translate(-50%,-50%);min-width:0;padding:0 2px;border-radius:3px;font:700 9px/12px ui-monospace,monospace;background:#10232dd9;color:#d1e0e3;box-shadow:0 1px 2px #0b1b3377}
+.viewport .slot-marker[aria-pressed=true],.viewport .slot-marker:hover{background:var(--teal);color:#082820}
+.viewport .slot-marker[data-closed=true]{background:#502e36;color:#ffe4df}
+.viewport .slot-marker[data-closed=true][aria-pressed=true]{outline:1px solid var(--teal)}
+.cargo-tag{display:none;position:absolute;z-index:2;pointer-events:none;transform:translate(-50%,-50%);white-space:nowrap;font:800 10px/14px ui-monospace,monospace;letter-spacing:.01em;padding:0 3px;border-radius:2px;color:#fff;background:#0c1925c9;text-shadow:0 1px 2px #000}
+.webgl-active .cargo-tag:not(.off-camera){display:block}
+.webgl-active .cargo-tag[data-priority=true]{color:#ffe28b}
+.viewport.precision-expanded .cargo-tag,.viewport.hide-positions .slot-marker{display:none!important}
+.camera-note{font-size:.72rem;color:#afd4df}
+</style>
+</head>
+<body>
+<main>
+<header class="top"><span class="brand">CSD IPG / GRÚA Y PATIO</span><span>Operaciones Portuarias</span></header>
+<div class="intro">
+  <div><h1 id="mission-title">Misión de descarga</h1><p id="mission-intro"></p></div>
+  <div class="actions" role="group" aria-label="Modo de juego">
+    <button class="btn" id="guided" aria-pressed="true">Modo guiado</button>
+    <button class="btn" id="challenge" aria-pressed="false">Modo desafío</button>
+    <button class="btn" id="new-mission">Otra misión</button>
+  </div>
+</div>
+<div class="layout">
+<section class="game" aria-label="Juego de grúa y patio">
+  <div class="hud" aria-label="Indicadores del turno">
+    <div class="metric"><span>Reloj del turno</span><strong id="clock">09:00</strong></div>
+    <div class="metric deadline"><span>Hora de retiro</span><strong id="deadline"></strong></div>
+    <div class="metric progress"><span>Descarga</span><strong id="unloaded">0 / 3</strong></div>
+    <div class="metric"><span>Movimientos</span><strong id="moves">0</strong></div>
+  </div>
+  <div id="scene" class="viewport">
+    <canvas id="canvas" tabindex="0" width="1100" height="560" role="img" aria-label="Vista isométrica de un buque, el muelle, la grúa y las posiciones de patio."></canvas>
+    <canvas id="three-canvas" width="1100" height="560" aria-label="Escenario tridimensional: arrastra para mirar alrededor."></canvas>
+    <div class="stage-head"><span id="camera-label">CABINA / BAHÍA SUR</span><span id="position"></span></div>
+    <button class="slot-marker" data-cell="N1">N1</button><button class="slot-marker" data-cell="N2">N2</button><button class="slot-marker" data-cell="N3">N3</button><button class="slot-marker" data-cell="N4">N4</button><button class="slot-marker" data-cell="N5">N5</button><button class="slot-marker" data-cell="N6">N6</button>
+    <button class="slot-marker" data-cell="A1">A1</button><button class="slot-marker" data-cell="A2">A2</button><button class="slot-marker" data-cell="A3">A3</button><button class="slot-marker" data-cell="A4">A4</button><button class="slot-marker" data-cell="A5">A5</button><button class="slot-marker" data-cell="A6">A6</button>
+    <button class="slot-marker" data-cell="B1">B1</button><button class="slot-marker" data-cell="B2">B2</button><button class="slot-marker" data-cell="B3">B3</button><button class="slot-marker" data-cell="B4">B4</button><button class="slot-marker" data-cell="B5">B5</button><button class="slot-marker" data-cell="B6">B6</button>
+    <div class="alignment-monitor" id="alignment-monitor">
+      <div class="monitor-title"><span>CAM 02 · VERTICAL</span><button id="focus-view" class="btn" aria-pressed="false" title="Ampliar cámara vertical (C)">Ampliar C</button></div>
+      <canvas id="alignment-camera" width="440" height="260" role="img" aria-label="Cámara cenital de precisión: contorno del bastidor, posición del contenedor y errores de alineación."></canvas>
+      <div class="monitor-readout"><strong id="precision-readout">Alineación</strong><span id="precision-offset"></span></div>
+    </div>
+  </div>
+  <div class="viewbar">
+    <div class="actions" role="group" aria-label="Cámara">
+      <button class="btn" id="cab-view" aria-pressed="true">Cabina 3D</button>
+      <button class="btn" id="map-view" aria-pressed="false">Vista exterior 3D</button>
+      <button class="btn" id="reset-look">Centrar cámara</button>
+      <button class="btn" id="position-labels" aria-pressed="true" title="Mostrar u ocultar los códigos de posición del buque y patio; los códigos de carga permanecen visibles">Posiciones</button>
+    </div>
+    <div class="signals"><span><kbd>V</kbd> Plano / cabina · <kbd>C</kbd> Cámara vertical</span><button class="btn" id="sound-toggle" aria-pressed="false">Activar sonido</button></div>
+  </div>
+  <p class="camera-note" id="renderer-note">Arrastra la escena para mirar alrededor. En la vista exterior usa la rueda para acercarte o alejarte.</p>
+  <div class="legend"><span><b>Amarillo</b> · R-204 prioritario</span><span id="dispatch-legend"></span><span>FR-618 · refrigerado B6</span><span>E-516 · A4</span><span class="closed">Franja roja · posición cerrada</span></div>
+  <p id="feedback" class="announce" role="status"></p>
+<section class="crane-desk" aria-labelledby="desk-title">
+  <header class="desk-head">
+    <div><p>GRÚA STS · PUESTO DE OPERACIÓN</p><h2 id="desk-title">Botonera de cabina</h2></div>
+    <button class="btn" id="panel-guide">Reconocer mandos</button>
+  </header>
+  <div class="operation-readout" aria-label="Estado de la maniobra">
+    <strong id="motion-status" role="status"></strong><span id="alignment"></span><span id="hoist-level"></span><span id="anchor-state"></span>
+  </div>
+  <div class="desk-grid">
+    <section class="console-unit" aria-labelledby="trolley-title">
+      <h3 id="trolley-title">Palanca izquierda</h3><p class="unit-sub">Carro transversal</p>
+      <div class="lever-track" id="trolley-lever" aria-hidden="true"><i></i></div>
+      <div class="axis-row" role="group" aria-label="Mandos del carro">
+        <button class="btn" data-motion="left" aria-label="Carro hacia el buque">← Buque <kbd>A</kbd></button>
+        <button class="btn" data-motion="right" aria-label="Carro hacia el patio">Patio → <kbd>D</kbd></button>
+      </div>
+    </section>
+    <section class="console-unit instrument-unit" aria-labelledby="interlocks-title">
+      <h3 id="interlocks-title">Bastidor de izaje</h3><p class="unit-sub">Apoyo y seguros de esquina</p>
+      <div class="spreader-panel" id="spreader-panel" data-locked="false" aria-hidden="true"><i></i><i></i><i></i><i></i><span>SPREADER</span></div>
+      <div class="lamp-row"><span class="lamp" id="seated-lamp">En apoyo</span><span class="lamp" id="travel-lamp">Altura de traslado</span></div>
+      <div class="axis-row anchor-row" role="group" aria-label="Seguros del bastidor">
+        <button class="btn close-lock" id="anchor">Cerrar seguros</button>
+        <button class="btn" id="release-anchor">Abrir seguros</button>
+      </div>
+    </section>
+    <section class="console-unit" aria-labelledby="hoist-title">
+      <h3 id="hoist-title">Palanca derecha</h3><p class="unit-sub">Izaje y pórtico</p>
+      <div class="lever-track cross-track" id="hoist-lever" aria-hidden="true"><i></i></div>
+      <div class="axis-grid" role="group" aria-label="Mandos de izaje y pórtico">
+        <button class="btn" id="lift" data-motion="raise">Subir <kbd>Q</kbd></button>
+        <button class="btn" id="lower" data-motion="descend">Bajar <kbd>E</kbd></button>
+        <button class="btn" data-motion="up">Retroceder <kbd>W</kbd></button>
+        <button class="btn" data-motion="down">Avanzar <kbd>S</kbd></button>
+      </div>
+    </section>
+  </div>
+  <div class="desk-footer">
+    <div class="safety-controls" role="group" aria-label="Mandos de seguridad de la simulación">
+      <button class="btn emergency" id="e-stop" aria-pressed="false"><i aria-hidden="true"></i><span>Parada de emergencia<br><small><kbd>Esc</kbd></small></span></button>
+      <button class="btn" id="rearm" disabled>Rearmar simulación</button>
+    </div>
+    <div class="actions"><button class="btn" id="finish">Finalizar misión</button><button class="btn" id="reset">Reintentar misión</button></div>
+  </div>
+  <p class="control-label">Mantén <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> o las flechas para desplazarte, <kbd>Q</kbd> / <kbd>E</kbd> para izaje y <kbd>Shift</kbd> para ajuste fino. Con el bastidor apoyado, <kbd>F</kbd> alterna los seguros. También puedes mantener pulsados los mandos en pantalla.</p>
+</section>
+</section>
+<aside class="aside" aria-label="Información del turno">
+  <section class="panel order"><h2>Orden de trabajo</h2>
+    <p id="mission-briefing"></p>
+    <div class="mission-notice" id="radio-box" hidden><strong>Radio · Control de terminal</strong><p id="mission-notice" role="status"></p><button class="btn" id="ack-notice" hidden>Confirmar recepción</button></div>
+    <ul class="manifest" id="manifest"></ul>
+    <p class="closing" id="mission-rules"></p>
+  </section>
+  <section class="panel hint" id="hint-panel"><h2>Ayuda de maniobra</h2><p id="hint" class="muted"></p></section>
+  <section class="panel"><h2>Ciclo de carga</h2><p class="mini muted">Alinea el bastidor de izaje (spreader), bájalo hasta el contenedor y confirma 4/4 anclajes. Eleva hasta la altura de traslado. En el destino, apoya la carga antes de liberar los seguros.</p></section>
+  <section class="panel"><h2>Bitácora del turno</h2><ol class="log" id="log"></ol></section>
+</aside>
+</div>
+<section class="panel report" id="report" hidden aria-labelledby="report-title">
+  <h2 id="report-title" tabindex="-1">Reporte de la misión</h2>
+  <p id="award" class="award"></p><p id="result"></p><div id="results" class="metrics"></div>
+  <p id="comparison" class="muted"></p><p id="reflection"></p>
+  <div class="actions"><button class="btn" id="export">Descargar reporte JSON</button><button class="btn" id="retry">Siguiente misión</button></div>
+</section>
+<p class="learning">Resultado de aprendizaje propuesto · Organizar una secuencia de descarga y asignar posiciones de patio considerando el plazo de retiro y las restricciones del escenario.</p>
+<dialog id="desk-guide" aria-labelledby="desk-guide-title">
+  <h2 id="desk-guide-title">Reconocer los mandos</h2>
+  <p>Selecciona cada elemento para identificar su función antes de practicar. La distribución corresponde a la cabina de este simulador y puede variar según el equipo.</p>
+  <p class="guide-count" id="guide-count" role="status">0 de 5 mandos e indicadores revisados</p>
+  <div id="guide-options" class="guide-choices"></div>
+  <p id="guide-description" class="guide-desc" role="status">Selecciona un mando o indicador.</p>
+  <button class="btn primary" type="button" id="close-desk-guide">Volver a la cabina</button>
+</dialog>
+<dialog id="safety-dialog" aria-labelledby="quiz-title">
+  <p class="quiz-title" id="quiz-step"></p>
+  <h2 id="quiz-title">Verificación previa de seguridad</h2>
+  <p>Responde tres preguntas para habilitar los controles. El cuestionario cambia en cada intento.</p>
+  <p class="mission-choice" id="quiz-mission"></p>
+  <h3 id="quiz-question" tabindex="-1"></h3>
+  <div id="quiz-options" class="quiz-options"></div>
+  <p id="quiz-feedback" class="quiz-feedback" role="status"></p>
+  <button class="btn primary" type="button" id="quiz-next" hidden>Siguiente pregunta</button>
+  <p class="quiz-links">Referencias del ejercicio · <a href="https://www.ilo.org/es/resource/otros/seguridad-y-salud-en-los-puertos-edicion-revisada-2016" target="_blank" rel="noopener">OIT, Seguridad y salud en los puertos</a> · <a href="https://www.osha.gov/enforcement/directives/cpl-02-00-132-0" target="_blank" rel="noopener">OSHA, manejo de contenedores</a></p>
+</dialog>
+</main>
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+const slots = Array.from(document.querySelectorAll("[data-cell]"));
+const cargoTags = new Map(slots.map(slot=>{
+  const tag=document.createElement("span");
+  tag.className="cargo-tag off-camera";
+  tag.setAttribute("aria-hidden","true");
+  $("scene").append(tag);
+  return [slot.dataset.cell,tag];
+}));
+let showPositions=true;
+$("position-labels").addEventListener("click",()=>{
+  showPositions=!showPositions;
+  $("scene").classList.toggle("hide-positions",!showPositions);
+  $("position-labels").setAttribute("aria-pressed",String(showPositions));
+});
+const required = ["R-204", "G-317", "G-582", "G-765", "E-516", "FR-618","G-882","G-909"];
+const priority = required[0];
+const moveMinutes = 8;
+const specialDestinations = {"E-516":"A4","FR-618":"B6"};
+const rowCount = 6;
+const missions = [
+  {
+    id: "operacion-mixta", title: "Turno mixto de descarga", ship: [priority, "G-317", "FR-618","G-582","E-516","G-765"],
+    occupied: "A1", closed: ["A3"], dispatch: ["A1", "A2"], deadline: 24,
+    briefing: "Ocho contenedores, dos en niveles inferiores. A1 está ocupada. Reserva A4 para E-516 y B6 para la carga refrigerada.",
+    notices: [{after: 2, close: ["B3"], message: "B3 deja de recibir nuevos depósitos por inspección. Reasigna el acopio de carga general."}],
+    reference: [["N1","A2"],["N3","B6"],["N5","A4"],["N2","B1"],["N4","B2"],["N6","B4"],["N3","A5"],["N5","A6"]]
+  },
+  {
+    id: "ventana-urgente", title: "Ventana de retiro adelantada", ship: ["G-317","FR-618","G-582","E-516","G-765",priority],
+    occupied: "A2", closed: ["A3","B1"], dispatch: ["A1", "A2"], deadline: 17,
+    briefing: "El camión adelanta su retiro y R-204 está al extremo del buque (N6). B1 está cerrada. Decide qué carga mover primero sin ocupar los destinos especiales.",
+    notices: [{after:3,close:["B5"],open:["B1"],message:"B1 vuelve a operar y B5 queda restringida a nuevas recepciones."}],
+    reference: [["N6","A1"],["N2","B6"],["N4","A4"],["N1","B2"],["N3","B3"],["N5","B4"],["N3","A5"],["N5","A6"]]
+  },
+  {
+    id: "despeje-y-refrigerado", title: "Despeje de patio y despacho", ship: ["G-582", "FR-618", "G-317",priority,"E-516","G-765"],
+    occupied: "A1", closed: ["A2"], dispatch: ["A1"], relocation: "A3", deadline: 30,
+    briefing: "A2 está fuera de servicio. Reubica X-410 en A3 para liberar A1. Luego resuelve la descarga de ocho unidades con destinos diferenciados.",
+    notices: [{after:3,close:["B2"],message:"B2 entra en inspección; selecciona otra posición de acopio sin ocupar B6."}],
+    reference: [["A1","A3"],["N4","A1"],["N2","B6"],["N5","A4"],["N1","B1"],["N3","B3"],["N6","B4"],["N3","A5"],["N5","A6"]]
+  },
+  {
+    id: "patio-dinamico", title: "Patio bajo contingencias", ship: ["E-516","G-582",priority,"G-317","FR-618","G-765"],
+    occupied: "A1", closed: ["A3","B2","B4"], dispatch: ["A1", "A2"], deadline: 28,
+    briefing: "Dos posiciones de acopio comienzan cerradas. Control de terminal modifica la capacidad disponible en sucesivos avisos. Mantén libres los destinos de entregas especiales.",
+    notices: [
+      {after: 1, open: ["B2"], close: ["B1"], message: "B2 se habilita y B1 se cierra temporalmente para nuevos depósitos."},
+      {after: 3, open: ["B1","B4"], close:["B5"], message: "B1 y B4 vuelven a recibir depósitos. B5 entra en inspección."}
+    ],
+    reference: [["N3","A2"],["N1","A4"],["N5","B6"],["N2","B1"],["N4","B2"],["N6","B4"],["N3","A5"],["N5","A6"]]
+  }
+];
+
+function shuffled(values) {
+  const result = [...values];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+const rotationCache = new Map();
+function nextRotation(key, entries) {
+  const storageKey = "csd-grua-rotation-v1:" + key;
+  let saved = rotationCache.get(key);
+  try { saved = JSON.parse(localStorage.getItem(storageKey)) || saved; } catch {}
+  const ids = entries.map(entry => entry.id);
+  let queue = Array.isArray(saved?.queue)
+    ? [...new Set(saved.queue.filter(id => ids.includes(id) && id !== saved.last))]
+    : [];
+  if (queue.length === 0) {
+    queue = shuffled(ids);
+    if (queue.length > 1 && queue[0] === saved?.last) queue.push(queue.shift());
+  }
+  const id = queue.shift();
+  const next = {last: id, queue};
+  rotationCache.set(key, next);
+  try { localStorage.setItem(storageKey, JSON.stringify(next)); } catch {}
+  return entries.find(entry => entry.id === id);
+}
+
+function missionDescription(mission) {
+  $("mission-title").textContent = mission.title;
+  $("mission-intro").textContent = "Descarga ocho contenedores, incluidos dos en niveles inferiores. Retiro prioritario a las " + time(mission.deadline) + ".";
+  $("deadline").textContent = time(mission.deadline);
+  $("mission-briefing").textContent = mission.briefing;
+  $("radio-box").hidden = true;
+  $("ack-notice").hidden = true;
+  $("mission-rules").textContent = "Los contenedores superiores de N3 y N5 deben salir primero. Cada traslado suma 8 minutos simulados. " + (state.mode==="desafio"?"El reloj también avanza 1 minuto por cada 15 segundos de operación. Confirma los avisos por radio. ":"") + "Eleva el bastidor al finalizar.";
+  $("dispatch-legend").textContent = "Despacho · " + mission.dispatch.join(" y ") + (mission.relocation ? " · Reubicación · " + mission.relocation : "");
+}
+
+function destinationOf(cargo) {
+  const {mission} = state;
+  if (cargo === "X-410") return mission.occupied + " → Reubicación en " + mission.relocation;
+  const source = cargo==="G-882"?"N3 (inferior)":cargo==="G-909"?"N5 (inferior)":"N" + (mission.ship.indexOf(cargo) + 1);
+  if (specialDestinations[cargo]) return source + " → " + specialDestinations[cargo] + (cargo==="FR-618"?" · conexión refrigerada":" · entrega especial");
+  return source + (cargo === priority
+    ? " → Despacho en " + mission.dispatch.join(" o ") + " · retiro " + time(mission.deadline)
+    : " → Acopio libre en B1–B5 o A5–A6");
+}
+
+function postNotice() {
+  const change = state.mission.notices.find(notice => notice.after === state.movements);
+  if (!change) return;
+  const closed = new Set(state.closed);
+  for (const cell of change.open || []) closed.delete(cell);
+  for (const cell of change.close || []) closed.add(cell);
+  state.closed = [...closed];
+  const text = "Aviso de patio · " + change.message;
+  $("mission-notice").textContent = text;
+  $("radio-box").hidden = false;
+  if(state.mode==="desafio"){
+    state.noticePending=true;
+    motion.target=null;
+    releaseControls();
+    $("ack-notice").hidden=false;
+    soundSignal("warn");
+  }
+  record(text);
+  message(text, "warn");
+}
+
+let state;
+
+function time(minutes) {
+  return minutes == null ? "—" : new Intl.DateTimeFormat("es-CL", {
+    hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: "UTC"
+  }).format(new Date(Date.UTC(2026, 0, 1, 9, minutes)));
+}
+
+const canvas = $("canvas");
+const ctx = canvas.getContext("2d", { alpha: false });
+const width = 1100;
+const height = 560;
+const columns = ["N", "A", "B"];
+const positionOf = cell => [ [0, 4.1, 7.35][columns.indexOf(cell[0])], 1 + 1.5 * (Number(cell[1]) - 1) ];
+const deck = cell => cell.startsWith("N") ? 21 : 0;
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const colors = {
+  "R-204": ["#fbc15b", "#b76024", "#da8934"],
+  "G-317": ["#65c9d9", "#1e677c", "#368b9f"],
+  "G-582": ["#80b5fa", "#335f9b", "#477bb9"],
+  "X-410": ["#ba9ded", "#614283", "#7a61a9"],
+  "G-765": ["#bdafa0", "#6b625d", "#938071"],
+  "E-516": ["#f3897e", "#963f39", "#bb5d54"],
+  "FR-618": ["#d7eff2", "#80a4b1", "#b1c5cc"],
+  "G-882": ["#9cc99b", "#477752", "#6b9b69"],
+  "G-909": ["#d3a2c4", "#895779", "#a97a99"]
+};
+const project = ([x, y, z = 0]) => [395 + 65 * x - 32 * y, 112 + 22 * x + 27 * y - z*.85];
+const visual = { x: 0, y: 1, swayX:0, swayY:0 };
+
+function polygon(points, fill, stroke) {
+  ctx.beginPath();
+  points.map(project).forEach(([x, y], i) => i ? ctx.lineTo(x,y) : ctx.moveTo(x,y));
+  ctx.closePath();
+  ctx.fillStyle = fill;
+  ctx.fill();
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke(); }
+}
+
+function beam(points, color, thickness = 1) {
+  ctx.beginPath();
+  points.map(project).forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y));
+  ctx.strokeStyle = color;
+  ctx.lineWidth = thickness;
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+  ctx.stroke();
+}
+
+function floor(x, y, w, d, z, color, stroke) {
+  polygon([[x,y,z],[x+w,y,z],[x+w,y+d,z],[x,y+d,z]], color, stroke);
+}
+
+function box(x, y, w, d, z, h, palette) {
+  const [top, front, end] = palette;
+  polygon([[x,y+d,z],[x+w,y+d,z],[x+w,y+d,z+h],[x,y+d,z+h]], front);
+  polygon([[x+w,y,z],[x+w,y+d,z],[x+w,y+d,z+h],[x+w,y,z+h]], end);
+  floor(x,y,w,d,z+h,top,"#132b3640");
+}
+
+function print(value, x, y, z, color = "#edf6f6", size = 12, align = "center") {
+  const [left, top] = project([x,y,z]);
+  ctx.font = "800 "+size+"px ui-monospace, monospace";
+  ctx.textAlign = align;
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = color;
+  ctx.fillText(value, left, top);
+}
+
+let seed = 512;
+function random() {
+  seed = (Math.imul(1664525, seed) + 1013904223) >>> 0;
+  return seed / 4294967296;
+}
+
+const waves = Array.from({length: 100}, () => [random() * 1050, random() * 580, 10 + random() * 50, random()]);
+const asphalt = Array.from({length: 120}, () => [2 + random()*11, -3 + random()*12, .02 + random()*.09]);
+let harbor;
+
+function environment() {
+  const water = ctx.createLinearGradient(40,0,410,540);
+  water.addColorStop(0,"#235f71"); water.addColorStop(.56,"#17465c"); water.addColorStop(1,"#0a263e");
+  ctx.fillStyle = water; ctx.fillRect(0,0,width,height);
+  for (const [x,y,length,strength] of waves) {
+    ctx.beginPath(); ctx.moveTo(x,y); ctx.quadraticCurveTo(x+length*.38,y-4,x+length,y+1);
+    ctx.strokeStyle = `rgba(113,194,206,${(.04+strength*.16).toFixed(2)})`;
+    ctx.lineWidth = 1+strength; ctx.stroke();
+  }
+  polygon([[1.4,-7,0],[1.4,13,0],[1.4,13,-17],[1.4,-7,-17]],"#364653","#768991");
+  floor(1.4,-7,14,20,0,"#495e68");
+  floor(2.9,-7,12,20,.4,"#364b56");
+  for (const [x,y,size] of asphalt) floor(x,y,size,size,.7,"#a8c0c21d");
+  for (let y=-6; y<11; y+=.46) floor(1.49,y,.23,.22,1,"#dba759");
+  for (const x of [2.05,2.18,8.35,8.48]) beam([[x,-7,1],[x,12,1]],"#8c9fa0",1.4);
+  floor(9,-7,2.55,18,1,"#263a48");
+  for (let y=-6; y<11; y+=.92) floor(10.23,y,.055,.52,2,"#d5c088");
+  for (let y=-5; y<10; y+=1.7) {
+    box(1.42,y,.19,.18,1,7,["#f5c977","#8e643a","#a5794b"]);
+    if (y < 5) {
+      beam([[11.35,y,1],[11.35,y,62],[11.05,y,62]],"#26343e",4);
+      beam([[11.35,y,1],[11.35,y,62],[11.05,y,62]],"#a0b1ad",1.5);
+      floor(10.98,y-.16,.32,.23,60,"#f6dfab");
+    }
+  }
+  floor(8.99,-.8,1.12,1.3,1.5,"#718284","#a7b5af");
+  for(let y=-.76;y<.5;y+=.19) floor(9.03,y,1.04,.045,2,"#d6e0d9");
+  for (const [x,y,palette] of [[5.4,-2.2,colors["G-317"]],[6.94,-2.2,colors["G-582"]],[5.4,-1.45,colors["X-410"]],[8.5,-2.35,colors["R-204"]]]) {
+    crate(x,y,0,palette,null,.95,.48);
+    if (x > 6) crate(x,y,22,palette,null,.95,.48);
+  }
+  box(9.38,4.7,1.22,.65,1,16,["#8aa1ad","#495c6a","#597081"]);
+  box(10.65,4.74,.47,.57,1,22,["#e5ede9","#9fadb0","#c1d0d0"]);
+  for (const x of [9.5,10.73]) beam([[x,5.37,1],[x+.15,5.37,1]],"#14212c",7);
+  const hull = [[-.97,-.5],[-.57,-1.25],[.52,-1.45],[1.15,-.7],[1.15,9.0],[.81,9.8],[-.08,10.2],[-.97,9.8]];
+  const side = [hull[0],hull[7],hull[6],hull[5],hull[4]];
+  polygon([...side.map(([x,y])=>[x,y,-6]),...side.slice().reverse().map(([x,y])=>[x,y,22])],"#193443","#071f30");
+  beam(side.map(([x,y])=>[x,y,0]),"#ad674c",5);
+  polygon(hull.map(([x,y])=>[x,y,21]),"#687b80","#bfd2cd");
+  beam([...hull,hull[0]].map(([x,y])=>[x,y,23]),"#c6d2cb",2);
+  box(-.56,-.79,.98,.65,22,35,["#dbe6e0","#8ca4aa","#76969e"]);
+  box(-.44,-.7,.68,.49,57,8,["#e7e9df","#afbec1","#8fa7aa"]);
+  beam([[-.52,-.12,49],[.39,-.12,49]],"#24495e",8);
+  for (let x=-.46;x<.4;x+=.15) beam([[x,-.11,45],[x,-.11,53]],"#9fb8ba",2);
+  beam([[.05,-.53,65],[.05,-.53,87]],"#d0dede",2);
+  beam([[-.18,-.53,81],[.28,-.53,81]],"#d0dede",2);
+  print("BUQUE",-.26,9.4,25,"#e6f3ee",16);
+  print("MUELLE",2.76,9.4,3,"#dce6df",14);
+  print("PATIO A",4.04,9.4,2,"#e3eee5",16);
+  print("PATIO B",7.25,9.4,2,"#e3eee5",16);
+}
+
+function crate(x,y,z,palette,id,w=1.24,d=.64) {
+  if (!palette) return;
+  box(x,y,w,d,z,23,palette);
+  for (let n=.09;n<w-.035;n+=.11) {
+    beam([[x+n,y+d,z+2],[x+n,y+d,z+21]],"#081d373b",1.2);
+    beam([[x+n,y+.045,z+23],[x+n,y+d-.04,z+23]],"#d6e8e73b",1);
+  }
+  for (const corner of [x+.03,x+w-.035]) beam([[corner,y+d,z+1],[corner,y+d,z+24]],"#dce7e580",1.4);
+  if (id) print(id,x+w*.5,y+d, z+9,"#f0fbfa",11);
+}
+
+function paintSlot(cell) {
+  const [x,y] = positionOf(cell);
+  const z = deck(cell)+.5;
+  const occupied = state.positions[cell];
+  const selected = state.selected === cell;
+  const closed = state.closed.includes(cell);
+  const color = closed ? "#a94f50" : state.mission.dispatch.includes(cell) ? "#9e8656" : "#728e9a";
+  floor(x-.77,y-.48,1.54,.96,z,closed ? "#673c48" : "#122837a8",selected ? "#8ffbe2" : color);
+  if (closed) {
+    for(let i=0;i<7;i+=1) {
+      const stripe=x-.7+i*.21;
+      beam([[stripe,y-.37,z],[stripe,y+.37,z]],"#c37169",3);
+    }
+  }
+  if (selected) {
+    beam([[x-.79,y+.5,z],[x+.79,y+.5,z],[x+.79,y-.5,z]],"#92ffe4",2.6);
+  }
+  if (occupied) {
+    floor(x-.57,y-.29,1.34,.7,z+1,"#06182377");
+    if(state.under[cell])crate(x-.62,y-.32,z+1,colors[state.under[cell]],state.under[cell]);
+    crate(x-.62,y-.32,z+1+(state.under[cell]?23:0),colors[occupied],occupied);
+  }
+}
+
+function gantry(x,y,lift,cargo) {
+  const gold = "#dc9e46";
+  const bright = "#ffe099";
+  const frame = "#513919";
+  const realY = y-.04;
+  const arm = 111;
+  const left = 1.57;
+  const right = 8.61;
+  const rails = [realY-.37,realY+.37];
+  const feet = [left,right];
+  for (const rail of rails) {
+    for (const foot of feet) {
+      box(foot-.17,rail-.1,.34,.21,0,10,["#655d54","#32353a","#41464a"]);
+      beam([[foot,rail,8],[foot,rail,arm]],frame,10);
+      beam([[foot,rail,8],[foot,rail,arm]],gold,6);
+      beam([[foot+.025,rail,12],[foot+.025,rail,arm]],bright,1.4);
+      beam([[foot,rail,arm-31],[foot-.55,rail,arm]],gold,4);
+    }
+    beam([[-1.2,rail,arm],[9.1,rail,arm]],frame,12);
+    beam([[-1.2,rail,arm],[9.1,rail,arm]],gold,8);
+    beam([[-1.2,rail,arm+4],[9.1,rail,arm+4]],bright,2);
+    beam([[-1.2,rail,arm+19],[9.1,rail,arm+19]],gold,3);
+    for (let support=-1.2;support<8.65;support+=.62) {
+      beam([[support,rail,arm],[support+.3,rail,arm+19],[support+.62,rail,arm]],gold,2);
+    }
+  }
+  for (const end of [-1.15,left,right,9.07]) beam([[end,rails[0],arm+1],[end,rails[1],arm+1]],bright,4);
+  box(right+.17,realY-.33,.55,.59,arm-25,19,["#c7d3c7","#497183","#6796a0"]);
+  box(x-.23,realY-.31,.46,.62,arm-5,10,["#f6d185","#6c4924","#ad763a"]);
+  const [loadX,loadY]=loadCenter();
+  const spreaderY=loadY-.04;
+  for (const cableX of [x-.41,x+.41]) {
+    beam([[x+(cableX-x)*.43,realY,arm-5],[loadX+cableX-x,spreaderY,lift]],"#1c2832",4);
+    beam([[x+(cableX-x)*.43,realY,arm-5],[loadX+cableX-x,spreaderY,lift]],"#e6e4c2",1.15);
+  }
+  if (cargo) {
+    floor(loadX-.55,loadY-.24,1.26,.65,1,"#061a255e");
+    crate(loadX-.62,loadY-.32,lift-23,colors[cargo],cargo);
+  }
+  box(loadX-.51,spreaderY-.26,1.02,.48,lift,5,["#ffd987","#79532c","#a97736"]);
+  for (let i=0;i<6;i++) floor(loadX-.47+i*.16,spreaderY-.255,.06,.12,lift+5.1,"#3d3936");
+}
+
+function prepareCanvas() {
+  const ratio = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = Math.round(width * ratio);
+  canvas.height = Math.round(height * ratio);
+  ctx.setTransform(ratio,0,0,ratio,0,0);
+  harbor = document.createElement("canvas");
+  harbor.width=canvas.width;
+  harbor.height=canvas.height;
+  environment();
+  harbor.getContext("2d").drawImage(canvas,0,0);
+  for (const slot of slots) {
+    const [x,y] = positionOf(slot.dataset.cell);
+    const [left,top] = project([x+.02,y+.56,deck(slot.dataset.cell)]);
+    slot.style.left = left/width*100+"%";
+    slot.style.top = top/height*100+"%";
+  }
+}
+
+let previousFrame = 0;
+const precisionCanvas=$("alignment-camera");
+const precisionCtx=precisionCanvas.getContext("2d");
+let precisionExpanded=false;
+
+function togglePrecision(){
+  precisionExpanded=!precisionExpanded;
+  $("scene").classList.toggle("precision-expanded",precisionExpanded);
+  $("focus-view").setAttribute("aria-pressed",String(precisionExpanded));
+  $("focus-view").textContent=precisionExpanded?"Reducir C":"Ampliar C";
+}
+$("focus-view").addEventListener("click",togglePrecision);
+
+function loadCenter(){
+  return [visual.x+(state.carried?visual.swayX:0),visual.y+(state.carried?visual.swayY:0)];
+}
+
+function drawPrecision(){
+  const c=precisionCtx;
+  const w=440,h=260, centerX=w/2,centerY=h/2;
+  const [loadX,loadY]=loadCenter();
+  const rangeX=120,rangeY=115;
+  const point=(x,y)=>[centerX+(x-visual.x)*rangeX,centerY+(y-visual.y)*rangeY];
+  c.fillStyle="#172c38";c.fillRect(0,0,w,h);
+  c.strokeStyle="#465c66";c.lineWidth=1;
+  for(let x=-.5;x<=8;x+=.25){
+    const [px]=point(x,0);c.beginPath();c.moveTo(px,0);c.lineTo(px,h);c.stroke();
+  }
+  for(let y=.25;y<=9.5;y+=.25){
+    const [,py]=point(0,y);c.beginPath();c.moveTo(0,py);c.lineTo(w,py);c.stroke();
+  }
+  for(const slot of slots){
+    const cell=slot.dataset.cell,[x,y]=positionOf(cell);
+    const [px,py]=point(x,y);
+    if(px< -90||px>w+90||py< -65||py>h+65)continue;
+    const blocked=state.closed.includes(cell);
+    const cargo=state.positions[cell];
+    const active=cell===state.selected;
+    c.fillStyle=blocked?"#6b3942":cargo?colors[cargo][0]:"#0d232e";
+    c.globalAlpha=cargo?.83:.92;
+    c.fillRect(px-74,py-40,148,80);
+    c.globalAlpha=1;
+    c.strokeStyle=active?"#f5de9d":"#a0b9bf";
+    c.lineWidth=active?3:1;
+    c.strokeRect(px-74,py-40,148,80);
+    if(cargo){
+      c.strokeStyle="#17273375";c.lineWidth=2;
+      for(let offset=-65;offset<=65;offset+=10){c.beginPath();c.moveTo(px+offset,py-36);c.lineTo(px+offset,py+36);c.stroke();}
+    }
+    c.fillStyle=cargo&&!blocked?"#162933":"#c9d9df";
+    c.font="bold 13px monospace";c.textAlign="center";c.fillText(cell+(cargo?" / "+cargo:"")+(state.under[cell]?" · 2 niveles":""),px,py-12);
+  }
+  const [lx,ly]=point(loadX,loadY);
+  const aligned=alignment(state.selected);
+  const stroke=aligned?"#99ffba":"#ffcb81";
+  c.strokeStyle=stroke;c.lineWidth=2.5;c.setLineDash([6,3]);c.strokeRect(lx-74,ly-40,148,80);c.setLineDash([]);
+  for(const dx of [-74,74])for(const dy of [-40,40]){
+    c.fillStyle="#111c25";c.fillRect(lx+dx-5,ly+dy-5,10,10);c.strokeRect(lx+dx-5,ly+dy-5,10,10);
+  }
+  c.strokeStyle=stroke;c.beginPath();c.moveTo(lx-17,ly);c.lineTo(lx+17,ly);c.moveTo(lx,ly-17);c.lineTo(lx,ly+17);c.stroke();
+  const [tx,ty]=positionOf(state.selected);
+  const [targetPX,targetPY]=point(tx,ty);
+  c.strokeStyle="#ffffffaf";c.setLineDash([3,5]);c.beginPath();c.moveTo(lx,ly);c.lineTo(targetPX,targetPY);c.stroke();c.setLineDash([]);
+  c.fillStyle="#081722e0";c.fillRect(0,h-21,w,21);c.fillStyle="#e5eebf";c.font="12px monospace";c.textAlign="left";
+  c.fillText("BASTIDOR: "+(state.carried||"VACÍO")+"     OBJETIVO: "+state.selected,8,h-7);
+  const ex=Math.round((tx-loadX)*100),ey=Math.round((ty-loadY)*100);
+  const readout=aligned?"ALINEADO":"AJUSTAR";
+  const gap=Math.max(0,Math.round(motion.z-contactHeight(state.selected)));
+  const offset="X "+(ex>0?"+":"")+ex+" / Y "+(ey>0?"+":"")+ey+" · Z "+gap+" u.";
+  if($("precision-readout").textContent!==readout)$("precision-readout").textContent=readout;
+  $("precision-readout").style.color=stroke;
+  if($("precision-offset").textContent!==offset)$("precision-offset").textContent=offset;
+}
+
+function frame(now) {
+  const elapsed=Math.min(now-(previousFrame||now),250);
+  previousFrame=now;
+  tickControls(elapsed/1000);
+  deskInstruments();
+  if(view==="cab"||precisionExpanded)drawPrecision();
+  if(terminal3D){
+    terminal3D.render(now);
+    requestAnimationFrame(frame);
+    return;
+  }
+  const hoist=motion.z;
+  if (view==="cab") {
+    paintCab(now,hoist);
+    requestAnimationFrame(frame);
+    return;
+  }
+  ctx.drawImage(harbor,0,0,width,height);
+  const wake = now/1500;
+  if (!reducedMotion.matches) {
+    for (let i=0;i<13;i++) {
+      const offset = (wake+i*.31)%4;
+      beam([[-1.2-offset*.14,i*.56,-3],[-1.35-offset*.16,i*.56+.19,-3]],"#9cc9c759",1.3);
+    }
+  }
+  for (let row=1;row<=rowCount;row++) for (const col of columns) paintSlot(col+row);
+  gantry(visual.x,visual.y,hoist,state.carried);
+  const shade=ctx.createRadialGradient(533,268,187,540,278,637);
+  shade.addColorStop(0,"#04132300"); shade.addColorStop(1,"#06131f80");
+  ctx.fillStyle=shade;ctx.fillRect(0,0,width,height);
+  requestAnimationFrame(frame);
+}
+let view = "cab";
+const cabScale = [53, 45, 1];
+const cabFocal = 445;
+let cabEye, cabForward, cabRight, cabUp;
+const dot = (a,b) => a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const normal = vector => {const length = Math.hypot(...vector); return vector.map(value => value/length);};
+const cross = (a,b) => [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]];
+
+function camera(x,y) {
+  cabEye = [(x-.14)*cabScale[0], (y-1.95)*cabScale[1], 151];
+  cabForward = normal([.0, .61, -.79]);
+  cabRight = [1,0,0];
+  cabUp = cross(cabRight,cabForward);
+}
+
+function inCamera(point) {
+  const offset = point.map((coordinate,i) => coordinate*cabScale[i]-cabEye[i]);
+  return [dot(offset,cabRight), dot(offset,cabUp), dot(offset,cabForward)];
+}
+
+function projectCab([x,y,z]) {
+  return [550+x*cabFocal/z, 229-y*cabFocal/z];
+}
+
+function clipCab(points) {
+  const clipped=[];
+  let from = points.at(-1);
+  for (const to of points) {
+    if ((from[2]>=12)!==(to[2]>=12)) {
+      const weight=(12-from[2])/(to[2]-from[2]);
+      clipped.push(from.map((value,i)=>value+(to[i]-value)*weight));
+    }
+    if (to[2]>=12) clipped.push(to);
+    from=to;
+  }
+  return clipped;
+}
+
+function cabPath(points,fill,stroke,lineWidth=1) {
+  const clipped = clipCab(points.map(inCamera));
+  if (clipped.length<2) return;
+  ctx.beginPath();
+  clipped.map(projectCab).forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));
+  if (fill) {
+    ctx.closePath();
+    ctx.fillStyle=fill;
+    ctx.fill();
+  }
+  if (stroke) {
+    ctx.strokeStyle=stroke;
+    ctx.lineWidth=lineWidth;
+    ctx.lineJoin="round";
+    ctx.stroke();
+  }
+}
+
+function cabFloor(x,y,w,d,z,fill,stroke) {
+  cabPath([[x,y,z],[x+w,y,z],[x+w,y+d,z],[x,y+d,z]],fill,stroke);
+}
+
+const faces=[];
+function cabFace(points,fill,stroke) {
+  faces.push({points,fill,stroke,distance:points.reduce((sum,p)=>sum+inCamera(p)[2],0)/points.length});
+}
+
+function cabBox(x,y,w,d,z,h,[top,side,end]) {
+  const a=[x,y,z], b=[x+w,y,z], c=[x+w,y+d,z], f=[x,y+d,z];
+  const A=[x,y,z+h], B=[x+w,y,z+h], C=[x+w,y+d,z+h], F=[x,y+d,z+h];
+  if (cabEye[1]<y*cabScale[1]) cabFace([a,b,B,A],side,"#172c36a0");
+  if (cabEye[1]>(y+d)*cabScale[1]) cabFace([c,f,F,C],side,"#172c36a0");
+  if (cabEye[0]<x*cabScale[0]) cabFace([f,a,A,F],end,"#172c36a0");
+  if (cabEye[0]>(x+w)*cabScale[0]) cabFace([b,c,C,B],end,"#172c36a0");
+  if (cabEye[2]>z+h) cabFace([A,B,C,F],top,"#172c36a0");
+}
+
+function cabCrate(x,y,z,palette) {
+  cabBox(x-.62,y-.34,1.24,.68,z,21,palette);
+  for (let line=-.54;line<=.56;line+=.095) {
+    cabFace([[x+line,y-.315,z+21.3],[x+line+.022,y-.315,z+21.3],[x+line+.022,y+.315,z+21.3],[x+line,y+.315,z+21.3]],"#182b3d36");
+  }
+  for (const end of [-.59,.55]) {
+    cabFace([[x+end,y-.33,z+21.5],[x+end+.035,y-.33,z+21.5],[x+end+.035,y+.33,z+21.5],[x+end,y+.33,z+21.5]],"#fff0b18a");
+  }
+}
+
+function cabWorld(now,hoist) {
+  const sea = ctx.createLinearGradient(0,0,0,height);
+  sea.addColorStop(0,"#6e9fa8");
+  sea.addColorStop(.30,"#386b7e");
+  sea.addColorStop(1,"#153b56");
+  ctx.fillStyle=sea; ctx.fillRect(0,0,width,height);
+  for (const [a,b,length,strength] of waves) {
+    const x=a/58-16;
+    const y=b/12-12+(reducedMotion.matches?0:Math.sin(now/2300+a)*.15);
+    cabPath([[x,y,-10],[x+length/90,y+.07,-10]],null,`rgba(176,223,229,${.09+strength*.20})`,1.3);
+  }
+  cabPath([[1.39,-13,-14],[1.39,36,-14],[1.39,36,0],[1.39,-13,0]],"#2e464c","#94aba8");
+  cabFloor(1.4,-13,24,49,0,"#596c70");
+  cabFloor(2.9,-13,22.5,49,.15,"#435961");
+  cabFloor(9.12,-13,4,49,.3,"#344858","#617783");
+  for (const [x,y,size] of asphalt) cabFloor(x,y,size,size,.5,"#9bb1a93a");
+  for (let y=-8;y<32;y+=.58) {
+    cabFloor(1.48,y,.26,.25,.5,"#e3ba66");
+    if (Math.round(y*100)%3===0) cabFloor(10.7,y,.048,.34,.5,"#d9c58c");
+  }
+  for (const x of [2.03,2.18,8.34,8.49,9.25,12.55]) cabPath([[x,-13,.7],[x,36,.7]],null,"#aeb7a290",1.5);
+  const ship=[[-1.02,-.52],[-.59,-1.22],[.60,-1.35],[1.14,-.64],[1.14,9.0],[.73,9.8],[-.05,10.2],[-.92,9.8]];
+  if (cabEye[0]<-1.02*cabScale[0]) cabPath([ship[0],ship[7],ship[7],ship[0]].map(([x,y],i)=>[x,y,i<2?-8:21]),"#243a50");
+  cabPath(ship.map(([x,y])=>[x,y,21]),"#76868a","#c4d0c2",2);
+  cabPath(ship.map(([x,y])=>[x,y,26]),null,"#c9d9d1",2);
+  for (const slot of slots) {
+    const cell=slot.dataset.cell;
+    const [x,y]=positionOf(cell);
+    const z=deck(cell)+1;
+    const closed=state.closed.includes(cell);
+    const selected=state.selected===cell;
+    cabFloor(x-.74,y-.47,1.48,.94,z,closed?"#733e45":"#172933ad",selected?"#9bffe6":state.mission.dispatch.includes(cell)?"#f6ce7f":"#9eb2b5");
+    if(closed) {
+      for(let stripe=-.65;stripe<.7;stripe+=.18) cabFloor(x+stripe,y-.4,.068,.8,z+.05,"#c98275");
+    }
+    if (selected) {
+      cabPath([[x-.74,y-.47,z],[x+.74,y-.47,z],[x+.74,y+.47,z],[x-.74,y+.47,z],[x-.74,y-.47,z]],null,"#92ffe4",2.5);
+    }
+    if(state.under[cell])cabCrate(x,y,z+.4,colors[state.under[cell]]);
+    if(state.positions[cell]) cabCrate(x,y,z+.4+(state.under[cell]?23:0),colors[state.positions[cell]]);
+  }
+  for (const y of [-2,8.1,8.96,10.2,14,16,24]) {
+    cabBox(1.48,y,.19,.23,0,8,["#eeb667","#765b40","#ac7e51"]);
+    cabBox(12.4,y,.055,.065,0,61,["#d4d4af","#919f98","#a2b2ab"]);
+    cabBox(12.13,y,.31,.24,60,4,["#fff3c5","#a1af99","#d9c99c"]);
+  }
+  cabBox(-.56,-.75,.96,.64,21,24,["#e3e9e1","#9fb5b7","#87a6b2"]);
+  const scenery=[[4.2,11.3,0],[5.7,11.3,0],[5.7,11.3,21],[7.5,11.45,0],[7.5,11.45,21],[9,11.2,0],[4.2,-2.6,0],[7.7,-1.2,0],[12,15,0]];
+  scenery.forEach(([x,y,z],i)=>cabCrate(x,y,z,Object.values(colors)[i%4]));
+  cabBox(10.08,5.63,.63,1.95,6,19,["#b4c5c9","#728d9f","#55707f"]);
+  cabBox(10.1,7.61,.60,.56,0,22,["#e6e9dc","#91a5a5","#b2c2b9"]);
+  for (const y of [6.1,7.34,7.89]) cabBox(10,y,.8,.19,0,7,["#29333d","#101b26","#202f39"]);
+  for (const y of [9.2,16]) {
+    for(const x of [2.16,8.38]) cabBox(x-.095,y-.11,.19,.22,0,110,["#f6cc77","#9c743c","#bf9150"]);
+    cabBox(-1.2,y-.1,10.25,.20,108,10,["#e5b760","#9b6831","#a67b43"]);
+  }
+
+  const [x,y] = loadCenter();
+  const loadZ = hoist-22;
+  if (state.carried) {
+    cabFloor(x-.61,y-.32,1.22,.64,deck(state.selected)+1.1,"#06162663");
+    cabCrate(x,y,loadZ,colors[state.carried]);
+  }
+  const steel=["#f2c87a","#82552e","#b68648"];
+  for(const side of [-.33,.25])cabBox(x-.67,y+side,1.34,.09,hoist,5,steel);
+  for(const end of [-.65,.53])cabBox(x+end,y-.33,.12,.67,hoist,5,steel);
+  cabBox(x-.24,y-.32,.48,.65,hoist+1,4,["#8c9c9b","#44565c","#667b7d"]);
+  for(const side of [-.32,.25])for(const end of [-.63,.53]){
+    const light=state.carried?["#a4ffbf","#42774f","#5b9363"]:["#ffb36c","#965428","#b96d35"];
+    cabBox(x+end,y+side,.10,.09,hoist+5,3,light);
+  }
+  faces.sort((a,b)=>b.distance-a.distance);
+  for(const face of faces) cabPath(face.points,face.fill,face.stroke);
+  faces.length=0;
+  for (const side of [-.45,.45]) for (const offset of [-.14,.19]) {
+    const from=[visual.x+side*.74,visual.y+offset,143];
+    const to=[x+side,y+offset*1.5,hoist+5];
+    cabPath([from,to],null,"#13232c",5);
+    cabPath([from,to],null,"#c5d2ce",1.7);
+    const trim=from.map((value,i)=>value+(to[i]-value)*.9);
+    cabPath([trim,to],null,"#ede1b8",2.8);
+  }
+}
+
+function screenPolygon(points,fill,stroke) {
+  ctx.beginPath();
+  points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));
+  ctx.closePath();
+  ctx.fillStyle=fill;
+  ctx.fill();
+  if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke();}
+}
+
+function cabConsole() {
+  const dark=ctx.createLinearGradient(0,453,0,560);
+  dark.addColorStop(0,"#293540");
+  dark.addColorStop(.26,"#101d28");
+  dark.addColorStop(1,"#060f19");
+  screenPolygon([[0,0],[1100,0],[1100,33],[984,43],[113,43],[0,32]],"#121f2bd9","#66828c");
+  screenPolygon([[0,25],[142,39],[65,489],[0,530]],"#15232cea","#58717c");
+  screenPolygon([[1100,25],[958,39],[1040,489],[1100,530]],"#15232cea","#58717c");
+  screenPolygon([[0,450],[117,429],[230,454],[283,496],[816,496],[873,454],[983,429],[1100,450],[1100,560],[0,560]],dark,"#607783");
+  screenPolygon([[289,496],[811,496],[857,461],[917,460],[914,560],[197,560],[186,460],[240,461]],"#0a1b25cf","#3c6778");
+  ctx.fillStyle="#91f5db";
+  ctx.font="700 19px ui-monospace,monospace";ctx.textAlign="center";ctx.textBaseline="middle";
+  ctx.fillText(state.selected+"   /   "+(state.carried || "SIN CARGA"),550,520);
+  ctx.fillStyle="#b3cad5"; ctx.font="600 13px ui-monospace,monospace";
+  ctx.fillText(state.carried ? "SEGUROS CERRADOS   4/4" : "SEGUROS ABIERTOS   0/4",550,544);
+  for(let i=0;i<4;i++){
+    ctx.fillStyle=state.carried?"#8bffb2":"#e6b179";
+    ctx.beginPath();
+    ctx.arc(416+i*13,543,4,0,Math.PI*2);
+    ctx.fill();
+  }
+  for (const x of [116,984]) {
+    screenPolygon([[x-46,507],[x+26,493],[x+57,516],[x+31,548],[x-47,548]],"#192a38","#526c7b");
+    ctx.lineWidth=14;ctx.lineCap="round";ctx.strokeStyle="#06111c";
+    const lateral=x<550?12*(Number(has("right"))-Number(has("left"))):0;
+    const vertical=x<550?8*(Number(has("down"))-Number(has("up"))):12*(Number(has("descend"))-Number(has("raise")));
+    ctx.beginPath();ctx.moveTo(x,521);ctx.lineTo(x-13+lateral,476+vertical);ctx.stroke();
+    ctx.fillStyle="#364c60";ctx.beginPath();ctx.ellipse(x-13+lateral,475+vertical,15,12,-.18,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#ffc97a";ctx.beginPath();ctx.arc(x+28,518,4,0,Math.PI*2);ctx.fill();
+  }
+}
+
+function paintCab(now,hoist) {
+  camera(visual.x,visual.y);
+  cabWorld(now,hoist);
+  cabConsole();
+  for (const slot of slots) {
+    const cell=slot.dataset.cell;
+    const [x,y]=positionOf(cell);
+    const cameraPoint=inCamera([x,y-.47,deck(cell)+1]);
+    const [left,top]=projectCab(cameraPoint);
+    const visible=cameraPoint[2]>12&&top>53&&top<444&&left>108&&left<992;
+    slot.classList.toggle("off-camera",!visible);
+    if(visible){
+      slot.style.left=left/width*100+"%";
+      slot.style.top=top/height*100+"%";
+    }
+  }
+}
+
+function setView(next) {
+  if(precisionExpanded)togglePrecision();
+  view=next;
+  $("scene").dataset.view=next;
+  $("cab-view").setAttribute("aria-pressed",String(view==="cab"));
+  $("map-view").setAttribute("aria-pressed",String(view==="map"));
+  $("camera-label").textContent=view==="cab"?"CABINA / BAHÍA SUR":"EXTERIOR / BAHÍA SUR";
+  canvas.setAttribute("aria-label",view==="cab"
+    ?"Vista en primera persona desde la cabina, con el mecanismo de izaje frente al operador."
+    :"Vista exterior del buque, el muelle y las posiciones de patio.");
+  if(view==="map") locateMapMarkers();
+}
+
+function locateMapMarkers() {
+  for(const slot of slots) {
+    const cell=slot.dataset.cell;
+    const [x,y]=positionOf(cell);
+    const [left,top]=project([x+.02,y+.56,deck(cell)]);
+    slot.classList.remove("off-camera");
+    slot.style.left=left/width*100+"%";
+    slot.style.top=top/height*100+"%";
+  }
+}
+
+function start(mode, mission = nextRotation("misiones", missions)) {
+  state = {
+    attemptId: window.crypto?.randomUUID?.() || "grua-" + Date.now() + "-" + Math.random().toString(36).slice(2),
+    mode, mission, minute: 0, selected: "N1", carried: null, origin: null, available: null,
+    positions: Object.fromEntries(slots.map(slot=>[slot.dataset.cell,null])),
+    under: {N3:"G-882",N5:"G-909"},
+    closed: [...mission.closed], movements: 0, blocks: 0, finished: false, safetyAttempts: 0, emergencyStops: 0, noticePending:false, elapsedSeconds:0, events: []
+  };
+  mission.ship.forEach((cargo,i)=>state.positions["N"+(i+1)]=cargo);
+  state.positions[mission.occupied]="X-410";
+  visual.x = 0;
+  visual.y = 1;
+  visual.swayX=0;visual.swayY=0;
+  releaseControls();
+  Object.assign(motion,{z:parkedHeight,target:null,lastWarning:"",contact:"",status:"",enabled:false,stopped:false});
+  $("guided").setAttribute("aria-pressed", String(mode === "guiado"));
+  $("challenge").setAttribute("aria-pressed", String(mode === "desafio"));
+  $("hint-panel").hidden = mode !== "guiado";
+  $("report").hidden = true;
+  missionDescription(mission);
+  record("Inicio del turno · " + mission.title + ".");
+  message("Completa la verificación previa de seguridad para habilitar la grúa.");
+  beginSafety();
+  render();
+}
+
+function message(text, level = "ok") {
+  $("feedback").textContent = text;
+  $("feedback").dataset.level = level;
+}
+
+function record(text) {
+  state.events.push({ hora: time(state.minute), evento: text });
+}
+
+function block(text) {
+  state.blocks += 1;
+  record("Bloqueo · " + text);
+  message(text, "bad");
+  render();
+}
+
+function unloaded() {
+  return Object.entries(state.positions).filter(([cell, cargo]) => !cell.startsWith("N") && required.includes(cargo)).length;
+}
+
+function assignedCorrectly(){
+  return Object.entries(specialDestinations).every(([cargo,cell])=>state.positions[cell]===cargo)
+    && (!state.mission.relocation||state.positions[state.mission.relocation]==="X-410");
+}
+
+let lastParticipation = "";
+function reportParticipation() {
+  if (window.parent === window || !motion.enabled) return;
+  const progress = Math.round(100 * unloaded() / required.length);
+  const score = state.finished ? outcome().puntaje : null;
+  const signature = [state.attemptId, progress, score].join("|");
+  if (signature === lastParticipation) return;
+  lastParticipation = signature;
+  window.parent.postMessage({
+    type: "portsim-grua", id: state.attemptId, mission: state.mission.title, mode: state.mode,
+    progress, score, seconds: Math.round(state.elapsedSeconds)
+  }, location.origin);
+}
+
+function render() {
+  reportParticipation();
+  for (const slot of slots) {
+    const cell = slot.dataset.cell;
+    const cargo = state.positions[cell];
+    const tag=cargoTags.get(cell);
+    tag.textContent=cargo||"";
+    tag.dataset.priority=String(cargo===priority);
+    const closed = state.closed.includes(cell);
+    const description = closed ? "Cerrada" : state.under[cell]?"Apilado · 2 niveles":cargo ? "Ocupada" : "Libre";
+    slot.dataset.closed = String(closed);
+    slot.setAttribute("aria-pressed", String(cell === state.selected));
+    slot.setAttribute("aria-label", [cell, cargo, description, state.mission.dispatch.includes(cell) ? "despacho" : ""].filter(Boolean).join(", "));
+    slot.title = [cell, cargo, description].filter(Boolean).join(" · ");
+    slot.disabled = !canOperate();
+  }
+  $("manifest").replaceChildren(...(state.mission.relocation ? [...required, "X-410"] : required).map(cargo => {
+    const item = document.createElement("li");
+    const name = document.createElement("b");
+    name.textContent = cargo;
+    if (cargo === priority) item.className = "priority";
+    const cell = Object.keys(state.positions).find(position => state.positions[position] === cargo);
+    const below = Object.keys(state.under).find(position => state.under[position]===cargo);
+    const location = document.createElement("span");
+    location.textContent = below?"Buque · "+below+" · inferior":cell ? (cell.startsWith("N") ? "Buque" : "Patio") + " · " + cell : "En la grúa";
+    location.className = "cargo-status";
+    const destination = document.createElement("span");
+    destination.className = "destination";
+    destination.textContent = destinationOf(cargo);
+    item.append(name, location, destination);
+    return item;
+  }));
+  $("clock").textContent = time(state.minute);
+  $("unloaded").textContent = unloaded() + " / " + required.length;
+  $("moves").textContent = state.movements;
+  $("position").textContent = motion.stopped?"PARADA DE EMERGENCIA":state.selected+" / "+(state.carried||"GRÚA LIBRE");
+  $("e-stop").disabled=!motion.enabled||state.finished;
+  $("e-stop").setAttribute("aria-pressed",String(motion.stopped));
+  $("rearm").disabled=!motion.stopped||state.finished;
+  for(const button of document.querySelectorAll("[data-motion],#anchor,#release-anchor"))button.disabled=!canOperate();
+  panelStatus();
+  const availableDispatch = state.mission.dispatch.filter(cell => !state.closed.includes(cell) && !state.positions[cell]);
+  const priorityCell = Object.keys(state.positions).find(cell => state.positions[cell] === priority);
+  const priorityAdvice = availableDispatch.length ? "Revisa el despacho libre en " + availableDispatch.join(" o ") + "."
+    : state.mission.relocation ? "Libera el despacho trasladando X-410 a " + state.mission.relocation + "."
+    : "Revisa la ocupación antes de escoger el destino de despacho.";
+  $("hint").textContent = state.carried === priority ? priorityAdvice
+    : specialDestinations[state.carried] ? "Busca la posición especial "+specialDestinations[state.carried]+". Usa C para ampliar la cámara de precisión."
+    : state.carried === "X-410" && state.mission.relocation ? "Deposita X-410 en " + state.mission.relocation + "."
+    : state.carried ? "Busca una posición libre de acopio en B1–B5 o A5–A6."
+    : priorityCell?.startsWith("N") ? "R-204 está en " + priorityCell + ". " + priorityAdvice
+    : "Revisa el manifiesto y los avisos del patio antes del siguiente traslado.";
+  if (state.finished) $("hint").textContent = "Revisa la comparación de secuencias en el reporte.";
+  $("log").replaceChildren(...state.events.slice().reverse().map(event => {
+    const item = document.createElement("li");
+    item.textContent = event.hora + " · " + event.evento;
+    return item;
+  }));
+}
+
+function lift() {
+  const cell = state.selected;
+  const cargo = state.positions[cell];
+  if (state.finished || state.carried || !cargo) return;
+  state.carried = cargo;
+  state.origin = cell;
+  state.positions[cell] = state.under[cell]||null;
+  delete state.under[cell];
+  record("Cuatro seguros cerrados · " + cargo + ".");
+  message(cargo + " anclado en cuatro puntos. Mantén Q hasta alcanzar la altura de traslado.");
+  render();
+}
+
+function lower() {
+  if (state.finished || !state.carried) return;
+  const cell = state.selected;
+  const cargo = state.carried;
+  const origin = state.origin;
+  if (cell === origin) {
+    if(state.positions[cell]) state.under[cell]=state.positions[cell];
+    state.positions[cell] = cargo;
+    state.carried = null;
+    state.origin = null;
+    message("Izaje cancelado. " + cargo + " volvió a su posición de origen.");
+    record("Izaje cancelado en " + cell + ".");
+    render();
+    return;
+  }
+  state.positions[cell] = cargo;
+  state.carried = null;
+  state.origin = null;
+  state.minute += moveMinutes;
+  state.movements += 1;
+  if (cargo === priority) state.available = state.mission.dispatch.includes(cell) ? state.minute : null;
+  record(cargo + " trasladado de " + origin + " a " + cell + ".");
+  message(cargo === priority && state.available !== null
+    ? "R-204 disponible para retiro a las " + time(state.available) + "."
+    : cargo + " depositado en " + cell + ".");
+  postNotice();
+  render();
+}
+
+function outcome() {
+  const cell = state.mission.dispatch.find(position => state.positions[position] === priority);
+  const minutesLate = state.available === null ? null : Math.max(0, state.available - state.mission.deadline);
+  const extras = Math.max(0, state.movements - state.mission.reference.length);
+  const score = Math.max(0, 30 + (cell ? 20 : 0) + (minutesLate === 0 ? 25 : 0)
+    + Math.max(0, 15 - 5 * extras) + Math.max(0, 10 - 5 * state.blocks));
+  return {
+    mision: state.mission.title, mision_id: state.mission.id, modo: state.mode, puntaje: score,
+    contenedor_prioritario: priority, hora_retiro_programado: time(state.mission.deadline),
+    hora_disponibilidad: cell ? time(state.available) : null, posicion_despacho: cell || null,
+    minutos_atraso: minutesLate, movimientos_totales: state.movements, movimientos_adicionales: extras,
+    maniobras_bloqueadas: state.blocks, contenedores_descargados: unloaded(),
+    preguntas_seguridad: currentSafety.map(item => item.id),
+    movimientos_de_referencia: state.mission.reference.length,
+    seguridad_previa_completada: motion.enabled, intentos_respuestas_seguridad: state.safetyAttempts,
+    paradas_emergencia: state.emergencyStops, asignaciones_especiales_correctas: assignedCorrectly(), tiempo_activo_segundos: Math.round(state.elapsedSeconds),
+    hora_fin_turno: time(state.minute), bitacora: state.events
+  };
+}
+
+function finish() {
+  if ($("finish").disabled) return;
+  state.finished = true;
+  releaseControls();
+  record("Turno finalizado.");
+  const result = outcome();
+  $("award").textContent = result.puntaje === 100 ? "Oro · Turno impecable"
+    : result.puntaje >= 85 ? "Plata · Buen desempeño"
+    : result.puntaje >= 70 ? "Bronce · Turno completado"
+    : "Turno completado";
+  $("result").textContent = result.hora_disponibilidad === null
+    ? "Descarga completada. R-204 quedó en acopio y sigue pendiente de traslado a despacho."
+    : result.minutos_atraso > 0
+      ? "R-204 quedó disponible en " + result.posicion_despacho + " con " + result.minutos_atraso + " min de atraso."
+      : "Disponible a tiempo. R-204 quedó disponible en " + result.posicion_despacho + " a las " + result.hora_disponibilidad + ".";
+  const indicators = [
+    ["Puntaje", result.puntaje + " / 100"], ["Disponible", result.hora_disponibilidad || "Pendiente"],
+    ["Mov. adicionales", result.movimientos_adicionales], ["Bloqueos", result.maniobras_bloqueadas]
+  ];
+  $("results").replaceChildren(...indicators.map(([label, value]) => {
+    const box = document.createElement("div");
+    box.className = "metric";
+    const name = document.createElement("span");
+    name.textContent = label;
+    const quantity = document.createElement("strong");
+    quantity.textContent = value;
+    box.append(name, quantity);
+    return box;
+  }));
+  const sequence = state.mission.reference;
+  const priorityMove = sequence.findIndex(([from]) => state.mission.ship[Number(from[1])-1] === priority && from.startsWith("N")) + 1;
+  $("comparison").textContent = "Secuencia de referencia · " + sequence.map(([from,to]) => from + " → " + to).join(" · ")
+    + ". Con " + sequence.length + " movimientos, la carga prioritaria queda disponible a las " + time(priorityMove * moveMinutes) + ".";
+  $("reflection").textContent = result.minutos_atraso === 0
+    ? "Reflexión · ¿Cómo afectaron las condiciones del patio al orden de tus movimientos?"
+    : "Reflexión · ¿Qué cambio habría dejado R-204 listo a las " + time(state.mission.deadline) + "?";
+  $("report").hidden = false;
+  render();
+  $("report-title").focus();
+}
+
+function changeMode(mode, forceReset = false, rotateMission = false) {
+  if (state.mode === mode && !forceReset) return;
+  const inProgress = !state.finished && (state.movements || state.carried || state.blocks || state.emergencyStops || motion.z < parkedHeight);
+  if (inProgress && !window.confirm("Se perderá el progreso de este intento. ¿Quieres iniciar otro?")) return;
+  start(mode, rotateMission ? undefined : state.mission);
+}
+
+
+function depositRestriction() {
+  const cell = state.selected;
+  const cargo = state.carried;
+  if (cell === state.origin) return null;
+  if (cell.startsWith("N")) return "La orden de este turno permite depositar únicamente en el patio.";
+  if (state.closed.includes(cell)) return cell + " está cerrada. Mantén la carga y selecciona otra posición.";
+  if (state.positions[cell]) return cell + " está ocupada por " + state.positions[cell] + ". Selecciona otra posición.";
+  const reservedCargo=Object.keys(specialDestinations).find(code=>specialDestinations[code]===cell);
+  if(reservedCargo&&reservedCargo!==cargo)return cell+" está reservada para "+reservedCargo+".";
+  if(specialDestinations[cargo]&&specialDestinations[cargo]!==cell)return cargo+" tiene destino asignado en "+specialDestinations[cargo]+".";
+  if (cell === state.mission.relocation && cargo !== "X-410") return cell + " está reservada para reubicar X-410.";
+  if (cargo === "X-410" && state.mission.relocation && cell !== state.mission.relocation) {
+    return "La orden de este turno indica reubicar X-410 en " + state.mission.relocation + ".";
+  }
+  if (state.mission.dispatch.includes(cell) && cargo !== priority) {
+    return cell + " está reservada para la carga prioritaria.";
+  }
+  return null;
+}
+
+const travelHeight=88;
+const parkedHeight=96;
+const motion={z:parkedHeight, target:null, lastWarning:"", contact:"", status:"", enabled:false};
+const held=new Map();
+// The first alternative is correct in the bank. Every displayed set shuffles its options.
+const questionBank = {
+  zona: [
+    ["persona-en-zona", "Ves a una persona dentro de la zona de maniobra antes del primer izaje. ¿Qué haces?",
+      "Mantengo detenida la grúa hasta que se confirme que la zona está despejada.",
+      "Izo a velocidad reducida.", "Le pido que cruce rápido bajo la trayectoria.",
+      "Mantén despejada la zona de maniobra antes de iniciar el izaje."],
+    ["trayectoria", "La ruta más corta pasa sobre un sector con trabajadores. ¿Qué priorizas?",
+      "Evito pasar la carga sobre personas y coordino una trayectoria despejada.",
+      "Uso la ruta corta si la carga está alta.", "Aviso por radio mientras sigo por la ruta corta.",
+      "Mantén a las personas fuera de la trayectoria de la carga suspendida."],
+    ["bajo-carga", "Una persona quiere cruzar por debajo del contenedor suspendido. ¿Qué indicas?",
+      "Que espere fuera de la zona de maniobra o use una ruta autorizada.",
+      "Que pase si el carro está detenido.", "Que pase si los cuatro seguros están cerrados.",
+      "Una carga inmóvil o asegurada sigue suspendida. La zona bajo ella debe permanecer despejada."],
+    ["obstaculo", "Hay un obstáculo inesperado en el punto donde debes depositar. ¿Cómo procedes?",
+      "Detengo el descenso y coordino un punto de depósito despejado.",
+      "Bajo hasta tocar el obstáculo para estimar el espacio.", "Deposito sobre un espacio que no alcanzo a verificar.",
+      "Antes de depositar, verifica que el destino esté despejado y habilitado."]
+  ],
+  enganche: [
+    ["seguro-sin-confirmar", "El bastidor está apoyado, pero un seguro no confirma el cierre. ¿Qué haces?",
+      "Mantengo el contenedor apoyado hasta verificar los cuatro puntos de enganche.",
+      "Lo levanto un poco para comprobar el cierre.", "Traslado el carro para comprobar el enganche.",
+      "El izaje requiere confirmar el enganche. En este ejercicio se muestran cuatro indicadores."],
+    ["sin-apoyo", "El bastidor está cerca del contenedor, pero aún no indica apoyo. ¿Qué corresponde?",
+      "Alineo el bastidor y verifico el apoyo antes de ordenar el cierre.",
+      "Ordeno el cierre en el aire.", "Inicio el izaje para que el bastidor se ajuste.",
+      "En este simulador, confirma la alineación y el apoyo antes de cerrar los seguros."],
+    ["soltar", "El contenedor llegó al destino y sigue suspendido. ¿Cuándo abres los seguros?",
+      "Una vez que la carga esté completamente apoyada.",
+      "Al pasar sobre el destino.", "Apenas quede detenida la traslación.",
+      "En el ejercicio, el apoyo de la carga es la condición para liberar el bastidor."],
+    ["enganche-irregular", "Un indicador de cierre cambia de estado justo antes del izaje. ¿Qué haces?",
+      "Mantengo la carga apoyada y verifico el enganche antes de continuar.",
+      "Izo si los demás indicadores se mantienen.", "Compenso el aviso elevando a menor velocidad.",
+      "Un cierre sin confirmar exige verificar el enganche antes de izar."]
+  ],
+  comunicacion: [
+    ["parada", "Recibes una señal de parada de emergencia durante el traslado. ¿Qué haces?",
+      "Detengo la maniobra de inmediato y espero autorización para reanudar.",
+      "Completo el traslado antes de detener.", "Sigo a velocidad reducida.",
+      "La señal de parada de emergencia se atiende de inmediato."],
+    ["senal-dudosa", "No distingues si la señal recibida indica subir o detener. ¿Qué decisión tomas?",
+      "Mantengo la maniobra detenida y solicito una señal clara.",
+      "Subo para despejar el sector.", "Elijo el último movimiento que venía ejecutando.",
+      "Aclara una señal dudosa con la persona designada antes de continuar."],
+    ["radio", "Pierdes la comunicación acordada mientras te guían hacia un punto que no ves. ¿Cómo respondes?",
+      "Detengo el movimiento y restablezco la comunicación acordada.",
+      "Sigo lentamente hacia el punto estimado.", "Termino el descenso y luego pido indicaciones.",
+      "Cuando la maniobra depende de la guía, detén el movimiento hasta recuperar la comunicación."],
+    ["dos-ordenes", "Recibes dos órdenes de movimiento contradictorias. ¿Cómo decides?",
+      "Detengo la maniobra y aclaro la instrucción con la persona designada.",
+      "Sigo la orden que escuché primero.", "Alterno ambos movimientos hasta que aclaren.",
+      "Coordina las órdenes con la persona designada y atiende de inmediato cualquier señal de parada de emergencia."]
+  ]
+};
+
+function nextSafetySet() {
+  return shuffled(Object.entries(questionBank).map(([topic, rows]) => {
+    const entries = rows.map(([id,prompt,correct,wrong1,wrong2,explanation]) => ({id,prompt,correct,wrong1,wrong2,explanation}));
+    const {id,prompt,correct,wrong1,wrong2,explanation} = nextRotation("seguridad-" + topic, entries);
+    const options = shuffled([correct, wrong1, wrong2]);
+    return {id,prompt,options,correct:options.indexOf(correct),explanation};
+  }));
+}
+
+let currentSafety = [];
+let step=0;
+let checked=false;
+
+function showQuestion() {
+  const item=currentSafety[step];
+  $("quiz-step").textContent="Pregunta "+(step+1)+" de "+currentSafety.length;
+  $("quiz-question").textContent=item.prompt;
+  $("quiz-feedback").textContent="";
+  $("quiz-next").hidden=true;
+  $("quiz-options").replaceChildren(...item.options.map((option,i)=>{
+    const button=document.createElement("button");
+    button.className="btn";
+    button.textContent=option;
+    button.addEventListener("click",()=>checkAnswer(i));
+    return button;
+  }));
+  $("quiz-question").focus({preventScroll:true});
+}
+
+function checkAnswer(answer) {
+  if(checked)return;
+  const item=currentSafety[step];
+  const right=answer===item.correct;
+  state.safetyAttempts+=1;
+  $("quiz-feedback").textContent=(right?"Correcto. ":"Vuelve a intentarlo. ")+item.explanation;
+  if(!right)return;
+  checked=true;
+  for(const button of $("quiz-options").children)button.disabled=true;
+  $("quiz-next").hidden=false;
+  $("quiz-next").textContent=step===currentSafety.length-1?"Habilitar maniobra":"Siguiente pregunta";
+  $("quiz-next").focus();
+}
+
+function advanceSafety() {
+  if(!checked)return;
+  step+=1;
+  checked=false;
+  if(step<currentSafety.length){showQuestion();return;}
+  motion.enabled=true;
+  $("safety-dialog").close();
+  record("Verificación previa de seguridad completada.");
+  message("Grúa habilitada. Revisa la orden y alinea el bastidor sobre el primer contenedor.");
+  render();
+  canvas.focus({preventScroll:true});
+}
+
+$("safety-dialog").addEventListener("cancel",event=>event.preventDefault());
+$("quiz-next").addEventListener("click",advanceSafety);
+
+function beginSafety() {
+  currentSafety = nextSafetySet();
+  $("quiz-mission").textContent = state.mission.title;
+  step=0;
+  checked=false;
+  if(!$("safety-dialog").open)$("safety-dialog").showModal();
+  showQuestion();
+}
+
+const controls={
+  arrowleft:"left",a:"left",arrowright:"right",d:"right",
+  arrowup:"up",w:"up",arrowdown:"down",s:"down",q:"raise",e:"descend"
+};
+const has=command=>Array.from(held.values()).includes(command);
+const clamp=(number,min,max)=>Math.max(min,Math.min(max,number));
+const canOperate=()=>motion.enabled&&!motion.stopped&&!state.noticePending&&!state.finished&&!$("safety-dialog").open&&!$("desk-guide").open;
+$("ack-notice").addEventListener("click",()=>{
+  if(!state.noticePending)return;
+  state.noticePending=false;
+  $("ack-notice").hidden=true;
+  record("Confirmación de aviso por radio.");
+  message("Aviso confirmado. Revisa la disponibilidad del patio y continúa.");
+  render();
+  canvas.focus({preventScroll:true});
+});
+const nearestCell=()=>{
+  const best=slots.map(slot=>slot.dataset.cell).reduce((nearest,cell)=>{
+    const [x,y]=positionOf(cell);
+    const distance=Math.hypot(visual.x-x,visual.y-y);
+    return distance<nearest.distance?{cell,distance}:nearest;
+  },{cell:"N1",distance:Infinity});
+  return best.cell;
+};
+
+function alignment(cell) {
+  const [x,y]=positionOf(cell);
+  const [loadX,loadY]=loadCenter();
+  const tolerance=state.mode==="desafio"?.16:.25;
+  return Math.abs(loadX-x)<=tolerance && Math.abs(loadY-y)<=tolerance
+    && Math.hypot(visual.swayX,visual.swayY)<.11;
+}
+
+function contactHeight(cell) {
+  return deck(cell)+(state.carried||state.positions[cell]?24:4)
+    +(state.under[cell]||(state.carried&&cell===state.origin&&state.positions[cell])?23:0);
+}
+
+function warnOnce(text,penalize=false) {
+  if(motion.lastWarning===text)return;
+  motion.lastWarning=text;
+  if(penalize)block(text);
+  else message(text,"warn");
+  soundSignal("warn");
+}
+
+function panelStatus() {
+  let status="En tránsito";
+  if(motion.z>=travelHeight)status=state.carried?"Carga asegurada · traslado habilitado":"Bastidor elevado · traslado habilitado";
+  else if(Math.abs(motion.z-contactHeight(state.selected))<.9&&alignment(state.selected)) {
+    status=state.carried?"Carga apoyada · F para liberar":state.positions[state.selected]?"Bastidor apoyado · F para anclar":"Bastidor en posición baja";
+  } else status=state.carried?"Carga asegurada · eleva antes de trasladar":"Bastidor bajo · eleva antes de trasladar";
+  if(!motion.enabled)status="Controles bloqueados · verificación previa";
+  if(motion.stopped)status="Parada de emergencia · mandos en neutro";
+  if(state.noticePending)status="Radio pendiente · confirma recepción";
+  const [targetX,targetY]=positionOf(state.selected);
+  const alignmentText=alignment(state.selected)?state.selected+" · alineado":
+    state.selected+" · ajustes en cámara vertical";
+  const values={
+    alignment:alignmentText,
+    "hoist-level":motion.z>=travelHeight?"Altura de traslado":"Bastidor bajo",
+    "anchor-state":state.carried?"4/4 anclados":"0/4 anclados"
+  };
+  for(const [id,value] of Object.entries(values))if($(id).textContent!==value)$(id).textContent=value;
+  if(motion.status!==status){$("motion-status").textContent=status;motion.status=status;}
+  $("finish").disabled=!canOperate()||unloaded()!==required.length||!assignedCorrectly()||Boolean(state.carried)||motion.z<travelHeight;
+}
+
+function tickControls(seconds) {
+  if(!canOperate())return;
+  if(state.mode==="desafio"){
+    const before=Math.floor(state.elapsedSeconds/15);
+    state.elapsedSeconds+=seconds;
+    const added=Math.floor(state.elapsedSeconds/15)-before;
+    if(added){state.minute+=added;$("clock").textContent=time(state.minute);}
+  }else state.elapsedSeconds+=seconds;
+  const vx=Number(has("right"))-Number(has("left"));
+  const vy=Number(has("down"))-Number(has("up"));
+  const dz=Number(has("raise"))-Number(has("descend"));
+  const fine=has("slow")?.24:1;
+  const beforeX=visual.x,beforeY=visual.y;
+  if(vx||vy)motion.target=null;
+  let moving=false;
+  if(vx||vy||motion.target) {
+    if(motion.z<travelHeight) {
+      motion.target=null;
+      warnOnce("Eleva el bastidor hasta la altura de traslado antes de mover la grúa.");
+    } else {
+      const [goalX,goalY]=motion.target?positionOf(motion.target):[visual.x+vx*2.75*fine*seconds,visual.y+vy*1.8*fine*seconds];
+      const limit=(difference,max)=>clamp(difference,-max,max);
+      const dx=motion.target?limit(goalX-visual.x,2.75*seconds):goalX-visual.x;
+      const dy=motion.target?limit(goalY-visual.y,1.8*seconds):goalY-visual.y;
+      const x=clamp(visual.x+dx,-.45,7.8);
+      const y=clamp(visual.y+dy,.58,8.92);
+      moving=Math.hypot(x-visual.x,y-visual.y)>.0001;
+      visual.x=x;
+      visual.y=y;
+      if(motion.target&&Math.hypot(goalX-x,goalY-y)<.01)motion.target=null;
+    }
+  }
+  const settle=1-Math.exp(-seconds*4);
+  const swayTargetX=state.carried&&seconds>0?clamp(-(visual.x-beforeX)/seconds*.10,-.29,.29):0;
+  const swayTargetY=state.carried&&seconds>0?clamp(-(visual.y-beforeY)/seconds*.13,-.29,.29):0;
+  visual.swayX+=(swayTargetX-visual.swayX)*settle;
+  visual.swayY+=(swayTargetY-visual.swayY)*settle;
+  const closest=nearestCell();
+  if(closest!==state.selected) {
+    state.selected=closest;
+    render();
+  }
+  let winch=false;
+  if(dz) {
+    const at=alignment(closest);
+    let floor=at?contactHeight(closest):travelHeight;
+    if(dz<0&&state.carried&&at) {
+      const restriction=depositRestriction();
+      if(restriction) {
+        floor=travelHeight;
+        if(motion.z<=travelHeight+1)warnOnce(restriction,true);
+      }
+    }
+    if(dz<0&&!at&&motion.z<=travelHeight+1)warnOnce("Alinea el bastidor con una posición antes de seguir bajando.");
+    const next=dz>0?Math.min(parkedHeight,motion.z+40*seconds*fine):
+      Math.max(Math.min(floor,motion.z),motion.z-40*seconds*fine);
+    winch=Math.abs(next-motion.z)>.0001;
+    motion.z=next;
+  }
+  const contact=alignment(closest)&&Math.abs(motion.z-contactHeight(closest))<.9?closest:"";
+  if(contact&&motion.contact!==contact&&(state.carried||state.positions[closest]))soundSignal("contact");
+  motion.contact=contact;
+  driveSound(moving,winch);
+  panelStatus();
+}
+
+function toggleAnchor() {
+  if(!canOperate())return;
+  const cell=state.selected;
+  if(!alignment(cell)||Math.abs(motion.z-contactHeight(cell))>=.9) {
+    return warnOnce(state.carried?"Apoya el contenedor por completo antes de liberar los seguros.":"Alinea y baja el bastidor hasta apoyarlo sobre un contenedor.",true);
+  }
+  if(state.carried) {
+    const restriction=depositRestriction();
+    if(restriction)return warnOnce(restriction,true);
+    soundSignal("release");
+    lower();
+    visual.swayX=visual.swayY=0;
+    motion.z=deck(cell)+24+(state.under[cell]?23:0);
+  } else {
+    if(!state.positions[cell])return warnOnce("No hay un contenedor bajo el bastidor.",true);
+    const [x,y]=positionOf(cell);
+    visual.x=x;
+    visual.y=y;
+    soundSignal("lock");
+    lift();
+  }
+  motion.lastWarning="";
+  panelStatus();
+}
+
+function releaseControls() {
+  held.clear();
+  motion.lastWarning="";
+  driveSound(false,false);
+}
+
+document.addEventListener("keydown",event=>{
+  if(event.metaKey||event.ctrlKey||event.altKey||$("safety-dialog").open||$("desk-guide").open)return;
+  const key=event.key.toLowerCase();
+  if(key==="v"&&!event.repeat){event.preventDefault();setView(view==="cab"?"map":"cab");return;}
+  if(key==="c"&&!event.repeat){event.preventDefault();togglePrecision();return;}
+  if(key==="escape"&&!event.repeat&&canOperate()){event.preventDefault();emergencyStop();return;}
+  if(!canOperate())return;
+  if(key==="f"&&!event.repeat){event.preventDefault();toggleAnchor();return;}
+  if(!Object.hasOwn(controls,key)&&key!=="shift")return;
+  event.preventDefault();
+  if(event.repeat&&!held.has(key))return;
+  if(!held.has(key))motion.lastWarning="";
+  held.set(key,key==="shift"?"slow":controls[key]);
+});
+
+document.addEventListener("keyup",event=>{
+  if(held.delete(event.key.toLowerCase()))motion.lastWarning="";
+});
+window.addEventListener("blur",releaseControls);
+document.addEventListener("visibilitychange",()=>{if(document.hidden)releaseControls();});
+
+for(const button of document.querySelectorAll("[data-motion]")) {
+  const command=button.dataset.motion;
+  const start=(id)=>{if(canOperate()){motion.lastWarning="";held.set(id,command);}};
+  const end=(id)=>{if(held.delete(id))motion.lastWarning="";};
+  button.addEventListener("pointerdown",event=>{
+    button.setPointerCapture(event.pointerId);
+    start(event.pointerId);
+  });
+  for(const event of ["pointerup","pointercancel","lostpointercapture"]){
+    button.addEventListener(event,detail=>end(detail.pointerId));
+  }
+  button.addEventListener("keydown",event=>{
+    if(event.key===" "||event.key==="Enter"){event.preventDefault();if(!event.repeat)start(button);}
+  });
+  button.addEventListener("keyup",event=>{
+    if(event.key===" "||event.key==="Enter"){event.preventDefault();end(button);}
+  });
+  button.addEventListener("blur",()=>end(button));
+}
+for(const slot of slots)slot.addEventListener("click",()=>{
+  if(!canOperate())return;
+  const cell=slot.dataset.cell;
+  // The guided map can position the bridge gradually; challenge requires manual alignment.
+  if(state.mode==="guiado"&&motion.z>=travelHeight)motion.target=cell;
+  message(cell+" · "+(state.positions[cell]|| (state.closed.includes(cell)?"posición cerrada":"posición libre"))+
+    (motion.target?" · Aproximación guiada.":" · Usa los mandos para alinearte."));
+  canvas.focus({preventScroll:true});
+});
+$("guided").addEventListener("click",()=>changeMode("guiado"));
+$("challenge").addEventListener("click",()=>changeMode("desafio"));
+
+let audio=null;
+let soundEnabled=false;
+
+function initSound() {
+  const Audio=window.AudioContext||window.webkitAudioContext;
+  if(!Audio)return null;
+  const ctx=new Audio();
+  const main=ctx.createGain();
+  main.gain.value=.32;
+  main.connect(ctx.destination);
+  const motor=ctx.createOscillator();
+  const motorVolume=ctx.createGain();
+  motor.type="triangle";
+  motor.frequency.value=43;
+  motorVolume.gain.value=0;
+  motor.connect(motorVolume).connect(main);
+  motor.start();
+  const background=ctx.createBufferSource();
+  const data=ctx.createBuffer(1,ctx.sampleRate*3,ctx.sampleRate);
+  const samples=data.getChannelData(0);
+  let wave=0;
+  for(let i=0;i<samples.length;i++){
+    wave=.94*wave+(Math.random()*2-1)*.06;
+    samples[i]=wave;
+  }
+  background.buffer=data;
+  background.loop=true;
+  const filter=ctx.createBiquadFilter();
+  filter.frequency.value=460;
+  const ambience=ctx.createGain();
+  ambience.gain.value=.15;
+  background.connect(filter).connect(ambience).connect(main);
+  background.start();
+  return {ctx,main,motor,motorVolume};
+}
+
+function driveSound(travel,winch) {
+  if(!soundEnabled||!audio)return;
+  const time=audio.ctx.currentTime;
+  audio.motor.frequency.setTargetAtTime(winch?74:44,time,.09);
+  audio.motorVolume.gain.setTargetAtTime(winch?.24:travel?.18:0,time,.09);
+}
+
+function soundSignal(kind) {
+  if(!soundEnabled||!audio)return;
+  const {ctx,main}=audio;
+  const now=ctx.currentTime;
+  const effect=ctx.createOscillator();
+  const gain=ctx.createGain();
+  const frequencies={lock:[762,220],release:[415,125],contact:[160,62],warn:[525,390]};
+  const [from,to]=frequencies[kind];
+  effect.type=kind==="warn"?"sine":"triangle";
+  effect.frequency.setValueAtTime(from,now);
+  effect.frequency.exponentialRampToValueAtTime(to,now+.16);
+  gain.gain.setValueAtTime(.3,now);
+  gain.gain.exponentialRampToValueAtTime(.001,now+.23);
+  effect.connect(gain).connect(main);
+  effect.start(now);
+  effect.stop(now+.24);
+}
+
+$("sound-toggle").addEventListener("click",async()=>{
+  try {
+    audio ||= initSound();
+    if(!audio)throw Error("Audio no disponible");
+    if(soundEnabled)await audio.ctx.suspend();
+    else await audio.ctx.resume();
+    soundEnabled=!soundEnabled;
+    $("sound-toggle").setAttribute("aria-pressed",String(soundEnabled));
+    $("sound-toggle").textContent=soundEnabled?"Silenciar sonido":"Activar sonido";
+    if(soundEnabled)soundSignal("lock");
+  } catch {
+    message("El navegador no pudo activar el sonido. Las señales visuales siguen disponibles.","warn");
+  }
+});
+
+$("finish").addEventListener("click", finish);
+$("reset").addEventListener("click", () => changeMode(state.mode, true));
+$("new-mission").addEventListener("click", () => changeMode(state.mode, true, true));
+$("retry").addEventListener("click", () => {
+  start(state.mode);
+});
+$("export").addEventListener("click", () => {
+  const url = URL.createObjectURL(new Blob([JSON.stringify(outcome(), null, 2)], { type: "application/json" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "Reporte_Grúa_y_Patio_CSD.json";
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+
+
+for(const [id,next] of [["cab-view","cab"],["map-view","map"]]) {
+  $(id).addEventListener("click",() => {
+    setView(next);
+    canvas.focus({preventScroll:true});
+  });
+}
+const deskTopics=[
+  ["Palanca izquierda · carro","Desplaza el carro transversalmente entre el buque y el patio. Al soltar la palanca vuelve a neutro. En esta cabina las teclas A y D reproducen ese eje."],
+  ["Palanca derecha · pórtico e izaje","El pórtico recorre el muelle para cambiar de fila con W y S. El otro eje de la palanca sube y baja el bastidor con Q y E."],
+  ["Bastidor · apoyo y seguros","La luz «En apoyo» confirma el contacto detectado por el simulador. Las cuatro luces de esquina indican el estado de los seguros. Tras cerrar, comprueba 4/4 antes de izar. Para abrir, primero apoya la carga."],
+  ["Indicador · altura de traslado","Se enciende al alcanzar la altura a partir de la cual este ejercicio habilita el desplazamiento horizontal. El simulador mantiene bloqueado ese movimiento por debajo del umbral."],
+  ["Parada de emergencia y rearme","La parada cancela el movimiento del ejercicio. «Rearmar simulación» vuelve a habilitar los mandos en neutro. Debes dar una nueva orden para mover la grúa."]
+];
+const seenTopics=new Set();
+const deskGuide=$("desk-guide");
+const topicButtons=deskTopics.map(([name,description],index)=>{
+  const button=document.createElement("button");
+  button.type="button";
+  button.className="btn";
+  button.textContent=name;
+  button.setAttribute("aria-pressed","false");
+  button.addEventListener("click",()=>{
+    seenTopics.add(index);
+    button.dataset.seen="true";
+    for(const option of topicButtons)option.setAttribute("aria-pressed",String(option===button));
+    $("guide-count").textContent=seenTopics.size+" de "+deskTopics.length+" mandos e indicadores revisados";
+    $("guide-description").textContent=description;
+  });
+  return button;
+});
+$("guide-options").append(...topicButtons);
+$("panel-guide").addEventListener("click",()=>{
+  releaseControls();
+  motion.target=null;
+  deskGuide.showModal();
+});
+deskGuide.addEventListener("close",()=>$("panel-guide").focus({preventScroll:true}));
+$("close-desk-guide").addEventListener("click",()=>deskGuide.close());
+
+function emergencyStop() {
+  if(!canOperate())return;
+  motion.stopped=true;
+  motion.target=null;
+  releaseControls();
+  state.emergencyStops+=1;
+  record("Parada de emergencia activada.");
+  message("Parada de emergencia. Los mandos quedan en neutro hasta rearmar la simulación.","bad");
+  soundSignal("warn");
+  render();
+}
+
+$("e-stop").addEventListener("click",emergencyStop);
+$("rearm").addEventListener("click",()=>{
+  if(!motion.stopped||!motion.enabled||state.finished)return;
+  releaseControls();
+  motion.stopped=false;
+  record("Simulación rearmada con los mandos en neutro.");
+  message("Simulación rearmada. Da una nueva orden para iniciar el movimiento.");
+  render();
+  canvas.focus({preventScroll:true});
+});
+
+function useAnchor(close) {
+  if(!canOperate())return;
+  if(close===Boolean(state.carried)) {
+    message(close?"Los cuatro seguros ya están cerrados.":"Los seguros ya están abiertos.","warn");
+    return;
+  }
+  toggleAnchor();
+  canvas.focus({preventScroll:true});
+}
+$("anchor").addEventListener("click",()=>useAnchor(true));
+$("release-anchor").addEventListener("click",()=>useAnchor(false));
+
+function deskInstruments() {
+  const signals={
+    "seated-lamp":Boolean(state.carried||state.positions[state.selected])&&alignment(state.selected)
+      &&Math.abs(motion.z-contactHeight(state.selected))<.9,
+    "travel-lamp":motion.z>=travelHeight
+  };
+  for(const [id,lit] of Object.entries(signals)){
+    if($(id).dataset.active!==String(lit))$(id).dataset.active=String(lit);
+  }
+  const locked=String(Boolean(state.carried));
+  if($("spreader-panel").dataset.locked!==locked)$("spreader-panel").dataset.locked=locked;
+  const levers={
+    "trolley-lever":[(Number(has("right"))-Number(has("left")))*19,0],
+    "hoist-lever":[(Number(has("down"))-Number(has("up")))*19,(Number(has("descend"))-Number(has("raise")))*13]
+  };
+  for(const [id,[x,y]] of Object.entries(levers)){
+    const lever=$(id);
+    if(lever.dataset.xy===x+","+y)continue;
+    lever.dataset.xy=x+","+y;
+    lever.style.setProperty("--jx",x+"px");
+    lever.style.setProperty("--jy",y+"px");
+  }
+}
+
+// Renderer for the same simulation coordinates used by the crane and its precision monitor.
+function createTerminal3D(surface) {
+  const gl=surface.getContext("webgl",{alpha:false,antialias:true,preserveDrawingBuffer:false});
+  const software=gl?null:surface.getContext("2d",{alpha:false});
+  if(!gl&&!software)return null;
+  const vertexSource=`
+    attribute vec3 aPosition;attribute vec3 aNormal;attribute vec3 aColor;attribute float aMaterial;
+    uniform mat4 uViewProjection;varying vec3 vPosition;varying vec3 vNormal;varying vec3 vColor;varying float vMaterial;
+    void main(){vPosition=aPosition;vNormal=aNormal;vColor=aColor;vMaterial=aMaterial;gl_Position=uViewProjection*vec4(aPosition,1.0);}
+  `;
+  const fragmentSource=`
+    precision mediump float;varying vec3 vPosition;varying vec3 vNormal;varying vec3 vColor;varying float vMaterial;
+    uniform vec3 uEye;uniform float uTime;
+    void main(){
+      vec3 n=normalize(vNormal),sun=normalize(vec3(-0.55,0.85,-0.35));
+      float diffuse=max(dot(n,sun),0.0);
+      vec3 tint=vColor;
+      if(vMaterial>0.5&&vMaterial<1.5){
+        float wave=sin(vPosition.x*2.7+vPosition.z*1.2+uTime*1.5)*sin(vPosition.z*2.3-vPosition.x*.5-uTime*.9);
+        tint+=vec3(.025,.045,.05)*wave;
+        tint+=pow(max(0.0,wave),9.0)*vec3(.14,.18,.18);
+      }
+      if(vMaterial>1.5&&vMaterial<2.5){
+        float grain=fract(sin(dot(floor(vPosition.xz*19.0),vec2(12.9898,78.233)))*43758.5453);
+        tint*=.92+grain*.13;
+      }
+      vec3 lit=tint*(.46+.54*diffuse);
+      float haze=1.0-exp(-length(vPosition-uEye)*.008);
+      gl_FragColor=vec4(mix(lit,vec3(.57,.71,.74),haze*.6),1.0);
+    }
+  `;
+  function shader(type,source){
+    const result=gl.createShader(type);
+    gl.shaderSource(result,source);gl.compileShader(result);
+    if(!gl.getShaderParameter(result,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(result));
+    return result;
+  }
+  let program,attrs,vpLocation,eyeLocation,timeLocation;
+  if(gl){
+    program=gl.createProgram();
+    gl.attachShader(program,shader(gl.VERTEX_SHADER,vertexSource));
+    gl.attachShader(program,shader(gl.FRAGMENT_SHADER,fragmentSource));
+    gl.linkProgram(program);
+    if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));
+    gl.useProgram(program);
+    attrs=["aPosition","aNormal","aColor","aMaterial"].map(name=>gl.getAttribLocation(program,name));
+    vpLocation=gl.getUniformLocation(program,"uViewProjection");
+    eyeLocation=gl.getUniformLocation(program,"uEye");
+    timeLocation=gl.getUniformLocation(program,"uTime");
+    gl.enable(gl.DEPTH_TEST);
+    gl.clearColor(.65,.78,.82,1);
+  }
+  const rgb=hex=>[parseInt(hex.slice(1,3),16)/255,parseInt(hex.slice(3,5),16)/255,parseInt(hex.slice(5,7),16)/255];
+  const minus=(a,b)=>a.map((value,i)=>value-b[i]);
+  const plus=(a,b)=>a.map((value,i)=>value+b[i]);
+  const scale=(a,s)=>a.map(value=>value*s);
+  const nx=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+  const d=(a,b)=>a.reduce((sum,value,i)=>sum+value*b[i],0);
+  const unit=a=>scale(a,1/(Math.hypot(...a)||1));
+  const X=5.3,Z=4.5,Y=.1;
+
+  class Mesh {
+    constructor(){this.data=[];this.faces=[];this.background=false;}
+    triangle(a,b,c,color,material=0,normal=null){
+      const n=normal||unit(nx(minus(b,a),minus(c,a)));
+      if(software)this.faces.push({points:[a,b,c],n,color,material,background:this.background});
+      else for(const point of [a,b,c])this.data.push(...point,...n,...color,material);
+    }
+    quad(a,b,c,d,color,material=0,normal=null){
+      if(software){
+        const n=normal||unit(nx(minus(b,a),minus(c,a)));
+        this.faces.push({points:[a,b,c,d],n,color,material,background:this.background});
+      }else{this.triangle(a,b,c,color,material,normal);this.triangle(a,c,d,color,material,normal);}
+    }
+    cube(x,y,z,w,h,l,color,material=0){
+      const a=[x-w/2,y-h/2,z-l/2],b=[x+w/2,y-h/2,z-l/2],c=[x+w/2,y-h/2,z+l/2],e=[x-w/2,y-h/2,z+l/2];
+      const A=plus(a,[0,h,0]),B=plus(b,[0,h,0]),C=plus(c,[0,h,0]),E=plus(e,[0,h,0]);
+      this.quad(A,E,C,B,color,material,[0,1,0]);this.quad(a,b,c,e,color,material,[0,-1,0]);
+      this.quad(a,A,B,b,color,material,[0,0,-1]);this.quad(e,c,C,E,color,material,[0,0,1]);
+      this.quad(a,e,E,A,color,material,[-1,0,0]);this.quad(b,B,C,c,color,material,[1,0,0]);
+    }
+    beam(a,b,r,color){
+      const axis=unit(minus(b,a));
+      const u=scale(unit(nx(axis,Math.abs(axis[1])>.85?[1,0,0]:[0,1,0])),r);
+      const v=scale(unit(nx(axis,u)),r);
+      const points=p=>[plus(plus(p,u),v),plus(minus(p,u),v),minus(minus(p,u),v),minus(plus(p,u),v)];
+      const p=points(a),q=points(b);
+      for(let i=0;i<4;i++){const j=(i+1)%4;this.quad(p[i],q[i],q[j],p[j],color);}
+    }
+    hull(shape,lower,upper,side,top){
+      for(let i=0;i<shape.length;i++){
+        const a=shape[i],b=shape[(i+1)%shape.length];
+        const n=unit([b[1]-a[1],0,a[0]-b[0]]);
+        this.quad([a[0],lower,a[1]],[b[0],lower,b[1]],[b[0],upper,b[1]],[a[0],upper,a[1]],side,0,n);
+      }
+      const a=shape[0];
+      for(let i=1;i<shape.length-1;i++)this.triangle([a[0],upper,a[1]],[shape[i][0],upper,shape[i][1]],[shape[i+1][0],upper,shape[i+1][1]],top,0,[0,1,0]);
+    }
+  }
+  const metal=rgb("#81949b"),rail=rgb("#adb6b3"),yellow=rgb("#e9ac4c"),dark=rgb("#29343b"),white=rgb("#dce4df");
+  const asphaltColor=rgb("#59686a"),concrete=rgb("#87948e");
+  function container(mesh,x,y,z,palette){
+    const main=rgb(palette[0]),rib=rgb(palette[1]),cap=rgb(palette[2]);
+    const w=6.57,h=2.22,l=3.02;
+    mesh.cube(x,y+h/2,z,w,h,l,main);
+    for(let dx=-3.05;dx<=3.06;dx+=software?.92:.44){
+      mesh.cube(x+dx,y+h/2,z-l/2-.018,.085,h-.16,.062,rib);
+      mesh.cube(x+dx,y+h/2,z+l/2+.018,.085,h-.16,.062,rib);
+      mesh.cube(x+dx,y+h+.016,z,.08,.04,l-.12,cap);
+    }
+    for(const dx of [-w/2,w/2])for(const dz of [-l/2,l/2]){
+      mesh.cube(x+dx,y+h/2,z+dz,.145,h,.145,cap);
+    }
+    for(const dz of [-.65,.65])mesh.cube(x+w/2+.045,y+h/2,z+dz,.075,h-.25,.085,rail);
+    mesh.cube(x+w/2+.06,y+h*.57,z,.11,.08,2.8,cap);
+  }
+  function slotOutline(mesh,x,y,z,color){
+    mesh.cube(x,y,z-1.68,7.4,.025,.09,color);
+    mesh.cube(x,y,z+1.68,7.4,.025,.09,color);
+    mesh.cube(x-3.7,y,z,.09,.025,3.36,color);
+    mesh.cube(x+3.7,y,z,.09,.025,3.36,color);
+  }
+  const staticMesh=new Mesh();
+  staticMesh.background=true;
+  staticMesh.cube(0,-.85,22,1000,.1,1000,rgb("#367282"),1);
+  if(software)for(let i=0;i<185;i++){
+    const x=-65+(i*37%143)*.5,z=-38+((i*59)%193)*.56;
+    staticMesh.cube(x,-.789,z,.65+(i%6)*.18,.018,.045,rgb(i%3===0?"#548993":"#497e89"));
+  }
+  staticMesh.cube(48,-.7,22,81.2,1.4,123,concrete,2);
+  staticMesh.cube(39,.006,22,55,.035,123,asphaltColor,2);
+  staticMesh.cube(65,.04,23,8,.06,122,rgb("#34474d"),2);
+  staticMesh.background=false;
+  for(let z=-34;z<80;z+=3){
+    staticMesh.cube(7.65,.08,z,.7,.13,1.55,yellow);
+    staticMesh.cube(65,.09,z,.12,.08,1.45,white);
+  }
+  for(const x of [10.9,11.45,44.25,44.8])staticMesh.cube(x,.14,22,.09,.12,120,rail);
+  for(let z=-24;z<=64;z+=8.5){
+    staticMesh.cube(8.0,.35,z,.52,.7,.52,dark);
+    staticMesh.cube(8.0,.73,z,.78,.18,.62,yellow);
+    staticMesh.cube(69,4.1,z,.105,8.2,.105,metal);
+    staticMesh.cube(68.3,8.1,z,1.6,.14,.28,metal);
+    staticMesh.cube(67.65,7.95,z,.38,.17,.48,white);
+  }
+  const ship=[[-5.6,-2],[-3.0,-7],[3.0,-7.9],[6,-3.0],[6,40.8],[4.3,47],[-.3,49],[-5.5,45.4]];
+  staticMesh.background=true;
+  staticMesh.hull(ship,-1.1,-.28,rgb("#944b3b"),rgb("#944b3b"));
+  staticMesh.hull(ship,-.28,2.1,rgb("#223d50"),rgb("#7e9092"));
+  staticMesh.background=false;
+  for(const x of [-5.35,5.72]){
+    staticMesh.cube(x,2.35,21,.14,.5,47,white);
+    for(let z=0;z<44;z+=3)staticMesh.cube(x,2.05,z,.07,.8,.07,white);
+  }
+  staticMesh.cube(0,3.7,-3.4,5.3,3.1,3.15,white);
+  staticMesh.cube(0,5.35,-3.4,5.5,.35,3.3,rgb("#8ba1a6"));
+  for(let x=-2.25;x<2.5;x+=.85)staticMesh.cube(x,4.7,-1.78,.57,.6,.035,rgb("#284f60"));
+  staticMesh.cube(0,6.9,-4.2,.11,3,.11,white);
+  staticMesh.beam([-1.5,7.5,-4.2],[1.5,7.5,-4.2],.045,white);
+  for(let k=0;k<3;k++)for(let i=0;i<5;i++){
+    const x=50+k*6.8,z=47+i*3.5;
+    container(staticMesh,x,0,z,Object.values(colors)[(i+k)%Object.keys(colors).length]);
+    if((i+k)%3!==1)container(staticMesh,x,2.25,z,Object.values(colors)[(i+k+3)%Object.keys(colors).length]);
+  }
+  for(let x=28;x<56;x+=10){
+    staticMesh.cube(x,4.0,70,8,8,8,rgb("#667d84"),2);
+    staticMesh.cube(x,8.1,70,8.4,.24,8.4,rgb("#4e646d"));
+  }
+  for(let z=-22;z<=72;z+=90){
+    for(const x of [10.9,44.5])staticMesh.beam([x,0,z],[x,17.5,z],.32,metal);
+    staticMesh.beam([-6.5,17.5,z],[48,17.5,z],.23,metal);
+  }
+  const staticBuffer=gl?gl.createBuffer():null;
+  const dynamicBuffer=gl?gl.createBuffer():null;
+  if(gl){
+    gl.bindBuffer(gl.ARRAY_BUFFER,staticBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(staticMesh.data),gl.STATIC_DRAW);
+  }
+  const viewState={yaw:0,pitch:1.38,orbit:-.83,elevation:.84,distance:75};
+  let dragging=null;
+  surface.addEventListener("pointerdown",event=>{
+    if(event.button!==0)return;
+    dragging={x:event.clientX,y:event.clientY};surface.setPointerCapture(event.pointerId);surface.classList.add("grabbing");
+  });
+  surface.addEventListener("pointermove",event=>{
+    if(!dragging)return;
+    const dx=event.clientX-dragging.x,dy=event.clientY-dragging.y;
+    if(view==="cab"){
+      viewState.yaw-=dx*.008;viewState.pitch=clamp(viewState.pitch+dy*.007,-.12,1.50);
+    }else{
+      viewState.orbit-=dx*.007;viewState.elevation=clamp(viewState.elevation+dy*.007,.26,1.48);
+    }
+    dragging={x:event.clientX,y:event.clientY};
+  });
+  for(const name of ["pointerup","pointercancel","lostpointercapture"])surface.addEventListener(name,()=>{dragging=null;surface.classList.remove("grabbing");});
+  surface.addEventListener("wheel",event=>{
+    if(view!=="map")return;
+    event.preventDefault();
+    viewState.distance=clamp(viewState.distance+event.deltaY*.06,40,135);
+  },{passive:false});
+  function resetLook(){
+    viewState.yaw=0;viewState.pitch=1.38;viewState.orbit=-.83;viewState.elevation=.84;viewState.distance=75;
+  }
+  function lookAt(eye,target){
+    const f=unit(minus(target,eye)),s=unit(nx(f,[0,1,0])),u=nx(s,f);
+    return [s[0],u[0],-f[0],0,s[1],u[1],-f[1],0,s[2],u[2],-f[2],0,-d(s,eye),-d(u,eye),d(f,eye),1];
+  }
+  function perspective(aspect,fov){
+    const n=.12,f=230,k=1/Math.tan(fov/2);
+    return [k/aspect,0,0,0,0,k,0,0,0,0,(f+n)/(n-f),-1,0,0,2*f*n/(n-f),0];
+  }
+  function multiply(a,b){
+    const result=new Float32Array(16);
+    for(let col=0;col<4;col++)for(let row=0;row<4;row++){
+      for(let k=0;k<4;k++)result[col*4+row]+=a[k*4+row]*b[col*4+k];
+    }
+    return result;
+  }
+  function project(matrix,point){
+    const [x,y,z]=point;
+    const t=[x,y,z,1];
+    const p=[0,1,2,3].map(row=>t.reduce((sum,value,col)=>sum+matrix[col*4+row]*value,0));
+    return {x:50+50*p[0]/p[3],y:50-50*p[1]/p[3],visible:p[3]>0&&p[2]/p[3]<1&&p[2]/p[3]>-1};
+  }
+  function drawBuffer(buffer,count){
+    gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+    [3,3,3,1].forEach((size,i)=>{
+      gl.enableVertexAttribArray(attrs[i]);gl.vertexAttribPointer(attrs[i],size,gl.FLOAT,false,40,[0,12,24,36][i]);
+    });
+    gl.drawArrays(gl.TRIANGLES,0,count);
+  }
+  function drawSoftware(eye,target,w,h,mesh,now){
+    const c=software,forward=unit(minus(target,eye)),right=unit(nx(forward,[0,1,0])),up=nx(right,forward);
+    const focal=h*.5/Math.tan((view==="cab"?1.48:1.04)*.5);
+    const clipZ=.1;
+    const light=unit([-.55,.85,-.35]);
+    const screen=p=>[w/2+p[0]*focal/p[2],h/2-p[1]*focal/p[2]];
+    const sky=c.createLinearGradient(0,0,0,h);
+    sky.addColorStop(0,"#a4c6d5");sky.addColorStop(1,"#d7e5db");
+    c.fillStyle=sky;c.fillRect(0,0,w,h);
+    const queue=[];
+    const background=[];
+    for(const face of [...staticMesh.faces,...mesh.faces]){
+      const p0=face.points[0];
+      if(d(face.n,minus(eye,p0))<-.00001)continue;
+      const coordinates=face.points.map(p=>{
+        const v=minus(p,eye);return[d(v,right),d(v,up),d(v,forward)];
+      });
+      const clipped=[];
+      for(let i=0;i<coordinates.length;i++){
+        const a=coordinates[i],b=coordinates[(i+1)%coordinates.length];
+        if(a[2]>=clipZ)clipped.push(a);
+        if((a[2]>=clipZ)!==(b[2]>=clipZ)){
+          const factor=(clipZ-a[2])/(b[2]-a[2]);
+          clipped.push(a.map((v,j)=>v+(b[j]-v)*factor));
+        }
+      }
+      if(clipped.length<3)continue;
+      const points=clipped.map(screen);
+      if(points.every(p=>p[0]<0)||points.every(p=>p[0]>w)||points.every(p=>p[1]<0)||points.every(p=>p[1]>h))continue;
+      const depth=clipped.reduce((sum,p)=>sum+p[2],0)/clipped.length;
+      const lit=.52+.48*Math.max(0,d(face.n,light));
+      const haze=Math.min(.22,depth*.0018);
+      const color=face.color.map((v,i)=>Math.round((v*lit*(1-haze)+[.57,.71,.74][i]*haze)*255));
+      const item={points,depth,color,material:face.material};
+      (face.background?background:queue).push(item);
+    }
+    function paint(item){
+      c.beginPath();item.points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();
+      c.fillStyle=item.material===3?"rgba(11,25,31,.31)":"rgb("+item.color.join(",")+")";c.fill();
+    }
+    // Ground and water are laid down in construction order. Rigid objects are depth sorted.
+    background.forEach(paint);
+    queue.sort((a,b)=>b.depth-a.depth).forEach(paint);
+  }
+  function crane(mesh){
+    const x=visual.x*X,z=visual.y*Z;
+    const darkGold=rgb("#8d622c");
+    for(const dz of [-1.1,1.1]){
+      for(const foot of [10.95,44.4]){
+        mesh.cube(foot,.38,z+dz,1.0,.76,.9,dark);
+        mesh.beam([foot,.7,z+dz],[foot,16,z+dz],.29,yellow);
+        mesh.beam([foot,12.5,z+dz],[foot-2.4,16,z+dz],.17,yellow);
+      }
+      mesh.beam([-6.3,16,z+dz],[48,16,z+dz],.30,yellow);
+      mesh.beam([-6.3,18.1,z+dz],[48,18.1,z+dz],.14,yellow);
+      for(let i=-6.3;i<47;i+=3){
+        mesh.beam([i,16,z+dz],[i+1.5,18.1,z+dz],.075,darkGold);
+        mesh.beam([i+1.5,18.1,z+dz],[i+3,16,z+dz],.075,yellow);
+      }
+    }
+    for(const px of [-6.1,10.95,44.4,47.8])mesh.beam([px,16,z-1.1],[px,16,z+1.1],.17,yellow);
+    mesh.cube(x,15.45,z,2.1,.62,2.8,dark);
+    mesh.cube(x,15.87,z,1.8,.6,2.5,yellow);
+    const cabinZ=z+1.9;
+    mesh.cube(x,14.7,cabinZ,2.3,.22,2.3,white);
+    for(const dx of [-1.13,1.13])for(const dz of [-1.12,1.12]){
+      mesh.beam([x+dx,12.5,cabinZ+dz],[x+dx,14.7,cabinZ+dz],.055,dark);
+    }
+    // Narrow solid side rails around the glazed lower viewing aperture.
+    for(const dx of [-1.12,1.12])mesh.cube(x+dx,12.55,cabinZ,.12,.14,2.3,dark);
+    mesh.cube(x,12.55,cabinZ+1.12,2.3,.14,.12,dark);
+    const [lx,lz]=loadCenter().map((value,i)=>value*(i===0?X:Z));
+    const hy=motion.z*Y,lock=state.carried?rgb("#76efaf"):rgb("#eaa450");
+    for(const dx of [-3.28,3.28]){
+      for(const dz of [-1.5,1.5]){
+        mesh.beam([x+dx*.23,15.18,z+dz*.45],[lx+dx,hy+.29,lz+dz],.025,rail);
+        mesh.cube(lx+dx,hy+.26,lz+dz,.20,.23,.20,lock);
+      }
+    }
+    for(const dx of [-3.28,3.28])mesh.cube(lx+dx,hy+.2,lz,.15,.38,3.2,yellow);
+    for(const dz of [-1.50,1.50])mesh.cube(lx,hy+.2,lz+dz,6.60,.38,.15,yellow);
+    mesh.cube(lx,hy+.3,lz,1.2,.26,1.9,darkGold);
+    if(state.carried)container(mesh,lx,hy-2.2,lz,colors[state.carried]);
+  }
+  function createTraffic(mesh,elapsed){
+    // Scenic vehicles stay on their own service lane outside the exercise positions.
+    for(let i=0;i<2;i++){
+      const z=((elapsed*(i?1.14:1.55)+i*34)%90)-20,x=i?65.9:61.9;
+      mesh.cube(x,.57,z,2.2,.7,6.3,dark);
+      mesh.cube(x,1.65,z-2.3,2.05,1.8,1.75,i?rgb("#d5a750"):white);
+      mesh.cube(x,1.88,z-3.21,1.75,.56,.04,rgb("#36566a"));
+      mesh.cube(x,1.22,z+1.0,2.2,1.1,3.9,metal);
+      for(const sx of [-1.0,1.0])for(const sz of [-2.25,1.7,2.35])mesh.cube(x+sx,.49,z+sz,.3,.9,.85,dark);
+    }
+  }
+  function render(now){
+    const css=surface.getBoundingClientRect();
+    if(!css.width||!css.height)return;
+    const pixelRatio=Math.min(devicePixelRatio||1,software?1:1.7);
+    const w=Math.round(css.width*pixelRatio),h=Math.round(css.height*pixelRatio);
+    if(surface.width!==w||surface.height!==h){surface.width=w;surface.height=h;}
+    if(gl){gl.viewport(0,0,w,h);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);}
+    let eye,target;
+    if(view==="cab"){
+      const x=visual.x*X,z=visual.y*Z;
+      eye=[x,13.9,z+1.9];
+      const p=viewState.pitch,a=viewState.yaw;
+      target=plus(eye,[Math.sin(a)*Math.cos(p),-Math.sin(p),-Math.cos(a)*Math.cos(p)]);
+    }else{
+      const center=[18,2.4,21],a=viewState.orbit,e=viewState.elevation,dist=viewState.distance;
+      eye=plus(center,[Math.sin(a)*Math.cos(e)*dist,Math.sin(e)*dist,Math.cos(a)*Math.cos(e)*dist]);
+      target=center;
+    }
+    const vp=multiply(perspective(w/h,view==="cab"?1.48:1.04),lookAt(eye,target));
+    if(gl){
+      gl.useProgram(program);gl.uniformMatrix4fv(vpLocation,false,vp);gl.uniform3fv(eyeLocation,eye);gl.uniform1f(timeLocation,now/1000);
+      drawBuffer(staticBuffer,staticMesh.data.length/10);
+    }
+    const mesh=new Mesh();
+    const labels=[];
+    for(const slot of slots){
+      const cell=slot.dataset.cell,[gx,gz]=positionOf(cell),x=gx*X,z=gz*Z,base=deck(cell)*Y;
+      const closed=state.closed.includes(cell),cargo=state.positions[cell],lower=state.under[cell];
+      const marking=closed?rgb("#c37775"):cell===state.selected?rgb("#8cffe0"):cell==="B6"||cell==="A4"?yellow:rgb("#a9b6af");
+      mesh.background=true;
+      if(cargo&&software)mesh.cube(x+.3,base+.025,z+.22,6.9,.01,3.3,dark,3);
+      slotOutline(mesh,x,base+.055,z,marking);
+      if(closed)for(let i=-3.15;i<3.2;i+=.55)mesh.cube(x+i,base+.075,z,.13,.025,3.15,rgb("#974e51"));
+      mesh.background=false;
+      if(lower)container(mesh,x,base+.1,z,colors[lower]);
+      if(cargo)container(mesh,x,base+.1+(lower?2.3:0),z,colors[cargo]);
+      const y=base+(cargo?(lower?4.7:2.4):.12);
+      const center=project(vp,[x,y,z]);
+      const nearZ=eye[2]>=z?1:-1,nearX=eye[0]>=x?1:-1;
+      // Position markers sit beside the footprint or the roof edge, never in its center.
+      const anchors=cargo?[[x,y,z+nearZ*1.9],[x+nearX*3.65,y,z], [x,y,z-nearZ*1.9],[x-nearX*3.65,y,z]]:[[x,y,z]];
+      const codeAnchors=[center,...[[x-2.25,y,z],[x+2.25,y,z],[x,y,z+.9],[x,y,z-.9],[x-2.25,y,z+.9],[x+2.25,y,z-.9]].map(point=>project(vp,point))];
+      labels.push({slot,cell,cargo,codeAnchors,anchors:anchors.map(point=>project(vp,point)),distance:Math.hypot(x-eye[0],z-eye[2])});
+    }
+    // Reserve visual space for container identifiers before placing the smaller position badges.
+    const occupied=[];
+    const fits=(p,halfW,halfH)=>{
+      if(!p.visible||p.x<2||p.x>98||p.y<8||p.y>94)return false;
+      const px=p.x*css.width/100,py=p.y*css.height/100;
+      return !occupied.some(r=>Math.abs(px-r.x)<halfW+r.w+2&&Math.abs(py-r.y)<halfH+r.h+2);
+    };
+    const place=(element,p,halfW,halfH)=>{
+      element.style.left=p.x+"%";element.style.top=p.y+"%";
+      occupied.push({x:p.x*css.width/100,y:p.y*css.height/100,w:halfW,h:halfH});
+    };
+    labels.sort((a,b)=>(b.cell===state.selected)-(a.cell===state.selected)||(b.cargo===priority)-(a.cargo===priority)||a.distance-b.distance);
+    for(const {cell,cargo,codeAnchors} of labels){
+      const tag=cargoTags.get(cell),halfW=cargo?cargo.length*3.1+4:0;
+      const codePoint=cargo&&codeAnchors.find(p=>fits(p,halfW,7));
+      const visible=Boolean(codePoint);
+      tag.classList.toggle("off-camera",!visible);
+      if(visible)place(tag,codePoint,halfW,7);
+    }
+    for(const {slot,anchors} of labels){
+      const anchor=showPositions&&anchors.find(p=>fits(p,9,7));
+      slot.classList.toggle("off-camera",!anchor);
+      if(anchor)place(slot,anchor,9,7);
+    }
+    createTraffic(mesh,now/1000);
+    crane(mesh);
+    if(gl){
+      gl.bindBuffer(gl.ARRAY_BUFFER,dynamicBuffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(mesh.data),gl.DYNAMIC_DRAW);
+      drawBuffer(dynamicBuffer,mesh.data.length/10);
+    }else drawSoftware(eye,target,w,h,mesh,now);
+  }
+  return {render,resetLook,mode:gl?"webgl":"software"};
+}
+
+let terminal3D=null;
+try { terminal3D=createTerminal3D($("three-canvas")); }
+catch(error){ console.warn("Renderizado WebGL no disponible:",error.message); }
+$("scene").classList.toggle("webgl-active",Boolean(terminal3D));
+if(terminal3D) {
+  $("scene").dataset.renderer=terminal3D.mode;
+  if(terminal3D.mode==="software")$("renderer-note").textContent="3D por software · Arrastra para mirar alrededor. En la vista exterior usa la rueda para ajustar la distancia.";
+}
+if(!terminal3D){
+  $("renderer-note").textContent="Vista compatible: el navegador no pudo activar WebGL. La cámara vertical y las maniobras siguen disponibles.";
+  $("cab-view").textContent="Cabina";
+  $("map-view").textContent="Vista exterior";
+  $("reset-look").hidden=true;
+}
+$("reset-look").addEventListener("click",()=>terminal3D?.resetLook());
+prepareCanvas();
+setView("cab");
+start("guiado");
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
