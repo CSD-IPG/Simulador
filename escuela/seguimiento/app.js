@@ -177,6 +177,10 @@ function manualNotice(tracking){
  url.search=new URLSearchParams({authuser:'escuela.gestion@ipg.cl',view:'cm',fs:'1',to:tracking.assignee,su:subject,body:message});
  return '<p><a href="'+html(url.href)+'" target="_blank" rel="noopener noreferrer">Redactar aviso en Gmail</a><br><small>Para asignaciones urgentes o vencimientos. Revise el remitente antes de enviar.</small></p>';
 }
+function solicitudesIPG(items=[]){
+ const fields=[['Jefatura de Carrera','jefatura'],['Registro Académico','registro'],['Jefatura Administrativa','administracion'],['Finanzas','finanzas']];
+ return '<h3>Solicitudes y derivaciones IPG</h3>'+(items.length?items.map(s=>'<article class="history"><b>'+html(s.tipo)+'</b> · '+html(s.fecha||new Date(s.enviada_en).toLocaleDateString('es-CL',{timeZone:'America/Santiago'}))+fields.filter(([,k])=>s[k]).map(([label,k])=>'<p><strong>'+label+'</strong> · '+html(s[k])+'</p>').join('')+'</article>').join(''):'<p class="muted">No hay solicitudes sincronizadas para este estudiante.</p>');
+}
 function openCase(rut){
  const c=allCases().find(v=>v.rut===rut),t=model.tracking[rut];if(!c||!t)return;
  caseRut=rut;pendingId=crypto.randomUUID();const dialog=$('caseDialog');cleanDialog(dialog);
@@ -186,6 +190,7 @@ function openCase(rut){
  '<div class="notice"><strong>Estado: '+(t.closed?'CERRADO':'ABIERTO')+'</strong>'+(t.closed?'<p>Cierre registrado: '+html(t.closed_at?new Date(t.closed_at).toLocaleString('es-CL',{timeZone:'America/Santiago'}):'Sin fecha')+' · Responsable del cierre: '+html(t.closed_by||'No registrado')+'</p>':'<p>La ficha permanecerá activa hasta confirmar el cierre.</p>')+'</div><p><button type="button" class="secondary" id="downloadCase">Descargar ficha de gestión (Word)</button></p>'+
  '<p><small>Responsable asignado: '+html(staffName(t.assignee))+' · Supervisor de carrera: '+html(staffName(t.supervisor))+' · Supervisión general: Dirección de Escuela'+'. La identificación de supervisión no equivale a una firma o aprobación.</small></p>'+
  (!t.closed?'<div class="notice"><strong>Próximo seguimiento: '+html(t.due||'Sin programar')+' · '+html(deadline(t))+'</strong><p>Fecha sugerida: '+html(t.suggested_due||'—')+' · Evidencia CSD: '+html(t.evidence||'No solicitada')+'</p><form id="reschedule"><label>Nueva fecha<input type="date" name="next_date" required value="'+html(t.due||followDate())+'"></label><label>Motivo de reprogramación<input name="reason" required maxlength="1000"></label><button class="secondary">Guardar reprogramación</button></form></div>':'')+((t.schedule_history||[]).length?'<h3>Historial de reprogramaciones</h3>'+t.schedule_history.map(h=>'<p>'+html(h.previous||'—')+' → '+html(h.next)+' · '+html(h.reason)+' · '+html(h.author)+' · '+html(h.at)+'</p>').join(''):'')+
+ solicitudesIPG(t.solicitudes_ipg)+
  '<h3 style="margin-top:20px">Historial de intervenciones</h3>'+(hist||'<p class="muted">Aún no se registran intervenciones.</p>')+
  (t.closed?'':'<form id="eventForm"><h3>Registrar intervención</h3><div class="fields"><label>Canal<select name="channel">'+options(['Correo institucional','Llamada','Reunión','Aula virtual','Otro'])+'</select></label><label>Resultado<select name="outcome">'+options(['Intento sin respuesta','Contacto efectivo','Derivado','Cerrado'])+'</select></label></div><label>Gestión realizada y acuerdos<textarea name="note" required maxlength="4000"></textarea></label><label>Recurso del CSD recomendado<input name="csd" maxlength="300"></label><div class="fields"><label>Área de derivación<input name="referral" maxlength="300"></label><label>Próximo seguimiento<input name="next_date" type="date"></label></div><p id="suggestedDate" class="muted"></p><label>Motivo si modifica la fecha sugerida<input name="reason" maxlength="1000"></label><label>Evidencia CSD<select name="evidence">'+options(['No solicitada','Pendiente','Recibida','Revisada','No recibida'],t.evidence||'No solicitada')+'</select></label><p class="muted">Al recomendar un recurso CSD, solicite al estudiante enviar evidencia de realización al responsable por canal institucional en cuatro semanas. Registre su recepción y revisión en una intervención posterior.</p><label class="notice"><input type="checkbox" name="cerrar" value="true" id="closeCase"> Confirmo que las gestiones se encuentran concluidas y solicito cerrar este caso. Una vez cerrado, quedará sólo para consulta.</label><button>Guardar intervención</button></form>');
  if(!dialog.open)dialog.showModal();
@@ -209,6 +214,18 @@ function drawTeam(){
  });
  $('content').innerHTML='<section class="card"><h2>Equipo de seguimiento</h2><p>Los integrantes con cuenta vinculada ingresan con su clave personal. Para quienes están pendientes, genere un enlace y compártalo por un canal individual. Puede asignar fichas antes de la activación.</p><form id="memberForm"><div class="fields"><label>Correo institucional<input name="email" type="email" required></label><label>Perfil<select name="role">'+options(['Jefatura','Consejería'])+'</select></label></div><button>Habilitar integrante</button></form></section><section class="card"><h2>Integrantes</h2>'+(members.length?table(['Correo','Perfil','Acceso','Cuenta','Acciones'],rows):'<p>Aún no hay integrantes habilitados.</p>')+'</section>';
  async function save(values){await api('equipo',values);user=await api('inicio');if(!admin())return;drawTeam();status('Acceso de equipo actualizado.')}
+ const setup=document.createElement('button');
+ setup.className='secondary';setup.textContent='Generar clave de sincronización IPG';
+ setup.onclick=()=>busy(setup,async()=>{
+  if(!confirm('Generar una clave desactiva la anterior. ¿Continuar?'))return;
+  const actor=token;
+  const key=await jsonRequest('/rest/v1/rpc/configurar_acceso_solicitudes_ipg',{},actor);
+  if(actor!==token||!admin())return;
+  $('inviteLink').value=key;
+  $('inviteMessage').textContent='Clave de sincronización IPG. Cópiela en las propiedades del proyecto privado de Apps Script.';
+  $('copied').textContent='';$('inviteDialog').showModal();$('inviteLink').select();
+ });
+ $('content').prepend(setup);
  $('memberForm').onsubmit=e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target));busy(e.submitter,()=>save({...v,active:true}))};
  $('content').querySelectorAll('[data-member]').forEach(btn=>btn.onclick=()=>{const m=members[+btn.dataset.member];busy(btn,()=>save({email:m.email,role:m.role,active:!m.active}))});
  $('content').querySelectorAll('[data-invite]').forEach(btn=>btn.onclick=()=>busy(btn,async()=>{
